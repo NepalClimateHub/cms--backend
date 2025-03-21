@@ -1,0 +1,22 @@
+import { PermissionModule } from ".";
+
+// remove PermissionModule type after formation
+// used for inferring permissions action in index.ts
+
+const config: PermissionModule = {
+  key: "USERS",
+  name: "User Management",
+  description: "User Management",
+  permissions: [
+    {
+      action: "USERS_FULL",
+      description: "Full Access",
+    },
+    {
+      action: "USERS_VIEW",
+      description: "View Access",
+    },
+  ],
+};
+
+export default config;

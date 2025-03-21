@@ -1,0 +1,232 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LocationType {
+  NATIONAL
+  INTERNATIONAL
+}
+
+model User {
+  id                String    @id() @default(cuid())
+  fullName          String
+  email             String    @unique() @db.VarChar(254)
+  password          String
+  isAccountVerified Boolean   @default(false)
+  isSuperAdmin      Boolean   @default(false)
+  profession        String?
+  expertise         String?
+  bio               String?
+  dateOfBirth       DateTime? @db.Timestamptz(6)
+  dateOfJoin        DateTime? @db.Timestamptz(6)
+  gender            String?
+  phoneCountryCode  String?
+  phoneNumber       String?
+
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?
+
+  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socialsId String?
+
+  gallery Gallery[]
+  tags    Tags[]
+
+  resetPasswordToken              String?
+  resetPasswordExpires            DateTime?
+  accountVerificationToken        String?
+  accountVerificationTokenExpires DateTime?
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([email])
+}
+
+model Organizations {
+  id               String  @id() @default(cuid())
+  name             String
+  description      String
+  email            String
+  phoneCountryCode String?
+  phoneNumber      String?
+
+  tags         Tags[]
+  eventGallery Gallery[]
+
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?
+
+  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socialsId String?
+
+  bannerImageId  String?
+  bannerImageUrl String
+
+  logoImageUrl String
+  logoImageId  String?
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Events {
+  id                   String       @id() @default(cuid())
+  title                String
+  organizaer           String
+  description          String
+  // location is like venue
+  location             String
+  locationType         LocationType
+  type                 String
+  format               String
+  startDate            DateTime?
+  registrationDeadline DateTime?
+  registrationLink     String?
+  contactEmail         String?
+  status               String?
+  cost                 String?
+
+  tags         Tags[]
+  eventGallery Gallery[]
+
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?
+
+  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socialsId String?
+
+  bannerImageId  String?
+  bannerImageUrl String
+
+  contributedBy String
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model Opportunity {
+  id                  String       @id() @default(cuid())
+  title               String
+  organizaer          String
+  description         String
+  // location is like venue
+  location            String
+  locationType        LocationType
+  type                String
+  format              String
+  applicationDeadline DateTime?
+  duration            String?
+  contactEmail        String?
+  status              String?
+  cost                String?
+
+  tags Tags[]
+
+  address   Address? @relation(fields: [addressId], references: [id])
+  addressId String?
+
+  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socialsId String?
+
+  bannerImageId  String?
+  bannerImageUrl String
+
+  contributedBy String
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model News {
+  id            String       @id() @default(cuid())
+  title         String
+  source        String
+  mode          LocationType
+  publishedDate DateTime
+  publishedYear DateTime
+  newsLink      String
+
+  tags Tags[]
+
+  bannerImageId  String?
+  bannerImageUrl String
+
+  contributedBy String
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model Address {
+  id       String  @id() @default(cuid())
+  street   String?
+  country  String?
+  city     String?
+  state    String?
+  postcode String?
+
+  user         User[]
+  event        Events[]
+  opportunity  Opportunity[]
+  organization Organizations[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Socials {
+  id   String @id() @default(cuid())
+  data Json?
+
+  user         User[]
+  events       Events[]
+  opportunity  Opportunity[]
+  organization Organizations[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Tags {
+  id                String  @id() @default(cuid())
+  isUserTag         Boolean @default(false)
+  isOrganizationTag Boolean @default(false)
+  isEventTag        Boolean @default(false)
+  isNewsTag         Boolean @default(false)
+  isOpportunityTag  Boolean @default(false)
+
+  user         User[]
+  event        Events[]
+  news         News[]
+  organization Organizations[]
+  opportunity  Opportunity[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Gallery {
+  id        String  @id() @default(cuid())
+  sourceId  String?
+  publicUrl String
+
+  user         User[]
+  events       Events[]
+  organization Organizations[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
