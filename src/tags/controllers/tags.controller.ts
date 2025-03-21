@@ -32,21 +32,18 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { OrganizationService } from "../services/organization.service";
-import {
-  CreateOrganizationDto,
-  OrganizationResponseDto,
-  OrganizationSearchInput,
-} from "../dto/organization.dto";
+import { TagsService } from "../services/tags.service";
+import { TagOutputDto } from "../dto/tags-output.dto";
+import { AddTagDto, TagSearchInput } from "../dto/tags-input.dto";
 
-@ApiTags("organizations")
-@Controller("organizations")
-export class OrganizationController {
+@ApiTags("tags")
+@Controller("tags")
+export class TagController {
   constructor(
-    private readonly organizationService: OrganizationService,
+    private readonly tagsService: TagsService,
     private readonly logger: AppLogger
   ) {
-    this.logger.setContext(OrganizationController.name);
+    this.logger.setContext(TagController.name);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -54,52 +51,47 @@ export class OrganizationController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
-    summary: "Get organizations API",
+    summary: "Get tags API",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: SwaggerBaseApiResponse([OrganizationResponseDto]),
+    type: SwaggerBaseApiResponse([TagOutputDto]),
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     type: BaseApiErrorResponse,
   })
-  async getOrgs(
+  async getTags(
     @ReqContext() ctx: RequestContext,
-    @Query() query: OrganizationSearchInput
-  ): Promise<BaseApiResponse<OrganizationResponseDto[]>> {
-    this.logger.log(ctx, `${this.getOrgs.name} was called`);
+    @Query() query: TagSearchInput
+  ): Promise<BaseApiResponse<TagOutputDto[]>> {
+    this.logger.log(ctx, `${this.getTags.name} was called`);
 
-    const { organizations, count } =
-      await this.organizationService.getOrganizations(ctx, query);
-    return { data: organizations, meta: { count } };
+    const { tags, count } = await this.tagsService.getTags(ctx, query);
+    return { data: tags, meta: { count } };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({
-    summary: "Add organizations API",
+    summary: "Add a new tag",
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+    type: SwaggerBaseApiResponse(TagOutputDto),
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     type: BaseApiErrorResponse,
   })
-  async addOrg(
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async addTag(
     @ReqContext() ctx: RequestContext,
-    @Body() payload: CreateOrganizationDto
-  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
-    this.logger.log(ctx, `${this.addOrg.name} was called`);
-
-    const organization = await this.organizationService.addOrganization(
-      ctx,
-      payload
-    );
-    return { data: organization, meta: {} };
+    @Body() payload: AddTagDto
+  ): Promise<BaseApiResponse<TagOutputDto>> {
+    this.logger.log(ctx, `${this.addTag.name} was called`);
+    const roleData = await this.tagsService.addTag(ctx, payload);
+    return { data: roleData, meta: {} };
   }
 }

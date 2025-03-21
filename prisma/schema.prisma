@@ -200,6 +200,7 @@ model Socials {
 
 model Tags {
   id                String  @id() @default(cuid())
+  tag               String
   isUserTag         Boolean @default(false)
   isOrganizationTag Boolean @default(false)
   isEventTag        Boolean @default(false)

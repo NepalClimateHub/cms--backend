@@ -4,48 +4,45 @@ import { plainToClass, plainToInstance } from "class-transformer";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
-import {
-  CreateOrganizationDto,
-  OrganizationResponseDto,
-  OrganizationSearchInput,
-} from "../dto/organization.dto";
+import { TagOutputDto } from "../dto/tags-output.dto";
+import { AddTagDto, TagSearchInput } from "../dto/tags-input.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
 
 @Injectable()
-export class OrganizationService {
+export class TagsService {
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService
   ) {
-    this.logger.setContext(OrganizationService.name);
+    this.logger.setContext(TagsService.name);
   }
 
-  async getOrganizations(
+  async getTags(
     ctx: RequestContext,
-    query: OrganizationSearchInput
-  ): Promise<{ organizations: OrganizationResponseDto[]; count: number }> {
-    this.logger.log(ctx, `${this.getOrganizations.name} was called`);
+    query: TagSearchInput
+  ): Promise<{ tags: TagOutputDto[]; count: number }> {
+    this.logger.log(ctx, `${this.getTags.name} was called`);
     const { limit, offset, ...restQuery } = query;
 
     const { whereBuilder: orgWhereQuery } =
-      await applyFilters<Prisma.OrganizationsWhereInput>({
+      await applyFilters<Prisma.TagsWhereInput>({
         appliedFiltersInput: restQuery,
         availableFilters: {
-          name: async ({ filter }) => {
+          tag: async ({ filter }) => {
             const searchKey = createSearchKey(String(filter), "AND");
             return {
               where: {
                 OR: [
                   {
-                    name: {
+                    tag: {
                       search: searchKey,
                       mode: "insensitive",
                     },
                   },
                   {
-                    name: {
+                    tag: {
                       contains: String(filter),
                       mode: "insensitive",
                     },
@@ -57,42 +54,37 @@ export class OrganizationService {
         },
       });
 
-    const organizations = await this.prismaService.organizations.findMany({
+    const tags = await this.prismaService.tags.findMany({
       where: {
         AND: [orgWhereQuery],
       },
-      take: limit,
-      skip: offset,
       orderBy: {
         createdAt: "desc",
       },
     });
-    const organizationCount = await this.prismaService.organizations.count({
+    const tagsCount = await this.prismaService.tags.count({
       where: {
         AND: [orgWhereQuery],
       },
     });
 
     return {
-      organizations: plainToInstance(OrganizationResponseDto, organizations, {
+      tags: plainToInstance(TagOutputDto, tags, {
         excludeExtraneousValues: true,
       }),
-      count: organizationCount,
+      count: tagsCount,
     };
   }
 
-  async addOrganization(
-    ctx: RequestContext,
-    payload: CreateOrganizationDto
-  ): Promise<OrganizationResponseDto> {
-    this.logger.log(ctx, `${this.addOrganization.name} was called`);
-    const organization = await this.prismaService.organizations.create({
+  async addTag(ctx: RequestContext, payload: AddTagDto): Promise<TagOutputDto> {
+    this.logger.log(ctx, `${this.addTag.name} was called`);
+    const tag = await this.prismaService.tags.create({
       data: {
         ...payload,
       },
     });
 
-    return plainToClass(OrganizationResponseDto, organization, {
+    return plainToClass(TagOutputDto, tag, {
       excludeExtraneousValues: true,
     });
   }

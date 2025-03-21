@@ -1,9 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
 
-import { PermissionActions } from "../../shared/constants/permissions";
-import { SingleOrganizationDto } from "../../organization/dto/organization-output.dto";
-
 export class AuthTokenOutput {
   @Expose()
   @ApiProperty()
