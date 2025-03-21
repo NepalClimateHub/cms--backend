@@ -2,13 +2,12 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
@@ -78,6 +77,34 @@ export class OrganizationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
+  @Get("/:id")
+  @ApiOperation({
+    summary: "Get one organizations API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async getOneOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string
+  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
+    this.logger.log(ctx, `${this.getOrgs.name} was called`);
+
+    const organization = await this.organizationService.getOneOrganization(
+      ctx,
+      id
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({
     summary: "Add organizations API",
@@ -99,6 +126,34 @@ export class OrganizationController {
     const organization = await this.organizationService.addOrganization(
       ctx,
       payload
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete("/:id")
+  @ApiOperation({
+    summary: "Delete one organizations API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async deleteOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string
+  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
+    this.logger.log(ctx, `${this.getOrgs.name} was called`);
+
+    const organization = await this.organizationService.deleteOrganization(
+      ctx,
+      id
     );
     return { data: organization, meta: {} };
   }

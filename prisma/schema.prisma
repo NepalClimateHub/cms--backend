@@ -58,8 +58,8 @@ model Organizations {
   phoneCountryCode String?
   phoneNumber      String?
 
-  tags         Tags[]
-  eventGallery Gallery[]
+  tags                Tags[]
+  organizationGallery Gallery[]
 
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?

@@ -154,6 +154,7 @@ CREATE TABLE "Socials" (
 -- CreateTable
 CREATE TABLE "Tags" (
     "id" TEXT NOT NULL,
+    "tag" TEXT NOT NULL,
     "isUserTag" BOOLEAN NOT NULL DEFAULT false,
     "isOrganizationTag" BOOLEAN NOT NULL DEFAULT false,
     "isEventTag" BOOLEAN NOT NULL DEFAULT false,

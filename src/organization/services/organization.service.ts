@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { plainToClass, plainToInstance } from "class-transformer";
 
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -54,6 +54,19 @@ export class OrganizationService {
               },
             };
           },
+          tagIds: async ({ filter }) => {
+            return {
+              where: {
+                tags: {
+                  some: {
+                    id: {
+                      in: filter as string[],
+                    },
+                  },
+                },
+              },
+            };
+          },
         },
       });
 
@@ -61,12 +74,18 @@ export class OrganizationService {
       where: {
         AND: [orgWhereQuery],
       },
+      include: {
+        address: true,
+        socials: true,
+        tags: true,
+      },
       take: limit,
       skip: offset,
       orderBy: {
         createdAt: "desc",
       },
     });
+
     const organizationCount = await this.prismaService.organizations.count({
       where: {
         AND: [orgWhereQuery],
@@ -81,18 +100,94 @@ export class OrganizationService {
     };
   }
 
+  async getOneOrganization(
+    ctx: RequestContext,
+    id: string
+  ): Promise<OrganizationResponseDto> {
+    this.logger.log(ctx, `${this.getOneOrganization.name} was called`);
+
+    const organization = await this.prismaService.organizations.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        address: true,
+        socials: true,
+        tags: true,
+        organizationGallery: true,
+      },
+    });
+
+    if (!organization) {
+      throw new NotFoundException("Organization not found");
+    }
+
+    return plainToInstance(OrganizationResponseDto, organization, {
+      excludeExtraneousValues: true,
+    });
+  }
+
   async addOrganization(
     ctx: RequestContext,
     payload: CreateOrganizationDto
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.addOrganization.name} was called`);
+    const { address, tagIds, gallery, ...restPayload } = payload;
+
     const organization = await this.prismaService.organizations.create({
       data: {
-        ...payload,
+        ...restPayload,
+        ...(address && {
+          address: {
+            create: {
+              ...address,
+            },
+          },
+        }),
+        ...(tagIds && {
+          tags: {
+            connect: tagIds?.map((id) => ({
+              id,
+              isOrganizationTag: true,
+            })),
+          },
+        }),
+        ...(gallery && {
+          organizationGallery: {
+            create: gallery,
+          },
+        }),
       },
     });
 
     return plainToClass(OrganizationResponseDto, organization, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async deleteOrganization(
+    ctx: RequestContext,
+    id: string
+  ): Promise<OrganizationResponseDto> {
+    this.logger.log(ctx, `${this.deleteOrganization.name} was called`);
+
+    const organization = await this.prismaService.organizations.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!organization) {
+      throw new NotFoundException("Organization not found");
+    }
+
+    await this.prismaService.organizations.delete({
+      where: {
+        id: organization.id,
+      },
+    });
+
+    return plainToInstance(OrganizationResponseDto, organization, {
       excludeExtraneousValues: true,
     });
   }
