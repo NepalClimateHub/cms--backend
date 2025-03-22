@@ -83,7 +83,8 @@ export class CreateOrganizationDto {
   @IsOptional()
   gallery?: GalleryInput[];
 
-  @ApiProperty({ description: "Object of Socials ", required: false })
+  @ApiPropertyOptional({ description: "Object of Socials ", required: false })
+  @IsOptional()
   socials?: any;
 
   @ApiProperty({
@@ -91,6 +92,106 @@ export class CreateOrganizationDto {
     example: "https://example.com/org-banner.jpg",
   })
   @IsString()
+  bannerImageUrl: string;
+
+  @ApiPropertyOptional({ description: "Banner image ID", required: false })
+  @IsString()
+  @IsOptional()
+  bannerImageId?: string;
+
+  @ApiProperty({
+    description: "Logo image URL",
+    example: "https://example.com/org-logo.jpg",
+  })
+  @IsString()
+  logoImageUrl: string;
+
+  @ApiPropertyOptional({ description: "Logo image ID", required: false })
+  @IsString()
+  @IsOptional()
+  logoImageId?: string;
+
+  @ApiPropertyOptional({
+    description: "Tags IDs",
+    type: [String],
+    required: false,
+  })
+  @IsOptional()
+  tagIds?: string[];
+}
+
+export class UpdateOrganizationDto {
+  @ApiProperty({
+    description: "Organization name",
+    example: "Tech Innovations Inc.",
+  })
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @ApiProperty({
+    description: "Organization description",
+    example: "A leading technology company",
+  })
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @ApiProperty({
+    description: "Organization email",
+    example: "contact@techinnovations.com",
+  })
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
+  @ApiPropertyOptional({
+    description: "Phone country code",
+    required: false,
+    example: "+1",
+  })
+  @IsOptional()
+  @IsString()
+  phoneCountryCode?: string;
+
+  @ApiPropertyOptional({
+    description: "Phone number",
+    required: false,
+    example: "5551234567",
+  })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiPropertyOptional({
+    description: "Address",
+    required: false,
+    example: "5551234567",
+  })
+  @IsOptional()
+  address?: AddressInput;
+
+  @ApiPropertyOptional({
+    description: "Gallery iamges",
+    required: false,
+    example: "5551234567",
+  })
+  @ValidateNested({ each: true })
+  @Type(() => GalleryInput)
+  @IsArray()
+  @IsOptional()
+  gallery?: GalleryInput[];
+
+  @ApiProperty({ description: "Object of Socials ", required: false })
+  @IsOptional()
+  socials?: any;
+
+  @ApiProperty({
+    description: "Banner image URL",
+    example: "https://example.com/org-banner.jpg",
+  })
+  @IsString()
+  @IsOptional()
   bannerImageUrl: string;
 
   @ApiProperty({ description: "Banner image ID", required: false })
@@ -103,6 +204,7 @@ export class CreateOrganizationDto {
     example: "https://example.com/org-logo.jpg",
   })
   @IsString()
+  @IsOptional()
   logoImageUrl: string;
 
   @ApiProperty({ description: "Logo image ID", required: false })
@@ -170,6 +272,7 @@ export class OrganizationResponseDto {
   address?: AddressResponse;
 
   @ApiProperty({ description: "Object of Socials ", required: false })
+  @Expose()
   socials?: any;
 
   @ApiProperty({
@@ -202,5 +305,3 @@ export class OrganizationResponseDto {
   @Expose()
   organizationGallery: GalleryResponse[];
 }
-
-export class UpdateOrganizationDto extends CreateOrganizationDto {}

@@ -8,6 +8,7 @@ import {
   CreateOrganizationDto,
   OrganizationResponseDto,
   OrganizationSearchInput,
+  UpdateOrganizationDto,
 } from "../dto/organization.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
@@ -132,7 +133,7 @@ export class OrganizationService {
     payload: CreateOrganizationDto
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.addOrganization.name} was called`);
-    const { address, tagIds, gallery, ...restPayload } = payload;
+    const { address, tagIds, gallery, socials, ...restPayload } = payload;
 
     const organization = await this.prismaService.organizations.create({
       data: {
@@ -144,6 +145,7 @@ export class OrganizationService {
             },
           },
         }),
+
         ...(tagIds && {
           tags: {
             connect: tagIds?.map((id) => ({
@@ -155,6 +157,13 @@ export class OrganizationService {
         ...(gallery && {
           organizationGallery: {
             create: gallery,
+          },
+        }),
+        ...(socials && {
+          socials: {
+            create: {
+              data: JSON.parse(JSON.stringify(socials)),
+            },
           },
         }),
       },
@@ -188,6 +197,77 @@ export class OrganizationService {
     });
 
     return plainToInstance(OrganizationResponseDto, organization, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async updateOrganization(
+    ctx: RequestContext,
+    id: string,
+    payload: UpdateOrganizationDto
+  ): Promise<OrganizationResponseDto> {
+    this.logger.log(ctx, `${this.addOrganization.name} was called`);
+    const org = await this.prismaService.organizations.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!org) {
+      throw new NotFoundException("Organization not found!");
+    }
+
+    const { address, tagIds, gallery, socials, ...restPayload } = payload;
+
+    const organization = await this.prismaService.organizations.update({
+      where: {
+        id: org.id,
+      },
+      data: {
+        ...restPayload,
+        address: {
+          upsert: {},
+        },
+        ...(socials && {
+          socials: {
+            upsert: {
+              create: {
+                data: JSON.parse(JSON.stringify(socials)),
+              },
+              update: {
+                data: JSON.parse(JSON.stringify(socials)),
+              },
+            },
+          },
+        }),
+        ...(address && {
+          address: {
+            upsert: {
+              create: address,
+              update: address,
+            },
+          },
+        }),
+        ...(tagIds && {
+          tags: {
+            //set empty then create new records
+            // do not use deletemany here since it maybe used elsewhere
+            set: [],
+            connect: tagIds?.map((id) => ({
+              id,
+              isOrganizationTag: true,
+            })),
+          },
+        }),
+        ...(gallery && {
+          organizationGallery: {
+            deleteMany: {},
+            create: gallery,
+          },
+        }),
+      },
+    });
+
+    return plainToClass(OrganizationResponseDto, organization, {
       excludeExtraneousValues: true,
     });
   }

@@ -6,6 +6,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -36,6 +37,7 @@ import {
   CreateOrganizationDto,
   OrganizationResponseDto,
   OrganizationSearchInput,
+  UpdateOrganizationDto,
 } from "../dto/organization.dto";
 
 @ApiTags("organizations")
@@ -77,34 +79,6 @@ export class OrganizationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get("/:id")
-  @ApiOperation({
-    summary: "Get one organizations API",
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: SwaggerBaseApiResponse(OrganizationResponseDto),
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    type: BaseApiErrorResponse,
-  })
-  async getOneOrganization(
-    @ReqContext() ctx: RequestContext,
-    @Param("id") id: string
-  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
-    this.logger.log(ctx, `${this.getOrgs.name} was called`);
-
-    const organization = await this.organizationService.getOneOrganization(
-      ctx,
-      id
-    );
-    return { data: organization, meta: {} };
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({
     summary: "Add organizations API",
@@ -133,6 +107,34 @@ export class OrganizationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
+  @Get("/:id")
+  @ApiOperation({
+    summary: "Get one organizations API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async getOneOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string
+  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
+    this.logger.log(ctx, `${this.getOrgs.name} was called`);
+
+    const organization = await this.organizationService.getOneOrganization(
+      ctx,
+      id
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Delete("/:id")
   @ApiOperation({
     summary: "Delete one organizations API",
@@ -154,6 +156,36 @@ export class OrganizationController {
     const organization = await this.organizationService.deleteOrganization(
       ctx,
       id
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch("/:id")
+  @ApiOperation({
+    summary: "Update one organizations API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async updateOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() payload: UpdateOrganizationDto
+  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
+    this.logger.log(ctx, `${this.getOrgs.name} was called`);
+
+    const organization = await this.organizationService.updateOrganization(
+      ctx,
+      id,
+      payload
     );
     return { data: organization, meta: {} };
   }
