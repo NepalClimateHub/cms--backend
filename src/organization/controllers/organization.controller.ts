@@ -19,10 +19,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import { ROLE } from "../../auth/constants/role.constant";
-import { Roles } from "../../auth/decorators/role.decorator";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { RolesGuard } from "../../auth/guards/roles.guard";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,

@@ -16,5 +16,8 @@ export const configModuleOptions: ConfigModuleOptions = {
     JWT_PRIVATE_KEY_BASE64: Joi.string().required(),
     JWT_ACCESS_TOKEN_EXP_IN_SEC: Joi.number().required(),
     JWT_REFRESH_TOKEN_EXP_IN_SEC: Joi.number().required(),
+    IMAGEKIT_PUB_KEY: Joi.string().required(),
+    IMAGEKIT_PVT_KEY: Joi.string().required(),
+    IMAGEKIT_ENDPOINT: Joi.string().required(),
   }),
 };

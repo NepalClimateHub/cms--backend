@@ -19,5 +19,9 @@ export default (): any => ({
       10
     ),
   },
-  defaultAdminUserPassword: process.env.DEFAULT_ADMIN_USER_PASSWORD,
+  imagekit: {
+    publicKey: process.env.IMAGEKIT_PUB_KEY,
+    privateKey: process.env.IMAGEKIT_PVT_KEY,
+    urlEndpoint: process.env.IMAGEKIT_ENDPOINT,
+  },
 });

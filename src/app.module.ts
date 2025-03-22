@@ -7,6 +7,7 @@ import { SharedModule } from "./shared/shared.module";
 import { UserModule } from "./user/user.module";
 import { OrganizationModule } from "./organization/organization.module";
 import { TagsModule } from "./tags/tags.module";
+import { ImagekitModule } from "./imagekit/imagekit.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TagsModule } from "./tags/tags.module";
     AuthModule,
     OrganizationModule,
     TagsModule,
+    ImagekitModule,
   ],
   controllers: [AppController],
   providers: [AppService],
