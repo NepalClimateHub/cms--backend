@@ -8,6 +8,7 @@ import { UserModule } from "./user/user.module";
 import { OrganizationModule } from "./organization/organization.module";
 import { TagsModule } from "./tags/tags.module";
 import { ImagekitModule } from "./imagekit/imagekit.module";
+import { EventsModule } from "./events/events.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ImagekitModule } from "./imagekit/imagekit.module";
     OrganizationModule,
     TagsModule,
     ImagekitModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
