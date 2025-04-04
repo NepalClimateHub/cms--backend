@@ -19,7 +19,7 @@
     "doc:generate": "npx compodoc -p tsconfig.json",
     "migrate:dev": "npx prisma migrate dev",
     "migrate:deploy": "npx prisma migrate deploy",
-    "migrate:seed": "npx ts-node scripts/seed/index.ts"
+    "migrate:seed": "npx tsx scripts/seed/index.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.11",
