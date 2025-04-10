@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
-import { BaseAclService } from '../../shared/acl/acl.service';
-import { ROLE } from './../../auth/constants/role.constant';
-import { Action } from './../../shared/acl/action.constant';
-import { Actor } from './../../shared/acl/actor.constant';
-import { User } from '@prisma/client';
+import { BaseAclService } from "../../shared/acl/acl.service";
+import { ROLE } from "./../../auth/constants/role.constant";
+import { Action } from "./../../shared/acl/action.constant";
+import { Actor } from "./../../shared/acl/actor.constant";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class UserAclService extends BaseAclService<User> {
