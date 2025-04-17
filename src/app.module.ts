@@ -9,6 +9,7 @@ import { OrganizationModule } from "./organization/organization.module";
 import { TagsModule } from "./tags/tags.module";
 import { ImagekitModule } from "./imagekit/imagekit.module";
 import { EventsModule } from "./events/events.module";
+import { NewsModule } from "./news/news.module";
 import { OpportunityModule } from "./opportunity/opportunities.module";
 
 @Module({
@@ -20,6 +21,7 @@ import { OpportunityModule } from "./opportunity/opportunities.module";
     TagsModule,
     ImagekitModule,
     EventsModule,
+    NewsModule,
     OpportunityModule,
   ],
   controllers: [AppController],
