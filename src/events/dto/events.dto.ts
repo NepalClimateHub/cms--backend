@@ -18,7 +18,7 @@ export class EventsSearchInput extends PaginationParamsDto {
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
   tagIds: string[];

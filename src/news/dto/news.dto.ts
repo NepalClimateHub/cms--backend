@@ -1,26 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsArray,
-  IsDate,
-  IsEmail,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsArray, IsOptional, IsString } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
-import { Expose, Type, Transform } from "class-transformer";
+import { Expose } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 
 export class NewsSearchInput extends PaginationParamsDto {
-  @ApiProperty()
-  @IsOptional()
+  @ApiProperty({ required: false })
   @IsString()
-  title: string;
-
-  @ApiProperty()
   @IsOptional()
+  title?: string;
+
+  @ApiProperty({ required: false, type: [String] })
   @IsArray()
-  tagIds: string[];
+  @IsOptional()
+  tagIds?: string[];
 }
 
 export class CreateNewsDto {
