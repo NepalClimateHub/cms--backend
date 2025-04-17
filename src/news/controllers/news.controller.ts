@@ -46,8 +46,6 @@ export class NewsController {
     this.logger.setContext(NewsController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -96,8 +94,6 @@ export class NewsController {
     return { data: news, meta: {} };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get("/:id")
   @ApiOperation({
