@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from "@nestjs/testing";
 
-import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { LoginInput } from '../dtos/auth-login-input.dto';
-import { RefreshTokenInput } from '../dtos/auth-refresh-token-input.dto';
-import { RegisterInput } from '../dtos/auth-register-input.dto';
-import { AuthTokenOutput } from '../dtos/auth-token-output.dto';
-import { AuthService } from '../services/auth.service';
-import { AuthController } from './auth.controller';
+import { AppLogger } from "../../shared/logger/logger.service";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { LoginInput } from "../dtos/auth-login-input.dto";
+import { RefreshTokenInput } from "../dtos/auth-refresh-token-input.dto";
+import { RegisterInput } from "../dtos/auth-register-input.dto";
+import { AuthTokenOutput } from "../dtos/auth-token-output.dto";
+import { AuthService } from "../services/auth.service";
+import { AuthController } from "./auth.controller";
 
-describe('AuthController', () => {
+describe("AuthController", () => {
   let moduleRef: TestingModule;
   let authController: AuthController;
 
@@ -33,39 +33,39 @@ describe('AuthController', () => {
     authController = moduleRef.get<AuthController>(AuthController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(authController).toBeDefined();
   });
 
   const ctx = new RequestContext();
 
-  describe('registerLocal', () => {
-    it('should register new user', async () => {
+  describe("registerLocal", () => {
+    it("should register new user", async () => {
       const registerInputDto = new RegisterInput();
-      registerInputDto.name = 'John Doe';
-      registerInputDto.username = 'john@example.com';
-      registerInputDto.password = '123123';
+      registerInputDto.name = "John Doe";
+      registerInputDto.username = "john@example.com";
+      registerInputDto.password = "123123";
 
       jest
-        .spyOn(mockedAuthService, 'register')
+        .spyOn(mockedAuthService, "register")
         .mockImplementation(async () => null);
 
       expect(await authController.registerLocal(ctx, registerInputDto)).toEqual(
         {
           data: null,
           meta: {},
-        },
+        }
       );
     });
   });
 
-  describe('login', () => {
-    it('should login user', async () => {
+  describe("login", () => {
+    it("should login user", async () => {
       const loginInputDto = new LoginInput();
-      loginInputDto.username = 'john@example.com';
-      loginInputDto.password = '123123';
+      loginInputDto.email = "john@example.com";
+      loginInputDto.password = "123123";
 
-      jest.spyOn(mockedAuthService, 'login').mockImplementation(() => null);
+      jest.spyOn(mockedAuthService, "login").mockImplementation(() => null);
 
       expect(await authController.login(ctx, loginInputDto)).toEqual({
         data: null,
@@ -74,28 +74,28 @@ describe('AuthController', () => {
     });
   });
 
-  describe('refreshToken', () => {
+  describe("refreshToken", () => {
     let refreshTokenInputDto: RefreshTokenInput;
     let authToken: AuthTokenOutput;
 
     beforeEach(() => {
       refreshTokenInputDto = {
-        refreshToken: 'refresh_token',
+        refreshToken: "refresh_token",
       };
       authToken = {
-        accessToken: 'new_access_token',
-        refreshToken: 'new_refresh_token',
+        accessToken: "new_access_token",
+        refreshToken: "new_refresh_token",
       };
 
       jest
-        .spyOn(mockedAuthService, 'refreshToken')
+        .spyOn(mockedAuthService, "refreshToken")
         .mockImplementation(async () => authToken);
     });
 
-    it('should generate refresh token', async () => {
+    it("should generate refresh token", async () => {
       const response = await authController.refreshToken(
         ctx,
-        refreshTokenInputDto,
+        refreshTokenInputDto
       );
 
       expect(mockedAuthService.refreshToken).toBeCalledWith(ctx);

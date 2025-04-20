@@ -8,6 +8,24 @@ import { VALIDATION_PIPE_OPTIONS } from "./shared/constants";
 import { RequestIdMiddleware } from "./shared/middlewares/request-id/request-id.middleware";
 import { apiReference } from "@scalar/nestjs-api-reference";
 
+function updateReferences(
+  obj: Record<string, any>,
+  oldRef: string,
+  newRef: string
+): void {
+  if (!obj || typeof obj !== "object") return;
+
+  if (obj.$ref === oldRef) {
+    obj.$ref = newRef;
+  }
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+      updateReferences(obj[key], oldRef, newRef);
+    }
+  }
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("api/v1");
@@ -16,7 +34,7 @@ async function bootstrap() {
   app.use(RequestIdMiddleware);
   app.enableCors();
 
-  /** Swagger configuration*/
+  /** Swagger configuration */
   const options = new DocumentBuilder()
     .setTitle("NCH")
     .setDescription("NCH")
@@ -25,6 +43,49 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
+
+  if (document.components?.schemas) {
+    const schemas = document.components.schemas;
+
+    const problematicKeys = Object.keys(schemas).filter((key) => {
+      return (
+        key.includes("class ") ||
+        key.includes("{") ||
+        key.includes("\n") ||
+        key.includes("SwaggerBaseApiResponseFor")
+      );
+    });
+
+    problematicKeys.forEach((key) => {
+      let modelName = "";
+      if (key.includes("SwaggerBaseApiResponseFor")) {
+        const match = key.match(/SwaggerBaseApiResponseFor\s+([a-zA-Z0-9_]+)/);
+        if (match && match[1]) {
+          modelName = `ApiResponseOf${match[1]}`;
+        } else {
+          modelName = `CleanApiResponse${Math.floor(Math.random() * 10000)}`;
+        }
+      } else if (key.includes("class ")) {
+        const match = key.match(/class\s+([a-zA-Z0-9_]+)/);
+        if (match && match[1]) {
+          modelName = match[1];
+        } else {
+          modelName = `CleanApiResponse${Math.floor(Math.random() * 10000)}`;
+        }
+      } else {
+        modelName = `CleanApiResponse${Math.floor(Math.random() * 10000)}`;
+      }
+
+      schemas[modelName] = schemas[key];
+
+      const oldRef = `#/components/schemas/${key}`;
+      const newRef = `#/components/schemas/${modelName}`;
+      updateReferences(document, oldRef, newRef);
+
+      delete schemas[key];
+    });
+  }
+
   app.use("/docs", apiReference({ content: document }));
 
   const configService = app.get(ConfigService);
