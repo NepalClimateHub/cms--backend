@@ -120,7 +120,7 @@ model Organizations {
 model Events {
   id           String @id() @default(cuid())
   title        String
-  organizaer   String
+  organizer    String @map("organizer")
   description  String
   // location is like venue
   location     String
@@ -156,7 +156,7 @@ model Events {
 model Opportunity {
   id                  String    @id() @default(cuid())
   title               String
-  organizaer          String
+  organizer           String    @map("organizer")
   description         String
   // location is like venue
   location            String
