@@ -51,4 +51,4 @@ EXPOSE 3000
 USER node
 
 # Set the default command to run the application
-CMD [ "npm", "run", "start:prod" ]
+CMD [ "npm", "run", "prod" ]
