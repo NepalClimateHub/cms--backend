@@ -1,54 +1,34 @@
-# Stage 1: Build the application
-FROM node:20.14.0-bookworm-slim as builder
+FROM node:22.4.1-bookworm-slim AS builder
 
+RUN apt-get update -y
+RUN apt-get install -y openssl
 WORKDIR /usr/src/app
-
-# Install pnpm
 RUN npm install -g pnpm
-
-# Copy and install dependencies
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
-
-# Copy the rest of the application files
 COPY . .
-
-# Build the application
 ARG APP_ENV=production
 ARG DATABASE_URL
 ENV NODE_ENV=${APP_ENV}
 ENV DATABASE_URL=${DATABASE_URL}
-
-# generate client
 RUN pnpm dlx prisma generate
 RUN pnpm run build
-
-# Run Prisma migrations 
 RUN pnpm dlx prisma migrate deploy
+RUN pnpm prune --prod
 
-# Prune development dependencies
-RUN pnpm prune --production
+# runner
+FROM node:22.4.1-bookworm-slim
 
-# Stage 2: Create the production image
-FROM node:20.14.0-bookworm-slim
-
+RUN apt-get update -y && apt-get install -y curl
 WORKDIR /usr/src/app
-
-# Copy only the necessary files from the builder stage
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/prisma ./prisma
-
-# Set the environment variables
 ARG APP_ENV=production
 ENV NODE_ENV=${APP_ENV}
-
-# Expose the application port
 EXPOSE 3000
-
-# Use a non-root user for security
+RUN apt-get update -y
+RUN apt-get install -y openssl
 USER node
-
-# Set the default command to run the application
-CMD [ "npm", "run", "prod" ]
+CMD [ "node", "dist/src/main" ]

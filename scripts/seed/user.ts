@@ -9,8 +9,8 @@ const seedSuperAdmin = async () => {
 
   const superAdmin: Prisma.UserCreateInput[] = [
     {
-      fullName: "Super Admin",
-      email: "avash700@gmail.com",
+      fullName: "NCH Admin",
+      email: "nchadmin@mailinator.com",
       password: hasedPW,
       isAccountVerified: true,
       isSuperAdmin: true,

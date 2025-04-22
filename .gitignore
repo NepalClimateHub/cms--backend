@@ -395,3 +395,5 @@ test-report.xml
 tsconfig.build.tsbuildinfo
 
 ./.vscode
+
+docker-compose.yml

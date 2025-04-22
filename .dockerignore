@@ -4,3 +4,4 @@ dist
 .git
 .env
 local
+docker-compose.yml
