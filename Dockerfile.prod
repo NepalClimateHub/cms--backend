@@ -19,11 +19,12 @@ ARG DATABASE_URL
 ENV NODE_ENV=${APP_ENV}
 ENV DATABASE_URL=${DATABASE_URL}
 
+# generate client
+RUN pnpm dlx prisma generate
 RUN pnpm run build
 
-# Run Prisma migrations and generate client
+# Run Prisma migrations 
 RUN pnpm dlx prisma migrate deploy
-RUN pnpm dlx prisma generate
 
 # Prune development dependencies
 RUN pnpm prune --production
