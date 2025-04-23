@@ -86,9 +86,15 @@ async function bootstrap() {
     });
   }
 
-  app.use("/docs", apiReference({ content: document }));
-
   const configService = app.get(ConfigService);
+
+  if (configService.get<string>("NODE_ENV") === "development") {
+    app.use("/docs", apiReference({ content: document }));
+    app.use("/swagger.json", (req: any, res: any) => {
+      return res.json(document);
+    });
+  }
+
   const port = configService.get<number>("port") || 3000;
   await app.listen(port);
   Logger.log(`App port: ${port}`);

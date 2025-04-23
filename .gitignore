@@ -385,7 +385,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-=======
 # Local
 .env
 dist
@@ -396,5 +395,5 @@ tsconfig.build.tsbuildinfo
 
 ./.vscode
 
-
-pnpm-lock.yaml 
+docker-compose.yml
+pnpm-lock.yaml
