@@ -3,20 +3,31 @@ FROM node:20.14.0-bookworm-slim as builder
 
 WORKDIR /usr/src/app
 
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy and install dependencies
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 
 # Copy the rest of the application files
 COPY . .
 
 # Build the application
 ARG APP_ENV=production
+ARG DATABASE_URL
 ENV NODE_ENV=${APP_ENV}
-RUN npm run build
+ENV DATABASE_URL=${DATABASE_URL}
+
+# generate client
+RUN pnpm dlx prisma generate
+RUN pnpm run build
+
+# Run Prisma migrations 
+RUN pnpm dlx prisma migrate deploy
 
 # Prune development dependencies
-RUN npm prune --production
+RUN pnpm prune --production
 
 # Stage 2: Create the production image
 FROM node:20.14.0-bookworm-slim
@@ -27,6 +38,7 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
 
 # Set the environment variables
 ARG APP_ENV=production
@@ -39,4 +51,4 @@ EXPOSE 3000
 USER node
 
 # Set the default command to run the application
-CMD [ "npm", "run", "start:prod" ]
+CMD [ "npm", "run", "prod" ]

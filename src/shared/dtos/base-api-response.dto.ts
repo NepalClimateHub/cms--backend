@@ -1,45 +1,113 @@
-import { Type } from '@nestjs/common';
+import { Type } from "@nestjs/common";
 import {
   ApiProperty,
   ApiPropertyOptional,
-  ApiPropertyOptions,
-} from '@nestjs/swagger';
+  getSchemaPath,
+} from "@nestjs/swagger";
+import { TagOutputDto } from "../../tags/dto/tags-output.dto";
+import { UserOutput } from "../../user/dtos/user-output.dto";
+import { EventResponseDto } from "../../events/dto/events.dto";
+import { OrganizationResponseDto } from "../../organization/dto/organization.dto";
+import { OpportunityResponseDto } from "../../opportunity/dto/opportunities.dto";
+import { AuthTokenOutput } from "../../auth/dtos/auth-token-output.dto";
+import { RegisterOutput } from "../../auth/dtos/auth-register-output.dto";
+import { ImagekitResponseDto } from "../../imagekit/imagekit.dto";
+import {
+  UserApiResponse,
+  UserArrayApiResponse,
+  TagApiResponse,
+  TagArrayApiResponse,
+  EventApiResponse,
+  EventArrayApiResponse,
+  OrganizationApiResponse,
+  OrganizationArrayApiResponse,
+  OpportunityApiResponse,
+  OpportunityArrayApiResponse,
+  AuthTokenApiResponse,
+  RegisterApiResponse,
+  ImagekitApiResponse,
+} from "./specific-api-responses.dto";
 
+// Keeping this for backward compatibility
 export class BaseApiResponse<T> {
-  public data: T; // Swagger Decorator is added in the extended class below, since that will override this one.
+  public data: T;
 
   @ApiProperty({ type: Object })
-  public meta: any;
+  public meta: Record<string, any> = {};
 }
 
+// API property type definition
 type ApiPropertyType =
   | Type<unknown>
   | Function
   | [Function]
-  | 'array'
-  | 'string'
-  | 'number'
-  | 'boolean'
-  | 'integer'
-  | 'null';
+  | string
+  | number
+  | boolean;
 
+// Type mapping dictionary - maps type names to response classes
+interface TypeMapping {
+  [key: string]: any;
+}
+
+// Non-generic response type mapping
+const responseTypeMap: TypeMapping = {
+  UserOutput: UserApiResponse,
+  "UserOutput[]": UserArrayApiResponse,
+  TagOutputDto: TagApiResponse,
+  "TagOutputDto[]": TagArrayApiResponse,
+  EventResponseDto: EventApiResponse,
+  "EventResponseDto[]": EventArrayApiResponse,
+  OrganizationResponseDto: OrganizationApiResponse,
+  "OrganizationResponseDto[]": OrganizationArrayApiResponse,
+  OpportunityResponseDto: OpportunityApiResponse,
+  "OpportunityResponseDto[]": OpportunityArrayApiResponse,
+  AuthTokenOutput: AuthTokenApiResponse,
+  RegisterOutput: RegisterApiResponse,
+  ImagekitResponseDto: ImagekitApiResponse,
+};
+
+/**
+ * Returns a proper OpenAPI compatible response class
+ * This function avoids using generics in OpenAPI schema generation
+ */
 export function SwaggerBaseApiResponse<T extends ApiPropertyType>(
-  type: T,
-): typeof BaseApiResponse {
-  class ExtendedBaseApiResponse<T> extends BaseApiResponse<T> {
-    @ApiProperty({
-      type,
-    }) // Casting `type` to `any` to bypass type checking for now
-    public declare data: T;
+  type: T
+): any {
+  let typeName: string;
+  if (Array.isArray(type)) {
+    typeName = `${type[0].name}[]`;
+  } else if (typeof type === "function") {
+    typeName = (type as Function).name;
+  } else {
+    typeName = String(type);
   }
-  // NOTE : Overwrite the returned class name, otherwise whichever type calls this function in the last,
-  // will overwrite all previous definitions. i.e., Swagger will have all response types as the same one.
-  const isAnArray = Array.isArray(type) ? ' [ ] ' : '';
-  Object.defineProperty(ExtendedBaseApiResponse, 'name', {
-    value: `SwaggerBaseApiResponseFor ${type} ${isAnArray}`,
+
+  if (responseTypeMap[typeName]) {
+    return responseTypeMap[typeName];
+  }
+
+  const className = `ApiResponseOf${typeName.replace("[]", "Array")}`;
+
+  class CustomApiResponse extends BaseApiResponse<any> {
+    @ApiProperty(
+      Array.isArray(type)
+        ? {
+            type: "array",
+            items: {
+              $ref: getSchemaPath(type[0]),
+            },
+          }
+        : { type: type as any }
+    )
+    public declare data: any;
+  }
+
+  Object.defineProperty(CustomApiResponse, "name", {
+    value: className,
   });
 
-  return ExtendedBaseApiResponse;
+  return CustomApiResponse;
 }
 
 export class BaseApiErrorObject {

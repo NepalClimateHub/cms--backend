@@ -56,6 +56,8 @@ export class TagController {
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse([TagOutputDto]),
+    
+    
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,

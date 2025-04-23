@@ -12,34 +12,28 @@ import { Expose, Type } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 import { GalleryInput, GalleryResponse } from "../../shared/dtos/gallery.dto";
 
-export class EventsSearchInput extends PaginationParamsDto {
+export class OpportunitySearchInput extends PaginationParamsDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
   title: string;
 
-  @ApiProperty({ required: false, type: [String] })
+  @ApiProperty()
   @IsOptional()
   @IsArray()
   tagIds: string[];
 }
 
-export class CreateEventDto {
+export class CreateOpportunityDto {
   @ApiProperty({
-    description: "Event name",
-    example: "Tech Innovations",
+    description: "Opportunity name",
+    example: "The Green Fellows Program",
   })
   @IsString()
   title: string;
 
   @ApiProperty({
-    description: "organizer",
-  })
-  @IsString()
-  organizer: string;
-
-  @ApiProperty({
-    description: "Event description",
+    description: "Opportunity description",
     example: "A leading technology company",
   })
   @IsString()
@@ -58,16 +52,62 @@ export class CreateEventDto {
   locationType: string;
 
   @ApiProperty({
-    description: "event type",
+    description: "Opportunity type",
   })
   @IsString()
   type: string;
 
   @ApiProperty({
-    description: "event type",
+    description: "opportunity format",
   })
   @IsString()
   format: string;
+
+  @ApiPropertyOptional({
+    description: "date",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  applicationDeadline?: string;
+
+  @ApiPropertyOptional({
+    description: "duration",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  duration?: string;
+
+  @ApiPropertyOptional({
+    description: "email contact",
+    required: false,
+  })
+  @IsOptional()
+  @IsEmail()
+  contactEmail?: string;
+
+  @ApiPropertyOptional({
+    description: "status",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: "cost",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  cost?: string;
+
+  @ApiProperty({
+    description: "organizer",
+  })
+  @IsString()
+  organizer: string;
 
   @ApiProperty({
     description: "Contributed by",
@@ -76,12 +116,96 @@ export class CreateEventDto {
   contributedBy: string;
 
   @ApiPropertyOptional({
-    description: "date",
+    description: "Address",
+    required: false,
+    example: "5551234567",
+  })
+  @IsOptional()
+  address?: AddressInput;
+
+  @ApiPropertyOptional({ description: "Object of Socials ", required: false })
+  @IsOptional()
+  socials?: any;
+
+  @ApiProperty({
+    description: "Banner image URL",
+    example: "https://example.com/org-banner.jpg",
+  })
+  @IsString()
+  bannerImageUrl: string;
+
+  @ApiPropertyOptional({ description: "Banner image ID", required: false })
+  @IsString()
+  @IsOptional()
+  bannerImageId?: string;
+
+  @ApiPropertyOptional({
+    description: "Tags IDs",
+    type: [String],
     required: false,
   })
   @IsOptional()
+  tagIds?: string[];
+}
+
+export class UpdateOpportunityDto {
+  @ApiProperty({
+    description: "Opportunity name",
+    example: "Tech Innovations",
+  })
   @IsString()
-  startDate?: string;
+  @IsOptional()
+  title: string;
+
+  @ApiProperty({
+    description: "organizer",
+  })
+  @IsString()
+  @IsOptional()
+  organizer: string;
+
+  @ApiProperty({
+    description: "Opportunity description",
+    example: "A leading technology company",
+  })
+  @IsString()
+  @IsOptional()
+  description: string;
+
+  @ApiProperty({
+    description: "location",
+  })
+  @IsString()
+  @IsOptional()
+  location: string;
+
+  @ApiProperty({
+    description: "location type",
+  })
+  @IsString()
+  @IsOptional()
+  locationType: string;
+
+  @ApiProperty({
+    description: "Opportunity type",
+  })
+  @IsString()
+  @IsOptional()
+  type: string;
+
+  @ApiProperty({
+    description: "Opportunity type",
+  })
+  @IsString()
+  @IsOptional()
+  format: string;
+
+  @ApiProperty({
+    description: "Contributed by",
+  })
+  @IsString()
+  @IsOptional()
+  contributedBy: string;
 
   @ApiPropertyOptional({
     description: "date",
@@ -89,15 +213,7 @@ export class CreateEventDto {
   })
   @IsOptional()
   @IsString()
-  registrationDeadline?: string;
-
-  @ApiPropertyOptional({
-    description: "link",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  registrationLink?: string;
+  applicationDeadline?: string;
 
   @ApiPropertyOptional({
     description: "email contact",
@@ -131,17 +247,6 @@ export class CreateEventDto {
   @IsOptional()
   address?: AddressInput;
 
-  @ApiPropertyOptional({
-    description: "Gallery iamges",
-    required: false,
-    example: "5551234567",
-  })
-  @ValidateNested({ each: true })
-  @Type(() => GalleryInput)
-  @IsArray()
-  @IsOptional()
-  gallery?: GalleryInput[];
-
   @ApiPropertyOptional({ description: "Object of Socials ", required: false })
   @IsOptional()
   socials?: any;
@@ -167,160 +272,16 @@ export class CreateEventDto {
   tagIds?: string[];
 }
 
-export class UpdateEventDto {
+export class OpportunityResponseDto {
   @ApiProperty({
-    description: "Event name",
-    example: "Tech Innovations",
+    description: "Opportunity ID",
+    example: "cm92hbrpe00049kz8bwoaz1rh",
   })
   @IsString()
-  @IsOptional()
-  title: string;
-
+  @Expose()
+  id: string;
   @ApiProperty({
-    description: "organizer",
-  })
-  @IsString()
-  @IsOptional()
-  organizer: string;
-
-  @ApiProperty({
-    description: "Event description",
-    example: "A leading technology company",
-  })
-  @IsString()
-  @IsOptional()
-  description: string;
-
-  @ApiProperty({
-    description: "location",
-  })
-  @IsString()
-  @IsOptional()
-  location: string;
-
-  @ApiProperty({
-    description: "location type",
-  })
-  @IsString()
-  @IsOptional()
-  locationType: string;
-
-  @ApiProperty({
-    description: "event type",
-  })
-  @IsString()
-  @IsOptional()
-  type: string;
-
-  @ApiProperty({
-    description: "event type",
-  })
-  @IsString()
-  @IsOptional()
-  format: string;
-
-  @ApiProperty({
-    description: "Contributed by",
-  })
-  @IsString()
-  @IsOptional()
-  contributedBy: string;
-
-  @ApiPropertyOptional({
-    description: "date",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
-  @ApiPropertyOptional({
-    description: "date",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  registrationDeadline?: string;
-
-  @ApiPropertyOptional({
-    description: "link",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  registrationLink?: string;
-
-  @ApiPropertyOptional({
-    description: "email contact",
-    required: false,
-  })
-  @IsOptional()
-  @IsEmail()
-  contactEmail?: string;
-
-  @ApiPropertyOptional({
-    description: "status",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  status?: string;
-
-  @ApiPropertyOptional({
-    description: "cost",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  cost?: string;
-
-  @ApiPropertyOptional({
-    description: "Address",
-    required: false,
-    example: "5551234567",
-  })
-  @IsOptional()
-  address?: AddressInput;
-
-  @ApiPropertyOptional({
-    description: "Gallery iamges",
-    required: false,
-    example: "5551234567",
-  })
-  @ValidateNested({ each: true })
-  @Type(() => GalleryInput)
-  @IsArray()
-  @IsOptional()
-  gallery?: GalleryInput[];
-
-  @ApiPropertyOptional({ description: "Object of Socials ", required: false })
-  @IsOptional()
-  socials?: any;
-
-  @ApiProperty({
-    description: "Banner image URL",
-    example: "https://example.com/org-banner.jpg",
-  })
-  @IsString()
-  bannerImageUrl: string;
-
-  @ApiPropertyOptional({ description: "Banner image ID", required: false })
-  @IsString()
-  @IsOptional()
-  bannerImageId?: string;
-
-  @ApiPropertyOptional({
-    description: "Tags IDs",
-    type: [String],
-    required: false,
-  })
-  @IsOptional()
-  tagIds?: string[];
-}
-
-export class EventResponseDto {
-  @ApiProperty({
-    description: "Event name",
+    description: "Opportunity name",
     example: "Tech Innovations",
   })
   @IsString()
@@ -335,7 +296,7 @@ export class EventResponseDto {
   organizer: string;
 
   @ApiProperty({
-    description: "Event description",
+    description: "Opportunity description",
     example: "A leading technology company",
   })
   @IsString()
@@ -357,14 +318,14 @@ export class EventResponseDto {
   locationType: string;
 
   @ApiProperty({
-    description: "event type",
+    description: "Opportunity type",
   })
   @IsString()
   @Expose()
   type: string;
 
   @ApiProperty({
-    description: "event type",
+    description: "Opportunity type",
   })
   @IsString()
   @Expose()
@@ -383,24 +344,7 @@ export class EventResponseDto {
   })
   @IsString()
   @Expose()
-  startDate?: string;
-
-  @ApiPropertyOptional({
-    description: "date",
-    required: false,
-  })
-  @IsString()
-  @Expose()
-  registrationDeadline?: string;
-
-  @ApiPropertyOptional({
-    description: "link",
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  @Expose()
-  registrationLink?: string;
+  applicationDeadline?: string;
 
   @ApiPropertyOptional({
     description: "email contact",
@@ -462,5 +406,5 @@ export class EventResponseDto {
 
   @ApiProperty({ description: "Gallery", required: false })
   @Expose()
-  eventGallery: GalleryResponse[];
+  OpportunityGallery: GalleryResponse[];
 }
