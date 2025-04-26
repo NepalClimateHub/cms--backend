@@ -7,6 +7,31 @@ export class TagSearchInput extends PaginationParamsDto {
   @IsOptional()
   @IsString()
   tag: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isUserTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isOrganizationTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isEventTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isNewsTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isOpportunityTag?: boolean;
 }
 
 export class AddTagDto {

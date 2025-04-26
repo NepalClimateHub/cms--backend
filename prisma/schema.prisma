@@ -178,7 +178,7 @@ model Opportunity {
   socialsId String?
 
   bannerImageId  String?
-  bannerImageUrl String
+  bannerImageUrl String?
 
   contributedBy String
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)

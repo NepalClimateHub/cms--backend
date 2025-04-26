@@ -132,7 +132,8 @@ export class CreateOpportunityDto {
     example: "https://example.com/org-banner.jpg",
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()

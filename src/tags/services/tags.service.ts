@@ -9,6 +9,7 @@ import { AddTagDto, TagSearchInput } from "../dto/tags-input.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
+import { inspect } from "util";
 
 @Injectable()
 export class TagsService {
@@ -23,6 +24,7 @@ export class TagsService {
     ctx: RequestContext,
     query: TagSearchInput
   ): Promise<{ tags: TagOutputDto[]; count: number }> {
+    console.log("query", query);
     this.logger.log(ctx, `${this.getTags.name} was called`);
     const { limit, offset, ...restQuery } = query;
 
@@ -51,8 +53,40 @@ export class TagsService {
               },
             };
           },
+          isUserTag: async ({ filter }) => {
+            return {
+              where: {
+                isUserTag: true,
+              },
+            };
+          },
+          isOrganizationTag: async ({ filter }) => {
+            return {
+              where: {
+                isOrganizationTag: true,
+              },
+            };
+          },
+
+          isEventTag: async ({ filter }) => {
+            return {
+              where: {
+                isEventTag: true,
+              },
+            };
+          },
+
+          isNewsTag: async ({ filter }) => {
+            return {
+              where: {
+                isNewsTag: true,
+              },
+            };
+          },
         },
       });
+
+    console.log("==tags", inspect(orgWhereQuery, { depth: 3 }));
 
     const tags = await this.prismaService.tags.findMany({
       where: {
@@ -62,6 +96,8 @@ export class TagsService {
         createdAt: "desc",
       },
     });
+
+    console.log("==tags", tags);
     const tagsCount = await this.prismaService.tags.count({
       where: {
         AND: [orgWhereQuery],
