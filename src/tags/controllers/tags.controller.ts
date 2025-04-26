@@ -19,22 +19,18 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import { ROLE } from "../../auth/constants/role.constant";
-import { Roles } from "../../auth/decorators/role.decorator";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { RolesGuard } from "../../auth/guards/roles.guard";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
   SwaggerBaseApiResponse,
 } from "../../shared/dtos/base-api-response.dto";
-import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { TagsService } from "../services/tags.service";
 import { TagOutputDto } from "../dto/tags-output.dto";
-import { AddTagDto, TagSearchInput } from "../dto/tags-input.dto";
+import { AddTagDto, TagSearchInput, TagsType } from "../dto/tags-input.dto";
 
 @ApiTags("tags")
 @Controller("tags")
@@ -68,6 +64,31 @@ export class TagController {
     this.logger.log(ctx, `${this.getTags.name} was called`);
 
     const { tags, count } = await this.tagsService.getTags(ctx, query);
+    return { data: tags, meta: { count } };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get("/:type")
+  @ApiOperation({
+    summary: "Get tags by type API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse([TagOutputDto]),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async getTagsType(
+    @ReqContext() ctx: RequestContext,
+    @Param("type") tagType: TagsType
+  ): Promise<BaseApiResponse<TagOutputDto[]>> {
+    this.logger.log(ctx, `${this.getTagsType.name} was called`);
+
+    const { tags, count } = await this.tagsService.getTagsByType(ctx, tagType);
     return { data: tags, meta: { count } };
   }
 

@@ -150,8 +150,9 @@ export class CreateEventDto {
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
   })
+  @IsOptional()
   @IsString()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()

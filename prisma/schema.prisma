@@ -107,7 +107,7 @@ model Organizations {
   socialsId String?
 
   bannerImageId  String?
-  bannerImageUrl String
+  bannerImageUrl String?
 
   logoImageUrl String
   logoImageId  String?
@@ -145,7 +145,7 @@ model Events {
   socialsId String?
 
   bannerImageId  String?
-  bannerImageUrl String
+  bannerImageUrl String?
 
   contributedBy String
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)
@@ -178,7 +178,7 @@ model Opportunity {
   socialsId String?
 
   bannerImageId  String?
-  bannerImageUrl String
+  bannerImageUrl String?
 
   contributedBy String
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)
@@ -198,7 +198,7 @@ model News {
   tags Tags[]
 
   bannerImageId  String?
-  bannerImageUrl String
+  bannerImageUrl String?
 
   contributedBy String
   createdAt     DateTime  @default(now()) @db.Timestamptz(6)
