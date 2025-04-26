@@ -47,8 +47,6 @@ export class OrganizationController {
     this.logger.setContext(OrganizationController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -101,8 +99,6 @@ export class OrganizationController {
     return { data: organization, meta: {} };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get("/:id")
   @ApiOperation({

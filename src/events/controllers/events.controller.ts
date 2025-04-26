@@ -46,8 +46,6 @@ export class EventsController {
     this.logger.setContext(EventsController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -96,8 +94,6 @@ export class EventsController {
     return { data: event, meta: {} };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get("/:id")
   @ApiOperation({
