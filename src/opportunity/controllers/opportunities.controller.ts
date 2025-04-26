@@ -46,8 +46,6 @@ export class OpportunityController {
     this.logger.setContext(OpportunityController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -97,8 +95,6 @@ export class OpportunityController {
     return { data: item, meta: {} };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get("/:id")
   @ApiOperation({
