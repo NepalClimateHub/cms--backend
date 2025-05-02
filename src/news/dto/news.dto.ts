@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsDate,
+  IsDateString,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { Expose } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
@@ -42,19 +49,21 @@ export class CreateNewsDto {
     description: "Published date",
     example: "2025-04-15T00:00:00.000Z",
   })
+  @IsDateString()
   publishedDate: Date;
 
   @ApiProperty({
     description: "Published year",
     example: "2025-01-01T00:00:00.000Z",
   })
+  @IsDateString()
   publishedYear: Date;
 
   @ApiProperty({
     description: "News link",
     example: "https://example.com/news-article",
   })
-  @IsString()
+  @IsUrl()
   newsLink: string;
 
   @ApiProperty({

@@ -130,6 +130,7 @@ export class NewsService {
     const news = await this.prismaService.news.create({
       data: {
         ...restPayload,
+
         ...(tagIds && {
           tags: {
             connect: tagIds?.map((id) => ({
