@@ -9,7 +9,6 @@ import { AddTagDto, TagSearchInput, TagsType } from "../dto/tags-input.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
-import { inspect } from "util";
 
 @Injectable()
 export class TagsService {
@@ -24,7 +23,6 @@ export class TagsService {
     ctx: RequestContext,
     query: TagSearchInput
   ): Promise<{ tags: TagOutputDto[]; count: number }> {
-    console.log("query", query);
     this.logger.log(ctx, `${this.getTags.name} was called`);
     const { limit, offset, ...restQuery } = query;
 
@@ -85,8 +83,6 @@ export class TagsService {
           },
         },
       });
-
-    console.log("==tags", inspect(orgWhereQuery, { depth: 3 }));
 
     const tags = await this.prismaService.tags.findMany({
       where: {
