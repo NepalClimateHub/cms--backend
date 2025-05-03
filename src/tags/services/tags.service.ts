@@ -5,7 +5,7 @@ import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { TagOutputDto } from "../dto/tags-output.dto";
-import { AddTagDto, TagSearchInput } from "../dto/tags-input.dto";
+import { AddTagDto, TagSearchInput, TagsType } from "../dto/tags-input.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
@@ -28,7 +28,7 @@ export class TagsService {
     this.logger.log(ctx, `${this.getTags.name} was called`);
     const { limit, offset, ...restQuery } = query;
 
-    const { whereBuilder: orgWhereQuery } =
+    const { whereBuilder: tagsWhereQuery } =
       await applyFilters<Prisma.TagsWhereInput>({
         appliedFiltersInput: restQuery,
         availableFilters: {
@@ -90,7 +90,7 @@ export class TagsService {
 
     const tags = await this.prismaService.tags.findMany({
       where: {
-        AND: [orgWhereQuery],
+        AND: [tagsWhereQuery],
       },
       orderBy: {
         createdAt: "desc",
@@ -100,7 +100,84 @@ export class TagsService {
     console.log("==tags", tags);
     const tagsCount = await this.prismaService.tags.count({
       where: {
-        AND: [orgWhereQuery],
+        AND: [tagsWhereQuery],
+      },
+    });
+
+    return {
+      tags: plainToInstance(TagOutputDto, tags, {
+        excludeExtraneousValues: true,
+      }),
+      count: tagsCount,
+    };
+  }
+
+  async getTagsByType(
+    ctx: RequestContext,
+    type: TagsType
+  ): Promise<{ tags: TagOutputDto[]; count: number }> {
+    this.logger.log(ctx, `${this.getTagsByType.name} was called`);
+    const { whereBuilder: tagsWhereQuery } =
+      await applyFilters<Prisma.TagsWhereInput>({
+        appliedFiltersInput: {
+          type,
+        },
+        availableFilters: {
+          type: async ({ filter }) => {
+            const tagType = filter as TagsType;
+            if (tagType === "NEWS") {
+              return {
+                where: {
+                  isNewsTag: true,
+                },
+              };
+            }
+            if (tagType === "EVENT") {
+              return {
+                where: {
+                  isEventTag: true,
+                },
+              };
+            }
+            if (tagType === "OPPORTUNITY") {
+              return {
+                where: {
+                  isOpportunityTag: true,
+                },
+              };
+            }
+            if (tagType === "ORGANIZATION") {
+              return {
+                where: {
+                  isOrganizationTag: true,
+                },
+              };
+            }
+            if (tagType === "USER") {
+              return {
+                where: {
+                  isUserTag: true,
+                },
+              };
+            }
+            return {
+              where: {},
+            };
+          },
+        },
+      });
+
+    const tags = await this.prismaService.tags.findMany({
+      where: {
+        AND: [tagsWhereQuery],
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const tagsCount = await this.prismaService.tags.count({
+      where: {
+        AND: [tagsWhereQuery],
       },
     });
 

@@ -2,6 +2,13 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsOptional, IsString } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 
+export type TagsType =
+  | "USER"
+  | "ORGANIZATION"
+  | "EVENT"
+  | "NEWS"
+  | "OPPORTUNITY";
+
 export class TagSearchInput extends PaginationParamsDto {
   @ApiPropertyOptional()
   @IsOptional()
