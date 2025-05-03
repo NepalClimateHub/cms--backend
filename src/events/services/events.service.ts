@@ -223,9 +223,6 @@ export class EventsService {
       },
       data: {
         ...restPayload,
-        address: {
-          upsert: {},
-        },
         ...(socials && {
           socials: {
             upsert: {

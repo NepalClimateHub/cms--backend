@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsOptional,
   IsString,
@@ -175,14 +176,14 @@ export class UpdateEventDto {
   })
   @IsString()
   @IsOptional()
-  title: string;
+  title?: string;
 
   @ApiProperty({
     description: "organizer",
   })
   @IsString()
   @IsOptional()
-  organizer: string;
+  organizer?: string;
 
   @ApiProperty({
     description: "Event description",
@@ -190,42 +191,42 @@ export class UpdateEventDto {
   })
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @ApiProperty({
     description: "location",
   })
   @IsString()
   @IsOptional()
-  location: string;
+  location?: string;
 
   @ApiProperty({
     description: "location type",
   })
   @IsString()
   @IsOptional()
-  locationType: string;
+  locationType?: string;
 
   @ApiProperty({
     description: "event type",
   })
   @IsString()
   @IsOptional()
-  type: string;
+  type?: string;
 
   @ApiProperty({
     description: "event type",
   })
   @IsString()
   @IsOptional()
-  format: string;
+  format?: string;
 
   @ApiProperty({
     description: "Contributed by",
   })
   @IsString()
   @IsOptional()
-  contributedBy: string;
+  contributedBy?: string;
 
   @ApiPropertyOptional({
     description: "date",
@@ -303,7 +304,8 @@ export class UpdateEventDto {
     example: "https://example.com/org-banner.jpg",
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
@@ -317,9 +319,24 @@ export class UpdateEventDto {
   })
   @IsOptional()
   tagIds?: string[];
+
+  @ApiProperty({
+    description: "Event status",
+  })
+  @IsBoolean()
+  @IsOptional()
+  isDraft?: boolean;
 }
 
 export class EventResponseDto {
+  @ApiProperty({
+    description: "Event id",
+    example: "abcd",
+  })
+  @IsString()
+  @Expose()
+  id: string;
+
   @ApiProperty({
     description: "Event name",
     example: "Tech Innovations",
@@ -464,4 +481,8 @@ export class EventResponseDto {
   @ApiProperty({ description: "Gallery", required: false })
   @Expose()
   eventGallery: GalleryResponse[];
+
+  @ApiProperty({ description: "Draft status" })
+  @Expose()
+  isDraft: boolean;
 }

@@ -112,6 +112,7 @@ model Organizations {
   logoImageUrl String
   logoImageId  String?
 
+  isDraft   Boolean   @default(true)
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -148,9 +149,11 @@ model Events {
   bannerImageUrl String?
 
   contributedBy String
-  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+
+  isDraft   Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model Opportunity {
@@ -181,9 +184,11 @@ model Opportunity {
   bannerImageUrl String?
 
   contributedBy String
-  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+
+  isDraft   Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model News {
@@ -201,9 +206,11 @@ model News {
   bannerImageUrl String?
 
   contributedBy String
-  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+
+  isDraft   Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model Address {
