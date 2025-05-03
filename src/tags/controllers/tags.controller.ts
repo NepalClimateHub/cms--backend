@@ -42,8 +42,6 @@ export class TagController {
     this.logger.setContext(TagController.name);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -67,8 +65,6 @@ export class TagController {
     return { data: tags, meta: { count } };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get("/:type")
   @ApiOperation({
@@ -92,6 +88,8 @@ export class TagController {
     return { data: tags, meta: { count } };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiOperation({
@@ -105,8 +103,6 @@ export class TagController {
     status: HttpStatus.UNAUTHORIZED,
     type: BaseApiErrorResponse,
   })
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async addTag(
     @ReqContext() ctx: RequestContext,
     @Body() payload: AddTagDto
