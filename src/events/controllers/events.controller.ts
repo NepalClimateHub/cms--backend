@@ -164,6 +164,8 @@ export class EventsController {
   ): Promise<BaseApiResponse<EventResponseDto>> {
     this.logger.log(ctx, `${this.updateEvent.name} was called`);
 
+    console.log("body payload", payload);
+
     const event = await this.eventsService.updateEvent(ctx, id, payload);
     return { data: event, meta: {} };
   }
