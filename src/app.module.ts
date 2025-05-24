@@ -11,6 +11,7 @@ import { ImagekitModule } from "./imagekit/imagekit.module";
 import { EventsModule } from "./events/events.module";
 import { NewsModule } from "./news/news.module";
 import { OpportunityModule } from "./opportunity/opportunities.module";
+import { AnalyticsModule } from "./analytics/analytics.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { OpportunityModule } from "./opportunity/opportunities.module";
     EventsModule,
     NewsModule,
     OpportunityModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

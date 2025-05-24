@@ -88,7 +88,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  if (configService.get<string>("NODE_ENV") === "development") {
+  if (configService.get<string>("APP_ENV") === "development") {
     app.use("/docs", apiReference({ content: document }));
     app.use("/swagger.json", (req: any, res: any) => {
       return res.json(document);
