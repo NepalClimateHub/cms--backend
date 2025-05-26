@@ -133,11 +133,19 @@ export class EventsService {
     payload: CreateEventDto
   ): Promise<EventResponseDto> {
     this.logger.log(ctx, `${this.addEvent.name} was called`);
-    const { address, tagIds, gallery, socials, ...restPayload } = payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      ...restPayload
+    } = payload;
 
     const event = await this.prismaService.events.create({
       data: {
         ...restPayload,
+        bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
             create: {
@@ -215,14 +223,30 @@ export class EventsService {
       throw new NotFoundException("Event not found!");
     }
 
-    const { address, tagIds, gallery, socials, ...restPayload } = payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      ...restPayload
+    } = payload;
+
+    // Filter out undefined fields to prevent null validation errors
+    const cleanPayload = Object.fromEntries(
+      Object.entries(restPayload).filter(
+        ([_, v]) => v !== undefined && v !== null
+      )
+    );
 
     const eventUpdate = await this.prismaService.events.update({
       where: {
         id: event.id,
       },
       data: {
-        ...restPayload,
+        ...cleanPayload,
+        // Only include bannerImageUrl if it's provided and not null/undefined
+        ...(bannerImageUrl && { bannerImageUrl }),
         ...(socials && {
           socials: {
             upsert: {

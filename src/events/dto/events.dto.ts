@@ -452,8 +452,9 @@ export class EventResponseDto {
     example: "https://example.com/org-banner.jpg",
   })
   @IsString()
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
