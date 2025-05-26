@@ -133,11 +133,19 @@ export class OrganizationService {
     payload: CreateOrganizationDto
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.addOrganization.name} was called`);
-    const { address, tagIds, gallery, socials, ...restPayload } = payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      ...restPayload
+    } = payload;
 
     const organization = await this.prismaService.organizations.create({
       data: {
         ...restPayload,
+        bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
             create: {

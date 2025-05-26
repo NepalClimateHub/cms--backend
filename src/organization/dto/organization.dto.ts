@@ -87,12 +87,14 @@ export class CreateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
@@ -186,15 +188,16 @@ export class UpdateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
   @IsOptional()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: "Banner image ID", required: false })
+  @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
   @IsOptional()
   bannerImageId?: string;
@@ -275,14 +278,17 @@ export class OrganizationResponseDto {
   @Expose()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: "Banner image ID", required: false })
+  @ApiPropertyOptional({ description: "Banner image ID", required: false })
+  @IsOptional()
   @Expose()
   bannerImageId?: string;
 
