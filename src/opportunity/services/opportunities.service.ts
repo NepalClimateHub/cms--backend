@@ -132,6 +132,25 @@ export class OpportunityService {
   ): Promise<OpportunityResponseDto> {
     this.logger.log(ctx, `${this.addOpportunity.name} was called`);
     const { address, tagIds, socials, ...restPayload } = payload;
+
+    // Verify tags exist and are opportunity tags
+    if (tagIds?.length) {
+      const existingTags = await this.prismaService.tags.findMany({
+        where: {
+          id: {
+            in: tagIds,
+          },
+          isOpportunityTag: true,
+        },
+      });
+
+      if (existingTags.length !== tagIds.length) {
+        throw new NotFoundException(
+          "One or more tags not found or are not opportunity tags"
+        );
+      }
+    }
+
     const item = await this.prismaService.opportunity.create({
       data: {
         ...restPayload,

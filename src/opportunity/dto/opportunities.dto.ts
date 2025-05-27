@@ -4,7 +4,9 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  IsUrl,
   ValidateNested,
+  isURL,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
@@ -62,6 +64,13 @@ export class CreateOpportunityDto {
   })
   @IsString()
   format: string;
+
+  @ApiProperty({
+    description: "Website URL",
+  })
+  @IsOptional()
+  @IsUrl()
+  websiteUrl: string;
 
   @ApiPropertyOptional({
     description: "date",

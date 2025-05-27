@@ -171,6 +171,7 @@ model Opportunity {
   contactEmail        String?
   status              String?
   cost                String?
+  websiteUrl         String?
 
   tags Tags[]
 

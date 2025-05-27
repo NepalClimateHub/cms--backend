@@ -127,10 +127,12 @@ export class NewsService {
     this.logger.log(ctx, `${this.addNews.name} was called`);
     const { tagIds, ...restPayload } = payload;
 
+    const publishedYear = new Date(restPayload.publishedDate).getFullYear();
     const news = await this.prismaService.news.create({
       data: {
         ...restPayload,
-
+        contributedBy: ctx!.user!.id,
+        publishedYear: new Date(`${publishedYear}-01-01`).toISOString(),
         ...(tagIds && {
           tags: {
             connect: tagIds?.map((id) => ({

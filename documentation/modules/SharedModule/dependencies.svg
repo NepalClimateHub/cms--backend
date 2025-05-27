@@ -28,13 +28,13 @@
 <title>cluster_SharedModule_providers</title>
 <polygon fill="none" stroke="black" points="247,-78 247,-130 397,-130 397,-78 247,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SharedModule_exports</title>
-<polygon fill="none" stroke="black" points="111,-208 111,-260 373,-260 373,-208 111,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_SharedModule_imports</title>
 <polygon fill="none" stroke="black" points="99,-78 99,-130 239,-130 239,-78 99,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SharedModule_exports</title>
+<polygon fill="none" stroke="black" points="111,-208 111,-260 373,-260 373,-208 111,-208"/>
 </g>
 <!-- AppLoggerModule -->
 <g id="node1" class="node">

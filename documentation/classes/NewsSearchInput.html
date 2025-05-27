@@ -443,13 +443,6 @@ export class CreateNewsDto {
   publishedDate: Date;
 
   @ApiProperty({
-    description: &quot;Published year&quot;,
-    example: &quot;2025-01-01T00:00:00.000Z&quot;,
-  })
-  @IsDateString()
-  publishedYear: Date;
-
-  @ApiProperty({
     description: &quot;News link&quot;,
     example: &quot;https://example.com/news-article&quot;,
   })
@@ -475,13 +468,6 @@ export class CreateNewsDto {
   })
   @IsOptional()
   tagIds?: string[];
-
-  @ApiProperty({
-    description: &quot;Contributed by&quot;,
-    example: &quot;admin&quot;,
-  })
-  @IsString()
-  contributedBy: string;
 }
 
 export class UpdateNewsDto {

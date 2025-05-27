@@ -336,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">src/news/services/news.service.ts:150</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">src/news/services/news.service.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -579,8 +579,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="174"
-                                    class="link-to-prism">src/news/services/news.service.ts:174</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/news/services/news.service.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -788,7 +788,8 @@ export class NewsService {
     const news &#x3D; await this.prismaService.news.create({
       data: {
         ...restPayload,
-
+        contributedBy: ctx!.user!.id,
+        publishedYear: new Date(payload.publishedDate).getFullYear().toString(),
         ...(tagIds &amp;&amp; {
           tags: {
             connect: tagIds?.map((id) &#x3D;&gt; ({

@@ -257,7 +257,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="153" class="link-to-prism">src/news/dto/news.dto.ts:153</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="139" class="link-to-prism">src/news/dto/news.dto.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -296,7 +296,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="148" class="link-to-prism">src/news/dto/news.dto.ts:148</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="134" class="link-to-prism">src/news/dto/news.dto.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -335,7 +335,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="169" class="link-to-prism">src/news/dto/news.dto.ts:169</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="155" class="link-to-prism">src/news/dto/news.dto.ts:155</a></div>
                         </td>
                     </tr>
 
@@ -374,7 +374,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="120" class="link-to-prism">src/news/dto/news.dto.ts:120</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="106" class="link-to-prism">src/news/dto/news.dto.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -413,7 +413,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="140" class="link-to-prism">src/news/dto/news.dto.ts:140</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/news/dto/news.dto.ts:126</a></div>
                         </td>
                     </tr>
 
@@ -451,7 +451,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/news/dto/news.dto.ts:126</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="112" class="link-to-prism">src/news/dto/news.dto.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -489,7 +489,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">src/news/dto/news.dto.ts:132</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">src/news/dto/news.dto.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -528,7 +528,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="112" class="link-to-prism">src/news/dto/news.dto.ts:112</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/news/dto/news.dto.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -566,7 +566,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="161" class="link-to-prism">src/news/dto/news.dto.ts:161</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="147" class="link-to-prism">src/news/dto/news.dto.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -605,7 +605,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">src/news/dto/news.dto.ts:104</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/news/dto/news.dto.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -679,13 +679,6 @@ export class CreateNewsDto {
   publishedDate: Date;
 
   @ApiProperty({
-    description: &quot;Published year&quot;,
-    example: &quot;2025-01-01T00:00:00.000Z&quot;,
-  })
-  @IsDateString()
-  publishedYear: Date;
-
-  @ApiProperty({
     description: &quot;News link&quot;,
     example: &quot;https://example.com/news-article&quot;,
   })
@@ -711,13 +704,6 @@ export class CreateNewsDto {
   })
   @IsOptional()
   tagIds?: string[];
-
-  @ApiProperty({
-    description: &quot;Contributed by&quot;,
-    example: &quot;admin&quot;,
-  })
-  @IsString()
-  contributedBy: string;
 }
 
 export class UpdateNewsDto {
