@@ -125,7 +125,7 @@ export class NewsService {
     payload: CreateNewsDto
   ): Promise<NewsResponseDto> {
     this.logger.log(ctx, `${this.addNews.name} was called`);
-    const { tagIds, ...restPayload } = payload;
+    const { tagIds, bannerImageUrl, ...restPayload } = payload;
 
     const publishedYear = new Date(restPayload.publishedDate).getFullYear();
     const news = await this.prismaService.news.create({
@@ -133,6 +133,7 @@ export class NewsService {
         ...restPayload,
         contributedBy: ctx!.user!.id,
         publishedYear: new Date(`${publishedYear}-01-01`).toISOString(),
+        bannerImageUrl: bannerImageUrl ?? "",
         ...(tagIds && {
           tags: {
             connect: tagIds?.map((id) => ({

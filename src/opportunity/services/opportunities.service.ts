@@ -131,7 +131,8 @@ export class OpportunityService {
     payload: CreateOpportunityDto
   ): Promise<OpportunityResponseDto> {
     this.logger.log(ctx, `${this.addOpportunity.name} was called`);
-    const { address, tagIds, socials, ...restPayload } = payload;
+    const { address, tagIds, socials, bannerImageUrl, ...restPayload } =
+      payload;
 
     // Verify tags exist and are opportunity tags
     if (tagIds?.length) {
@@ -154,6 +155,7 @@ export class OpportunityService {
     const item = await this.prismaService.opportunity.create({
       data: {
         ...restPayload,
+        bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
             create: {

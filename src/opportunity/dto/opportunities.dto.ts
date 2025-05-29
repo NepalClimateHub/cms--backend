@@ -136,7 +136,7 @@ export class CreateOpportunityDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
   })
@@ -261,12 +261,14 @@ export class UpdateOpportunityDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
@@ -383,13 +385,15 @@ export class OpportunityResponseDto {
   @Expose()
   cost?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()

@@ -147,9 +147,10 @@ export class CreateEventDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -299,9 +300,10 @@ export class UpdateEventDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -447,13 +449,15 @@ export class EventResponseDto {
   @Expose()
   cost?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/org-banner.jpg",
+    required: false,
   })
   @IsString()
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()
