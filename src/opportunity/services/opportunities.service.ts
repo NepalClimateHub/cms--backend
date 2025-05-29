@@ -236,9 +236,6 @@ export class OpportunityService {
       },
       data: {
         ...restPayload,
-        address: {
-          upsert: {},
-        },
         ...(socials && {
           socials: {
             upsert: {
@@ -261,8 +258,6 @@ export class OpportunityService {
         }),
         ...(tagIds && {
           tags: {
-            //set empty then create new records
-            // do not use deletemany here since it maybe used elsewhere
             set: [],
             connect: tagIds?.map((id) => ({
               id,

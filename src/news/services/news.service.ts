@@ -191,6 +191,7 @@ export class NewsService {
 
     const { tagIds, ...restPayload } = payload;
 
+    console.log("payload===", payload);
     const updatedNews = await this.prismaService.news.update({
       where: {
         id: news.id,

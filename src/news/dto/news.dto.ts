@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsDateString,
   IsOptional,
@@ -147,12 +148,12 @@ export class UpdateNewsDto {
   tagIds?: string[];
 
   @ApiProperty({
-    description: "Contributed by",
-    example: "admin",
+    description: "isDraft",
+    example: "true",
   })
-  @IsString()
   @IsOptional()
-  contributedBy?: string;
+  @IsBoolean()
+  isDraft?: boolean;
 }
 
 export class NewsResponseDto {
@@ -252,4 +253,11 @@ export class NewsResponseDto {
   @IsOptional()
   @Expose()
   deletedAt?: Date;
+
+  @ApiProperty({
+    description: "isDraft",
+  })
+  @IsOptional()
+  @Expose()
+  isDraft?: boolean;
 }

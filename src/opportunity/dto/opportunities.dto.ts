@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsOptional,
   IsString,
   IsUrl,
   ValidateNested,
+  isBoolean,
   isURL,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
@@ -282,6 +284,14 @@ export class UpdateOpportunityDto {
   })
   @IsOptional()
   tagIds?: string[];
+
+  @ApiPropertyOptional({
+    description: "isDraft",
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isDraft: boolean;
 }
 
 export class OpportunityResponseDto {
@@ -421,4 +431,11 @@ export class OpportunityResponseDto {
   @ApiProperty({ description: "Gallery", required: false })
   @Expose()
   OpportunityGallery: GalleryResponse[];
+
+  @ApiPropertyOptional({
+    description: "isDraft",
+    required: false,
+  })
+  @Expose()
+  isDraft: boolean;
 }
