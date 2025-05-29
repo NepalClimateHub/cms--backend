@@ -120,12 +120,6 @@ export class CreateOpportunityDto {
   @IsString()
   organizer: string;
 
-  @ApiProperty({
-    description: "Contributed by",
-  })
-  @IsString()
-  contributedBy: string;
-
   @ApiPropertyOptional({
     description: "Address",
     required: false,
@@ -211,13 +205,6 @@ export class UpdateOpportunityDto {
   @IsString()
   @IsOptional()
   format: string;
-
-  @ApiProperty({
-    description: "Contributed by",
-  })
-  @IsString()
-  @IsOptional()
-  contributedBy: string;
 
   @ApiPropertyOptional({
     description: "date",
@@ -352,13 +339,6 @@ export class OpportunityResponseDto {
   @IsString()
   @Expose()
   format: string;
-
-  @ApiProperty({
-    description: "Contributed by",
-  })
-  @IsString()
-  @Expose()
-  contributedBy: string;
 
   @ApiPropertyOptional({
     description: "date",

@@ -155,6 +155,7 @@ export class OpportunityService {
     const item = await this.prismaService.opportunity.create({
       data: {
         ...restPayload,
+        contributedBy: ctx!.user!.id,
         bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
