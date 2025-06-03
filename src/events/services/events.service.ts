@@ -144,6 +144,7 @@ export class EventsService {
 
     const event = await this.prismaService.events.create({
       data: {
+        contributedBy: ctx!.user!.id,
         ...restPayload,
         bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {

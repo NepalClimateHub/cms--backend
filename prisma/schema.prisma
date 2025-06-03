@@ -128,6 +128,7 @@ model Events {
   locationType String
   type         String
   format       String
+  website      String
 
   startDate            DateTime?
   registrationDeadline DateTime?

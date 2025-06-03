@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  IsUrl,
   ValidateNested,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
@@ -69,12 +70,6 @@ export class CreateEventDto {
   })
   @IsString()
   format: string;
-
-  @ApiProperty({
-    description: "Contributed by",
-  })
-  @IsString()
-  contributedBy: string;
 
   @ApiPropertyOptional({
     description: "date",
@@ -142,6 +137,14 @@ export class CreateEventDto {
   @IsArray()
   @IsOptional()
   gallery?: GalleryInput[];
+
+  @ApiPropertyOptional({
+    description: "website",
+    required: false,
+  })
+  @IsOptional()
+  @IsUrl()
+  website?: string;
 
   @ApiPropertyOptional({ description: "Object of Socials ", required: false })
   @IsOptional()
@@ -222,12 +225,13 @@ export class UpdateEventDto {
   @IsOptional()
   format?: string;
 
-  @ApiProperty({
-    description: "Contributed by",
+  @ApiPropertyOptional({
+    description: "website",
+    required: false,
   })
-  @IsString()
   @IsOptional()
-  contributedBy?: string;
+  @IsUrl()
+  website?: string;
 
   @ApiPropertyOptional({
     description: "date",
@@ -389,6 +393,13 @@ export class EventResponseDto {
   @IsString()
   @Expose()
   format: string;
+
+  @ApiProperty({
+    description: "event website",
+  })
+  @IsUrl()
+  @Expose()
+  website: string;
 
   @ApiProperty({
     description: "Contributed by",
