@@ -65,7 +65,8 @@ export class CreateNewsDto {
     example: "https://example.com/news-banner.jpg",
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: "Banner image ID", required: false })
   @IsString()

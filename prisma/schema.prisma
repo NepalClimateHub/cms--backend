@@ -124,11 +124,11 @@ model Events {
   organizer    String @map("organizer")
   description  String
   // location is like venue
-  location     String
+  location     String?
   locationType String
   type         String
   format       String
-  website      String
+  website      String?
 
   startDate            DateTime?
   registrationDeadline DateTime?

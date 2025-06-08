@@ -51,7 +51,8 @@ export class CreateEventDto {
     description: "location",
   })
   @IsString()
-  location: string;
+  @IsOptional()
+  location?: string;
 
   @ApiProperty({
     description: "location type",
