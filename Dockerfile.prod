@@ -24,5 +24,3 @@ COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 ARG APP_ENV=production
 
-# run migrations then start the app
-CMD pnpm dlx prisma migrate deploy && node dist/src/main
