@@ -7,7 +7,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3111:8080"
     env_file: .env
     command: sh -c "pnpm --version && pnpm dlx prisma migrate deploy && node dist/src/main"
     restart: always
