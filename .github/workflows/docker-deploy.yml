@@ -21,7 +21,7 @@ jobs:
 
       - name: copy .env
         run: |
-          cp ${{secrets.ENV_FILE}} > .env
+          echo ${{secrets.ENV_FILE}} > .env
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
