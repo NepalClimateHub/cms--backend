@@ -7,8 +7,8 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 COPY . .
-ARG APP_ENV=production
-ENV NODE_ENV=${APP_ENV}
+# ARG APP_ENV=production
+# ENV NODE_ENV=${APP_ENV}
 RUN pnpm dlx prisma generate
 RUN pnpm run build
 RUN pnpm prune --prod
