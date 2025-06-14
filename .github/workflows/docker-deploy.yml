@@ -33,8 +33,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: dahalsaroj/nch-cms-backend:latest
-          cache-from: type=registry,ref=dahalsaroj/nch-cms-backend:buildcache
-          cache-to: type=registry,ref=dahalsaroj/nch-cms-backend:buildcache,mode=max
 
       - name: Verify Image
         run: |
