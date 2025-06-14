@@ -16,6 +16,7 @@ FROM node:24.2.0-bookworm-slim
 
 RUN apt-get update -y && apt-get install -y curl openssl
 WORKDIR /usr/src/app
+RUN npm install -g pnpm
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/dist ./dist
@@ -23,6 +24,5 @@ COPY --from=builder /usr/src/app/prisma ./prisma
 COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 ARG APP_ENV=production
 
-
 # run migrations then start the app
-CMD pnpm install --prod && pnpm dlx prisma migrate deploy && node dist/src/main
+CMD pnpm dlx prisma migrate deploy && node dist/src/main
