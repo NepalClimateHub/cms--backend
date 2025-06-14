@@ -2,7 +2,9 @@ version: "3.9"
 
 services:
   api:
+    container_name: nch-cms-backend
     image: dahalsaroj/nch-cms-backend:latest
+    platform: linux/arm64
     depends_on:
       postgres:
         condition: service_healthy
@@ -11,7 +13,9 @@ services:
     restart: always
 
   postgres:
+    container_name: nch-postgres
     image: postgres:16
+    platform: linux/arm64
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -24,6 +28,16 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    platform: linux/arm64
+    environment:
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 nch-cms-backend
 
 volumes:
   pgdata:
