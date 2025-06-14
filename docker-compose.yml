@@ -8,8 +8,7 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
+    env_file: .env
     command: sh -c "pnpm --version && pnpm dlx prisma migrate deploy && node dist/src/main"
     restart: always
 
