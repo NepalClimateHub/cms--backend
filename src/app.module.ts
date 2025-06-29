@@ -12,6 +12,7 @@ import { EventsModule } from "./events/events.module";
 import { NewsModule } from "./news/news.module";
 import { OpportunityModule } from "./opportunity/opportunities.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
+import { BlogModule } from "./blog/blog.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AnalyticsModule } from "./analytics/analytics.module";
     NewsModule,
     OpportunityModule,
     AnalyticsModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

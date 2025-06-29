@@ -28,6 +28,10 @@ export class TagOutputDto {
 
   @IsBoolean()
   @Expose()
+  isBlogTag: boolean;
+
+  @IsBoolean()
+  @Expose()
   isOpportunityTag: boolean;
 
   @IsDate()

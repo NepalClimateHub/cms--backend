@@ -88,6 +88,15 @@ export class AddTagDto {
   isNewsTag?: boolean;
 
   @ApiProperty({
+    description: "Indicates if this is a blog tag",
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isBlogTag?: boolean;
+
+  @ApiProperty({
     description: "Indicates if this is an opportunity tag",
     example: false,
     required: false,

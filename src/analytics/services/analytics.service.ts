@@ -26,10 +26,31 @@ export class AnalyticsService {
     this.logger.log(ctx, `${this.getAdminDashboardAnalytics.name} was called`);
 
     const res = Promise.all([
-      this.prismaService.user.count(),
-      this.prismaService.news.count(),
-      this.prismaService.events.count(),
-      this.prismaService.opportunity.count(),
+      this.prismaService.user.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.news.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.events.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.opportunity.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.blog.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
     ]);
 
     console.log("res", await res);
@@ -40,6 +61,7 @@ export class AnalyticsService {
         newsCount: (await res)[1],
         eventCount: (await res)[2],
         opportunityCount: (await res)[3],
+        blogCount: (await res)[4],
       },
 
       {
