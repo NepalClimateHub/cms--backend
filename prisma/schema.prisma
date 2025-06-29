@@ -214,6 +214,29 @@ model News {
   deletedAt DateTime?
 }
 
+model Blog {
+  id              String   @id() @default(cuid())
+  title           String
+  content         String
+  excerpt         String?
+  author          String
+  category        String
+  readingTime     String?
+  publishedDate   DateTime?
+  isDraft         Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  bannerImageUrl  String?
+  bannerImageId   String?
+
+  tags Tags[]
+
+  contributedBy String
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
 model Address {
   id       String  @id() @default(cuid())
   street   String?
@@ -241,10 +264,12 @@ model Tags {
   isEventTag        Boolean @default(false)
   isNewsTag         Boolean @default(false)
   isOpportunityTag  Boolean @default(false)
+  isBlogTag         Boolean @default(false)
 
   user         User[]
   event        Events[]
   news         News[]
+  blog         Blog[]
   organization Organizations[]
   opportunity  Opportunity[]
 
