@@ -158,6 +158,13 @@ export class TagsService {
                 },
               };
             }
+            if (tagType === "BLOG") {
+              return {
+                where: {
+                  isBlogTag: true,
+                },
+              };
+            }
             return {
               where: {},
             };

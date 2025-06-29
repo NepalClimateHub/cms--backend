@@ -12,6 +12,7 @@ import { OpportunityResponseDto } from "../../opportunity/dto/opportunities.dto"
 import { AuthTokenOutput } from "../../auth/dtos/auth-token-output.dto";
 import { RegisterOutput } from "../../auth/dtos/auth-register-output.dto";
 import { ImagekitResponseDto } from "../../imagekit/imagekit.dto";
+import { BlogResponseDto } from "../../blog/dto/blog.dto";
 import {
   UserApiResponse,
   UserArrayApiResponse,
@@ -26,6 +27,8 @@ import {
   AuthTokenApiResponse,
   RegisterApiResponse,
   ImagekitApiResponse,
+  BlogApiResponse,
+  BlogArrayApiResponse,
 } from "./specific-api-responses.dto";
 
 // Keeping this for backward compatibility
@@ -65,6 +68,8 @@ const responseTypeMap: TypeMapping = {
   AuthTokenOutput: AuthTokenApiResponse,
   RegisterOutput: RegisterApiResponse,
   ImagekitResponseDto: ImagekitApiResponse,
+  BlogResponseDto: BlogApiResponse,
+  "BlogResponseDto[]": BlogArrayApiResponse,
 };
 
 /**

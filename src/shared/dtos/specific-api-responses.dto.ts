@@ -1,12 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { UserOutput } from '../../user/dtos/user-output.dto';
-import { TagOutputDto } from '../../tags/dto/tags-output.dto';
-import { EventResponseDto } from '../../events/dto/events.dto';
-import { OrganizationResponseDto } from '../../organization/dto/organization.dto';
-import { OpportunityResponseDto } from '../../opportunity/dto/opportunities.dto';
-import { AuthTokenOutput } from '../../auth/dtos/auth-token-output.dto';
-import { RegisterOutput } from '../../auth/dtos/auth-register-output.dto';
-import { ImagekitResponseDto } from '../../imagekit/imagekit.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { UserOutput } from "../../user/dtos/user-output.dto";
+import { TagOutputDto } from "../../tags/dto/tags-output.dto";
+import { EventResponseDto } from "../../events/dto/events.dto";
+import { OrganizationResponseDto } from "../../organization/dto/organization.dto";
+import { OpportunityResponseDto } from "../../opportunity/dto/opportunities.dto";
+import { AuthTokenOutput } from "../../auth/dtos/auth-token-output.dto";
+import { RegisterOutput } from "../../auth/dtos/auth-register-output.dto";
+import { ImagekitResponseDto } from "../../imagekit/imagekit.dto";
+import { BlogResponseDto } from "../../blog/dto/blog.dto";
 
 // Base metadata class used by all responses
 export class ResponseMetadata {
@@ -123,6 +124,23 @@ export class RegisterApiResponse {
 export class ImagekitApiResponse {
   @ApiProperty()
   public data: ImagekitResponseDto;
+
+  @ApiProperty()
+  public meta: ResponseMetadata;
+}
+
+// Blog responses
+export class BlogApiResponse {
+  @ApiProperty()
+  public data: BlogResponseDto;
+
+  @ApiProperty()
+  public meta: ResponseMetadata;
+}
+
+export class BlogArrayApiResponse {
+  @ApiProperty({ type: [BlogResponseDto] })
+  public data: BlogResponseDto[];
 
   @ApiProperty()
   public meta: ResponseMetadata;
