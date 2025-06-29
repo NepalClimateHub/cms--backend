@@ -11,6 +11,7 @@ import {
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
+  Delete,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
@@ -110,5 +111,29 @@ export class TagController {
     this.logger.log(ctx, `${this.addTag.name} was called`);
     const roleData = await this.tagsService.addTag(ctx, payload);
     return { data: roleData, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete a tag by id",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(TagOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async deleteTag(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string
+  ): Promise<BaseApiResponse<TagOutputDto>> {
+    this.logger.log(ctx, `${this.deleteTag.name} was called`);
+    const tag = await this.tagsService.deleteTag(ctx, id);
+    return { data: tag, meta: {} };
   }
 }

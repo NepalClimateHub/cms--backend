@@ -77,7 +77,6 @@ export class OpportunityService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
       take: limit,
@@ -112,7 +111,6 @@ export class OpportunityService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
     });
@@ -172,13 +170,6 @@ export class OpportunityService {
             })),
           },
         }),
-        ...(socials && {
-          socials: {
-            create: {
-              data: JSON.parse(JSON.stringify(socials)),
-            },
-          },
-        }),
       },
     });
 
@@ -229,7 +220,7 @@ export class OpportunityService {
       throw new NotFoundException("Opportunity not found!");
     }
 
-    const { address, tagIds, socials, ...restPayload } = payload;
+    const { address, tagIds, ...restPayload } = payload;
 
     const updatedItem = await this.prismaService.opportunity.update({
       where: {
@@ -237,18 +228,6 @@ export class OpportunityService {
       },
       data: {
         ...restPayload,
-        ...(socials && {
-          socials: {
-            upsert: {
-              create: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-              update: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-            },
-          },
-        }),
         ...(address && {
           address: {
             upsert: {
