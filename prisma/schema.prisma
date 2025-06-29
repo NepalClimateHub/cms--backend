@@ -71,7 +71,7 @@ model User {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socials   Json?
   socialsId String?
 
   gallery Gallery[]
@@ -103,7 +103,7 @@ model Organizations {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socials   Json?
   socialsId String?
 
   bannerImageId  String?
@@ -143,7 +143,7 @@ model Events {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials   Socials? @relation(fields: [socialsId], references: [id])
+  socials  Json?
   socialsId String?
 
   bannerImageId  String?
@@ -179,8 +179,7 @@ model Opportunity {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials   Socials? @relation(fields: [socialsId], references: [id])
-  socialsId String?
+  socials   Json?
 
   bannerImageId  String?
   bannerImageUrl String?
@@ -233,19 +232,6 @@ model Address {
   deletedAt DateTime?
 }
 
-model Socials {
-  id   String @id() @default(cuid())
-  data Json?
-
-  user         User[]
-  events       Events[]
-  opportunity  Opportunity[]
-  organization Organizations[]
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
 
 model Tags {
   id                String  @id() @default(cuid())

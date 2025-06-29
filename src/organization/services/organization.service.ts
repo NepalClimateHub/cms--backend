@@ -77,7 +77,6 @@ export class OrganizationService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
       take: limit,
@@ -113,7 +112,6 @@ export class OrganizationService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
         organizationGallery: true,
       },

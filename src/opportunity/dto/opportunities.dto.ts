@@ -341,6 +341,13 @@ export class OpportunityResponseDto {
   format: string;
 
   @ApiPropertyOptional({
+    description: "duration",
+    required: false,
+  })
+  @Expose()
+  duration?: string;
+
+  @ApiPropertyOptional({
     description: "date",
     required: false,
   })
@@ -418,4 +425,10 @@ export class OpportunityResponseDto {
   })
   @Expose()
   isDraft: boolean;
+
+  @ApiProperty({
+    description: "Website URL",
+  })
+  @Expose()
+  websiteUrl: string;
 }

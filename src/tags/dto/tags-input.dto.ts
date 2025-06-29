@@ -7,7 +7,8 @@ export type TagsType =
   | "ORGANIZATION"
   | "EVENT"
   | "NEWS"
-  | "OPPORTUNITY";
+  | "OPPORTUNITY"
+  | "BLOG";
 
 export class TagSearchInput extends PaginationParamsDto {
   @ApiPropertyOptional()

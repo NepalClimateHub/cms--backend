@@ -87,7 +87,9 @@ export class TagsService {
     const tags = await this.prismaService.tags.findMany({
       where: {
         AND: [tagsWhereQuery],
+        deletedAt: null,
       },
+
       orderBy: {
         createdAt: "desc",
       },
@@ -166,6 +168,7 @@ export class TagsService {
     const tags = await this.prismaService.tags.findMany({
       where: {
         AND: [tagsWhereQuery],
+        deletedAt: null,
       },
       orderBy: {
         createdAt: "desc",
@@ -193,6 +196,17 @@ export class TagsService {
       },
     });
 
+    return plainToClass(TagOutputDto, tag, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async deleteTag(ctx: RequestContext, id: string): Promise<TagOutputDto> {
+    this.logger.log(ctx, `${this.deleteTag.name} was called`);
+    const tag = await this.prismaService.tags.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
     return plainToClass(TagOutputDto, tag, {
       excludeExtraneousValues: true,
     });

@@ -77,7 +77,6 @@ export class EventsService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
       take: limit,
@@ -113,7 +112,6 @@ export class EventsService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
         eventGallery: true,
       },
@@ -133,14 +131,8 @@ export class EventsService {
     payload: CreateEventDto
   ): Promise<EventResponseDto> {
     this.logger.log(ctx, `${this.addEvent.name} was called`);
-    const {
-      address,
-      tagIds,
-      gallery,
-      socials,
-      bannerImageUrl,
-      ...restPayload
-    } = payload;
+    const { address, tagIds, gallery, bannerImageUrl, ...restPayload } =
+      payload;
 
     const event = await this.prismaService.events.create({
       data: {
@@ -165,13 +157,6 @@ export class EventsService {
         ...(gallery && {
           eventGallery: {
             create: gallery,
-          },
-        }),
-        ...(socials && {
-          socials: {
-            create: {
-              data: JSON.parse(JSON.stringify(socials)),
-            },
           },
         }),
       },
@@ -224,14 +209,8 @@ export class EventsService {
       throw new NotFoundException("Event not found!");
     }
 
-    const {
-      address,
-      tagIds,
-      gallery,
-      socials,
-      bannerImageUrl,
-      ...restPayload
-    } = payload;
+    const { address, tagIds, gallery, bannerImageUrl, ...restPayload } =
+      payload;
 
     // Filter out undefined fields to prevent null validation errors
     const cleanPayload = Object.fromEntries(
@@ -248,18 +227,6 @@ export class EventsService {
         ...cleanPayload,
         // Only include bannerImageUrl if it's provided and not null/undefined
         ...(bannerImageUrl && { bannerImageUrl }),
-        ...(socials && {
-          socials: {
-            upsert: {
-              create: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-              update: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-            },
-          },
-        }),
         ...(address && {
           address: {
             upsert: {
