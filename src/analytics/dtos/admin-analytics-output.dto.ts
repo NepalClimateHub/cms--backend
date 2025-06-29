@@ -17,4 +17,8 @@ export class AdminAnalyticsOutput {
   @Expose()
   @ApiProperty()
   opportunityCount: string;
+
+  @Expose()
+  @ApiProperty()
+  blogCount: string;
 }
