@@ -209,24 +209,21 @@ export class EventsService {
       throw new NotFoundException("Event not found!");
     }
 
-    const { address, tagIds, gallery, bannerImageUrl, ...restPayload } =
-      payload;
+    const { address, tagIds, gallery, ...restPayload } = payload;
 
     // Filter out undefined fields to prevent null validation errors
-    const cleanPayload = Object.fromEntries(
-      Object.entries(restPayload).filter(
-        ([_, v]) => v !== undefined && v !== null
-      )
-    );
+    // const cleanPayload = Object.fromEntries(
+    //   Object.entries(restPayload).filter(
+    //     ([_, v]) => v !== undefined && v !== null
+    //   )
+    // );
 
     const eventUpdate = await this.prismaService.events.update({
       where: {
         id: event.id,
       },
       data: {
-        ...cleanPayload,
-        // Only include bannerImageUrl if it's provided and not null/undefined
-        ...(bannerImageUrl && { bannerImageUrl }),
+        ...restPayload,
         ...(address && {
           address: {
             upsert: {
