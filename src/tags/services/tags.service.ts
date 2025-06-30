@@ -89,7 +89,8 @@ export class TagsService {
         AND: [tagsWhereQuery],
         deletedAt: null,
       },
-
+      take: limit,
+      skip: offset,
       orderBy: {
         createdAt: "desc",
       },
