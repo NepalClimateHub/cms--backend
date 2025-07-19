@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 
 import { ROLE } from '../constants/role.constant';
+import { USER_TYPE } from '../constants/role.constant';
 
 export class RegisterInput {
   @ApiProperty()
@@ -32,6 +33,9 @@ export class RegisterInput {
   @IsEmail()
   @MaxLength(100)
   email: string;
+
+  @ApiProperty({ enum: USER_TYPE, default: USER_TYPE.INDIVIDUAL })
+  userType: USER_TYPE = USER_TYPE.INDIVIDUAL;
 
   // These keys can only be set by ADMIN user.
   roles: ROLE[] = [ROLE.USER];

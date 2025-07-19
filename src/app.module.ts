@@ -13,6 +13,7 @@ import { NewsModule } from "./news/news.module";
 import { OpportunityModule } from "./opportunity/opportunities.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { BlogModule } from "./blog/blog.module";
+import { EmailSubscriptionModule } from "./email-subscription/email-subscription.module";
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { BlogModule } from "./blog/blog.module";
     OpportunityModule,
     AnalyticsModule,
     BlogModule,
+    EmailSubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

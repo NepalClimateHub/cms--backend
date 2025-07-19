@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { ApiProperty } from "@nestjs/swagger";
+import { Expose } from "class-transformer";
 
-import { ROLE } from '../constants/role.constant';
+import { ROLE, USER_TYPE } from "../constants/role.constant";
 
 export class RegisterOutput {
   @Expose()
@@ -27,6 +27,10 @@ export class RegisterOutput {
   @Expose()
   @ApiProperty()
   isAccountDisabled: boolean;
+
+  @Expose()
+  @ApiProperty({ enum: USER_TYPE })
+  userType: USER_TYPE;
 
   @Expose()
   @ApiProperty()

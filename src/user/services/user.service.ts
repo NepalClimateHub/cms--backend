@@ -22,13 +22,22 @@ export class UserService {
   ): Promise<UserOutput> {
     this.logger.log(ctx, `${this.createUser.name} was called`);
 
-    return plainToClass(
-      UserOutput,
-      {},
-      {
-        excludeExtraneousValues: true,
-      }
-    );
+    // Save userType to the database
+    const user = await this.prismaService.user.create({
+      data: {
+        fullName: input.name,
+        email: input.email,
+        password: input.password, // TODO: hash password
+        isAccountVerified: false,
+        isSuperAdmin: false,
+        userType: input.userType,
+        // Add other fields as needed
+      },
+    });
+
+    return plainToClass(UserOutput, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async validateUsernamePassword(

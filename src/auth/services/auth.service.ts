@@ -45,6 +45,7 @@ export class AuthService {
       throw new UnauthorizedException("This account is not verified!");
     }
 
+    // Ensure userType is present in returned claims
     return user;
   }
 
@@ -59,10 +60,11 @@ export class AuthService {
   ): Promise<RegisterOutput> {
     this.logger.log(ctx, `${this.register.name} was called`);
 
-    // TODO : Setting default role as USER here. Will add option to change this later via ADMIN users.
+    // Set default role and account status
     input.roles = [ROLE.USER];
     input.isAccountDisabled = false;
 
+    // Pass userType from input
     const registeredUser = await this.userService.createUser(ctx, input);
     return plainToClass(RegisterOutput, registeredUser, {
       excludeExtraneousValues: true,
