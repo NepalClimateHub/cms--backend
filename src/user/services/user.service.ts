@@ -7,6 +7,7 @@ import { CreateUserInput } from "../dtos/user-create-input.dto";
 import { UserOutput } from "../dtos/user-output.dto";
 import { UpdateUserInput } from "../dtos/user-update-input.dto";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -27,7 +28,7 @@ export class UserService {
       data: {
         fullName: input.name,
         email: input.email,
-        password: input.password, // TODO: hash password
+        password:  await bcrypt.hash(input.password, 10),
         isAccountVerified: false,
         isSuperAdmin: false,
         userType: input.userType,
@@ -61,6 +62,46 @@ export class UserService {
     return plainToClass(UserOutput, user, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async findByEmail(
+    ctx: RequestContext,
+    email: string
+  ): Promise<UserOutput | null> {
+    this.logger.log(ctx, `${this.findByEmail.name} was called`);
+
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return plainToClass(UserOutput, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async findByIdWithPassword(
+    ctx: RequestContext,
+    userId: string
+  ): Promise<any> {
+    this.logger.log(ctx, `${this.findByIdWithPassword.name} was called`);
+
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user; // Return raw user data including password
   }
 
   async getUsers(
@@ -122,7 +163,7 @@ export class UserService {
 
   async updateUser(
     ctx: RequestContext,
-    userId: number,
+    userId: string,
     input: UpdateUserInput
   ): Promise<UserOutput> {
     this.logger.log(ctx, `${this.updateUser.name} was called`);
@@ -131,6 +172,13 @@ export class UserService {
     if (input.password) {
       // input.password = await hash(input.password, 10);
     }
+
+    const user = await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: input,
+    });
 
     return plainToClass(
       UserOutput,

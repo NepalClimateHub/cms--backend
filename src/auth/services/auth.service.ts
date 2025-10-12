@@ -1,7 +1,8 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
+import * as bcrypt from 'bcrypt';
 
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -14,6 +15,8 @@ import {
   AuthTokenOutput,
   UserAccessTokenClaims,
 } from "../dtos/auth-token-output.dto";
+import { EmailType, sendEmail } from "../../utils/email.util";
+import { getJWTTokenForEmailVerification } from "src/utils/jwt.util";
 
 @Injectable()
 export class AuthService {
@@ -42,6 +45,14 @@ export class AuthService {
 
     // Prevent disabled users from logging in.
     if (!user.isAccountVerified) {
+    
+      // send email to user to verify account
+      await sendEmail(EmailType.EMAIL_VERIFICATION, {
+        to: user.email,
+        fullName: user.fullName,
+        verificationCode: getJWTTokenForEmailVerification(user.email), // makes the url from this JWT token and sends email
+      });
+
       throw new UnauthorizedException("This account is not verified!");
     }
 
@@ -69,6 +80,113 @@ export class AuthService {
     return plainToClass(RegisterOutput, registeredUser, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async resendVerification(
+    ctx: RequestContext,
+    email: string
+  ): Promise<{ message: string }> {
+    this.logger.log(ctx, `${this.resendVerification.name} was called`);
+
+    // Find user by email
+    const user = await this.userService.findByEmail(ctx, email);
+    
+    if (!user) {
+      throw new NotFoundException("User not found with this email address");
+    }
+
+    // Check if user is already verified
+    if (user.isAccountVerified) {
+      throw new BadRequestException("Account is already verified");
+    }
+
+  
+    // Send verification email
+    const emailSent = await sendEmail(EmailType.EMAIL_VERIFICATION, {
+      to: user.email,
+      userName: user.fullName,
+      verificationCode: getJWTTokenForEmailVerification(user.email),
+    });
+
+    if (!emailSent) {
+      throw new BadRequestException("Failed to send verification email");
+    }
+
+    return {
+      message: "Verification email sent successfully"
+    };
+  }
+
+  async verifyEmail(
+    ctx: RequestContext,
+    token: string
+  ): Promise<{ email: string }> {
+    this.logger.log(ctx, `${this.verifyEmail.name} was called`);
+
+    try {
+      // Verify and decode the JWT token
+      const decoded = this.jwtService.verify(token, { secret: "temp-secret-key" });
+      const email = decoded.email;
+
+      if (!email) {
+        throw new BadRequestException("Invalid token: email not found");
+      }
+
+      // Find the user by email
+      const user = await this.userService.findByEmail(ctx, email);
+      
+      if (!user) {
+        throw new NotFoundException("User not found with this email address");
+      }
+
+      if (user.isAccountVerified) {
+        throw new BadRequestException("Account is already verified");
+      }
+
+      // Update user verification status
+      await this.userService.updateUser(ctx, user.id, { isAccountVerified: true });
+
+      return {
+        email: email
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      
+      // JWT verification errors (expired, invalid, etc.)
+      throw new BadRequestException("Invalid or expired verification token");
+    }
+  }
+
+  async changePassword(
+    ctx: RequestContext,
+    input: { currentPassword: string; newPassword: string }
+  ): Promise<{ message: string }> {
+    this.logger.log(ctx, `${this.changePassword.name} was called`);
+
+    this.logger.log(ctx,`user : {ctx.user}`);
+    // Get the current user with password
+    const user = await this.userService.findByIdWithPassword(ctx, ctx.user!.id);
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(input.currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException("Invalid current password");
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(input.newPassword, 10);
+
+    // Update the password
+    await this.userService.updateUser(ctx, user.id, { password: hashedNewPassword });
+
+    return {
+      message: "Password changed successfully"
+    };
   }
 
   async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {
