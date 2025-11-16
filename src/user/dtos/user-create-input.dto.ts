@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   ArrayNotEmpty,
   IsAlphanumeric,
@@ -11,9 +11,9 @@ import {
   IsString,
   Length,
   MaxLength,
-} from 'class-validator';
+} from "class-validator";
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE, USER_TYPE } from "../../auth/constants/role.constant";
 
 export class CreateUserInput {
   @ApiPropertyOptional()
@@ -49,4 +49,7 @@ export class CreateUserInput {
   @ApiProperty()
   @IsBoolean()
   isAccountDisabled: boolean;
+
+  @ApiProperty({ enum: USER_TYPE, default: USER_TYPE.INDIVIDUAL })
+  userType: USER_TYPE = USER_TYPE.INDIVIDUAL;
 }

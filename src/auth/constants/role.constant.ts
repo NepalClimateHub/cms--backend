@@ -1,4 +1,10 @@
 export enum ROLE {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
+
+export enum USER_TYPE {
+  ADMIN = "ADMIN",
+  ORGANIZATION = "ORGANIZATION",
+  INDIVIDUAL = "INDIVIDUAL",
 }

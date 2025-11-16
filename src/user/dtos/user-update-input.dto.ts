@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -10,15 +11,18 @@ import {
 export class UpdateUserInput {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @MaxLength(100)
   @IsString()
-  name: string;
+  name?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @Length(6, 100)
   @IsString()
-  password: string;
+  password?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isAccountVerified?: boolean;
 }

@@ -19,5 +19,11 @@ export const configModuleOptions: ConfigModuleOptions = {
     IMAGEKIT_PUB_KEY: Joi.string().required(),
     IMAGEKIT_PVT_KEY: Joi.string().required(),
     IMAGEKIT_ENDPOINT: Joi.string().required(),
+    SMTP_HOST: Joi.string().required(),
+    SMTP_PORT: Joi.number().required(),
+    SMTP_USER: Joi.string().required(),
+    SMTP_PASS: Joi.string().required(),
+    BASE_URL: Joi.string().required(),
+    FRONTEND_BASE_URL: Joi.string().allow(''),
   }),
 };

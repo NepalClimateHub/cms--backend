@@ -52,6 +52,13 @@ datasource db {
 //   FREE
 // }
 
+// Add this enum for user types
+enum UserType {
+  ADMIN
+  ORGANIZATION
+  INDIVIDUAL
+}
+
 model User {
   id                String    @id() @default(cuid())
   fullName          String
@@ -81,6 +88,8 @@ model User {
   resetPasswordExpires            DateTime?
   accountVerificationToken        String?
   accountVerificationTokenExpires DateTime?
+
+  userType UserType @default(INDIVIDUAL)
 
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt
@@ -289,5 +298,12 @@ model Gallery {
 
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model SubscribedEmailUser {
+  id        String   @id() @default(cuid())
+  email     String   @unique() @db.VarChar(254)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
   deletedAt DateTime?
 }

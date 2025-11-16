@@ -142,12 +142,12 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   async updateUser(
     @ReqContext() ctx: RequestContext,
-    @Param("id") userId: number,
+    @Param("id") userId: number|string,
     @Body() input: UpdateUserInput
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.updateUser.name} was called`);
 
-    const user = await this.userService.updateUser(ctx, userId, input);
+    const user = await this.userService.updateUser(ctx, userId as string, input);
     return { data: user, meta: {} };
   }
 }
