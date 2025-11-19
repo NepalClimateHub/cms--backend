@@ -22,5 +22,3 @@ RUN pnpm run build
 
 RUN pnpm prune --prod
 
-ARG APP_ENV=production
-CMD ["pnpm", "run", "prod"]
