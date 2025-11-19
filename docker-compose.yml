@@ -9,7 +9,7 @@ services:
     ports:
       - "3111:8080"
     env_file: .env
-    command: sh -c "pnpm --version && pnpm dlx prisma migrate deploy && node dist/src/main"
+    command: sh -c "pnpm --version && pnpm dlx prisma@6.4.1 migrate deploy && node dist/src/main"
     restart: always
 
   postgres:
