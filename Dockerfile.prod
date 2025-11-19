@@ -1,12 +1,25 @@
 
-FROM node:24.2.0-bookworm-slim 
+FROM node:24.2.0-bookworm-slim
+
 WORKDIR /usr/src/app
+
+# Open ssl required for prisma in docker.
+RUN apt-get update -y \
+  && apt-get install -y openssl \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN npm install -g pnpm
-COPY package.json  ./
+
+COPY package.json ./
+
 RUN pnpm install
+
 COPY . .
-RUN pnpm dlx prisma generate
+
+RUN pnpm prisma generate
+
 RUN pnpm run build
+
 RUN pnpm prune --prod
 
 ARG APP_ENV=production
