@@ -1,34 +1,13 @@
-FROM node:22.4.1-bookworm-slim AS builder
 
-RUN apt-get update -y
-RUN apt-get install -y openssl
+FROM node:24.2.0-bookworm-slim 
 WORKDIR /usr/src/app
 RUN npm install -g pnpm
-COPY package.json pnpm-lock.yaml ./
+COPY package.json  ./
 RUN pnpm install
 COPY . .
-ARG APP_ENV=production
-ARG DATABASE_URL
-ENV NODE_ENV=${APP_ENV}
-ENV DATABASE_URL=${DATABASE_URL}
 RUN pnpm dlx prisma generate
 RUN pnpm run build
-RUN pnpm dlx prisma migrate deploy
 RUN pnpm prune --prod
 
-# runner
-FROM node:22.4.1-bookworm-slim
-
-RUN apt-get update -y && apt-get install -y curl
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/prisma ./prisma
 ARG APP_ENV=production
-ENV NODE_ENV=${APP_ENV}
-EXPOSE 3000
-RUN apt-get update -y
-RUN apt-get install -y openssl
-USER node
-CMD [ "node", "dist/src/main" ]
+CMD ["pnpm", "run", "prod"]
