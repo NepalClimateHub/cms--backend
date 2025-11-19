@@ -32,6 +32,7 @@ jobs:
           file: ./Dockerfile.prod
           platforms: linux/amd64,linux/arm64
           push: true
+          no-cache:false
           tags: dahalsaroj/nch-cms-backend:latest
 
       - name: Verify Image
