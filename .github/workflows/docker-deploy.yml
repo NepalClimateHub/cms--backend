@@ -37,7 +37,8 @@ jobs:
 
       - name: SSH and pull Image and run docker-compose up -d
         run: |
-          ssh -i ~/access.pem -o StrictHostKeyChecking=no ${{secrets.USER_AND_IP}} 
+          ssh -i ~/access.pem -o StrictHostKeyChecking=no ${{secrets.USER_AND_IP}} <<'EOF'
           docker pull dahalsaroj/nch-cms-backend:latest
-          sudo cd /root/nch 
-          sudo docker-compose up -d
+          cd /root/nch
+          docker compose up -d
+          EOF
