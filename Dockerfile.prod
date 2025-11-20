@@ -18,6 +18,8 @@ COPY . .
 
 RUN pnpm prisma generate
 
+RUN pnpm prisma@6.17 migrate deploy
+
 RUN pnpm run build
 
 
