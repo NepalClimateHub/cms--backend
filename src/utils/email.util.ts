@@ -128,6 +128,9 @@ class EmailService {
       organizationName: metadata.organizationName || "Nepal Climate Hub",
       currentYear: new Date().getFullYear(),
       siteUrl: this.configService?.get("urls.baseUrl") || process.env.BASE_URL,
+      frontendBaseUrl:
+        this.configService?.get("urls.frontendBaseUrl") ||
+        process.env.FRONTEND_BASE_URL,
     };
 
     switch (emailType) {
@@ -140,13 +143,13 @@ class EmailService {
       case EmailType.WELCOME_EMAIL:
         return {
           ...baseData,
-          loginLink: `${baseData.siteUrl}/login`,
+          loginLink: `${baseData.frontendBaseUrl}/login`,
         };
 
       case EmailType.EMAIL_VERIFIED:
         return {
           ...baseData,
-          dashboardLink: `${baseData.siteUrl}/dashboard`,
+          dashboardLink: `${baseData.frontendBaseUrl}/dashboard`,
         };
 
       case EmailType.PASSWORD_RESET:
@@ -159,7 +162,7 @@ class EmailService {
       case EmailType.PASSWORD_RESET_SUCCESS:
         return {
           ...baseData,
-          loginLink: `${baseData.siteUrl}/login`,
+          loginLink: `${baseData.frontendBaseUrl}/login`,
         };
 
       default:
