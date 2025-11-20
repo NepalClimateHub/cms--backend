@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 // import { compare, hash } from "bcrypt";
 import { plainToClass } from "class-transformer";
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -23,12 +27,20 @@ export class UserService {
   ): Promise<UserOutput> {
     this.logger.log(ctx, `${this.createUser.name} was called`);
 
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { email: input.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException("Email is already registered");
+    }
+
     // Save userType to the database
     const user = await this.prismaService.user.create({
       data: {
         fullName: input.name,
         email: input.email,
-        password:  await bcrypt.hash(input.password, 10),
+        password: await bcrypt.hash(input.password, 10),
         isAccountVerified: false,
         isSuperAdmin: false,
         userType: input.userType,
