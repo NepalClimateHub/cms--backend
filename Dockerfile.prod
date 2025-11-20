@@ -20,5 +20,4 @@ RUN pnpm prisma generate
 
 RUN pnpm run build
 
-RUN pnpm prune --prod
 
