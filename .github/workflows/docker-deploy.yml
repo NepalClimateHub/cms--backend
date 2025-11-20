@@ -32,14 +32,9 @@ jobs:
           no-cache: true
           tags: dahalsaroj/nch-cms-backend:latest
 
-      - name: Verify Image
-        run: |
-          docker pull dahalsaroj/nch-cms-backend:latest
-          docker run --rm dahalsaroj/nch-cms-backend:latest pnpm --version
-
       - name: Generate PEM file
         if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/develop'  || startsWith(github.ref, 'refs/tags/v')) }}
-        run: echo "${{ secrets.SSH_KEY }}" > ~/access.pem && chmod 600 ~/access.pem
+        run: echo "${{ secrets.SSH_KEY }}" > ~/access.pem && chmod 600 ~/access.pem && file ~/access.pem
 
       - name: SSH and pull Image and run docker-compose up -d
         run: |
