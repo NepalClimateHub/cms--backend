@@ -21,7 +21,9 @@ import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { RegisterInput } from "../../auth/dtos/auth-register-input.dto";
 import { AdminAnalyticsOutput } from "../dtos/admin-analytics-output.dto";
+import { MonthlyUserStatsResponseDto } from "../dtos/monthly-user-stats.dto";
 import { AnalyticsService } from "../services/analytics.service";
+import { Query } from "@nestjs/common";
 
 @ApiTags("analytics")
 @Controller("analytics")
@@ -45,6 +47,26 @@ export class AnalyticsController {
     @ReqContext() ctx: RequestContext
   ): Promise<BaseApiResponse<AdminAnalyticsOutput>> {
     const res = await this.analyticsService.getAdminDashboardAnalytics(ctx);
+    return { data: res, meta: {} };
+  }
+
+  @Get("/monthly-user-stats")
+  @ApiOperation({
+    summary: "Get monthly user statistics for a given year",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(MonthlyUserStatsResponseDto),
+  })
+  async getMonthlyUserStats(
+    @ReqContext() ctx: RequestContext,
+    @Query("year") year?: string
+  ): Promise<BaseApiResponse<MonthlyUserStatsResponseDto>> {
+    const yearNumber = year ? parseInt(year, 10) : new Date().getFullYear();
+    const res = await this.analyticsService.getMonthlyUserStats(
+      ctx,
+      yearNumber
+    );
     return { data: res, meta: {} };
   }
 }

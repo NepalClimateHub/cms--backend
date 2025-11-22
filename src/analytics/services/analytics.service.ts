@@ -10,6 +10,10 @@ import { UserService } from "../../user/services/user.service";
 
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { AdminAnalyticsOutput } from "../dtos/admin-analytics-output.dto";
+import {
+  MonthlyUserStatsResponseDto,
+  MonthlyUserStatsDto,
+} from "../dtos/monthly-user-stats.dto";
 
 @Injectable()
 export class AnalyticsService {
@@ -64,6 +68,76 @@ export class AnalyticsService {
         blogCount: (await res)[4],
       },
 
+      {
+        excludeExtraneousValues: true,
+      }
+    );
+  }
+
+  async getMonthlyUserStats(
+    ctx: RequestContext,
+    year: number
+  ): Promise<MonthlyUserStatsResponseDto> {
+    this.logger.log(ctx, `${this.getMonthlyUserStats.name} was called`);
+
+    // Get all users for the specified year
+    const startDate = new Date(year, 0, 1); // January 1st of the year
+    const endDate = new Date(year + 1, 0, 1); // January 1st of next year
+
+    const users = await this.prismaService.user.findMany({
+      where: {
+        deletedAt: null,
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+    });
+
+    // Initialize monthly counts
+    const monthlyCounts: { [key: number]: number } = {};
+    for (let i = 0; i < 12; i++) {
+      monthlyCounts[i] = 0;
+    }
+
+    // Count users by month
+    users.forEach((user) => {
+      const month = user.createdAt.getMonth();
+      monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+    });
+
+    // Convert to array format with month names
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const monthlyStats: MonthlyUserStatsDto[] = monthNames.map(
+      (name, index) => ({
+        month: name,
+        count: monthlyCounts[index] || 0,
+      })
+    );
+
+    return plainToClass(
+      MonthlyUserStatsResponseDto,
+      {
+        monthlyStats,
+        year,
+      },
       {
         excludeExtraneousValues: true,
       }

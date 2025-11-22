@@ -8,3 +8,4 @@ export const getJWTTokenForEmailVerification = (email: string) => {
         secret:"temp-secret-key"
       });
 }
+
