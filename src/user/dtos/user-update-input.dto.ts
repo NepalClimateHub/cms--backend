@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsBoolean,
   IsNotEmpty,
@@ -6,7 +6,7 @@ import {
   IsString,
   Length,
   MaxLength,
-} from 'class-validator';
+} from "class-validator";
 
 export class UpdateUserInput {
   @ApiPropertyOptional()
@@ -25,4 +25,20 @@ export class UpdateUserInput {
   @IsOptional()
   @IsBoolean()
   isAccountVerified?: boolean;
+
+  @ApiPropertyOptional({
+    description: "Profile photo URL",
+    example: "https://example.com/profile-photo.jpg",
+  })
+  @IsOptional()
+  @IsString()
+  profilePhotoUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Profile photo ID",
+    example: "img_123456",
+  })
+  @IsOptional()
+  @IsString()
+  profilePhotoId?: string;
 }

@@ -41,6 +41,14 @@ export class UserOutput {
 
   @ApiProperty()
   @Expose()
+  profilePhotoUrl: string | null;
+
+  @ApiProperty()
+  @Expose()
+  profilePhotoId: string | null;
+
+  @ApiProperty()
+  @Expose()
   createdAt: string;
 
   @ApiProperty()

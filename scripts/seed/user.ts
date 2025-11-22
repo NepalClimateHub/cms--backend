@@ -15,6 +15,7 @@ const seedSuperAdmin = async () => {
       isAccountVerified: true,
       isSuperAdmin: true,
       gender: "Male",
+      userType: "ADMIN",
     },
     {
       fullName: "Mukesh Kumar Chaudhary",
@@ -23,6 +24,7 @@ const seedSuperAdmin = async () => {
       isAccountVerified: true,
       isSuperAdmin: true,
       gender: "Male",
+      userType: "ADMIN",
     },
   ];
 
