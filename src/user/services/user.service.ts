@@ -123,11 +123,22 @@ export class UserService {
   ): Promise<{ users: UserOutput[]; count: number }> {
     this.logger.log(ctx, `${this.getUsers.name} was called`);
 
-    const usersOutput = plainToClass(UserOutput, [], {
+    const [users, count] = await Promise.all([
+      this.prismaService.user.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.user.count(),
+    ]);
+
+    const usersOutput = plainToClass(UserOutput, users, {
       excludeExtraneousValues: true,
     });
 
-    return { users: usersOutput, count: 1 };
+    return { users: usersOutput, count };
   }
 
   async findById(ctx: RequestContext, id: string): Promise<UserOutput> {

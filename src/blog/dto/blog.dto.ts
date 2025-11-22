@@ -128,6 +128,22 @@ export class CreateBlogDto {
   bannerImageId?: string;
 
   @ApiPropertyOptional({
+    description: "Content image URL",
+    example: "https://example.com/blog-content.jpg",
+  })
+  @IsString()
+  @IsOptional()
+  contentImageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Content image ID",
+    example: "img_789012",
+  })
+  @IsString()
+  @IsOptional()
+  contentImageId?: string;
+
+  @ApiPropertyOptional({
     description: "Tags IDs",
     type: [String],
     required: false,
@@ -224,6 +240,22 @@ export class UpdateBlogDto {
   @IsString()
   @IsOptional()
   bannerImageId?: string;
+
+  @ApiPropertyOptional({
+    description: "Content image URL",
+    example: "https://example.com/blog-content.jpg",
+  })
+  @IsString()
+  @IsOptional()
+  contentImageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Content image ID",
+    example: "img_789012",
+  })
+  @IsString()
+  @IsOptional()
+  contentImageId?: string;
 
   @ApiPropertyOptional({
     description: "Tags IDs",
@@ -333,6 +365,24 @@ export class BlogResponseDto {
   @IsOptional()
   @Expose()
   bannerImageId?: string;
+
+  @ApiPropertyOptional({
+    description: "Content image URL",
+    example: "https://example.com/blog-content.jpg",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  contentImageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: "Content image ID",
+    example: "img_789012",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  contentImageId?: string;
 
   @ApiProperty({ description: "Tags", type: [TagOutputDto], required: false })
   @Expose()

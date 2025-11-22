@@ -236,6 +236,8 @@ model Blog {
   isFeatured      Boolean  @default(false)
   bannerImageUrl  String?
   bannerImageId   String?
+  contentImageUrl String?
+  contentImageId  String?
 
   tags Tags[]
 
