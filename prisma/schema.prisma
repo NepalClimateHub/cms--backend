@@ -214,9 +214,6 @@ model News {
 
   tags Tags[]
 
-  bannerImageId  String?
-  bannerImageUrl String?
-
   contributedBy String
 
   isDraft   Boolean   @default(true)

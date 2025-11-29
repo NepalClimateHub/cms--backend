@@ -60,19 +60,6 @@ export class CreateNewsDto {
   @IsUrl()
   newsLink: string;
 
-  @ApiProperty({
-    description: "Banner image URL",
-    example: "https://example.com/news-banner.jpg",
-  })
-  @IsString()
-  @IsOptional()
-  bannerImageUrl?: string;
-
-  @ApiPropertyOptional({ description: "Banner image ID", required: false })
-  @IsString()
-  @IsOptional()
-  bannerImageId?: string;
-
   @ApiPropertyOptional({
     description: "Tags IDs",
     type: [String],
@@ -126,19 +113,6 @@ export class UpdateNewsDto {
   @IsString()
   @IsOptional()
   newsLink?: string;
-
-  @ApiProperty({
-    description: "Banner image URL",
-    example: "https://example.com/news-banner.jpg",
-  })
-  @IsString()
-  @IsOptional()
-  bannerImageUrl?: string;
-
-  @ApiPropertyOptional({ description: "Banner image ID", required: false })
-  @IsString()
-  @IsOptional()
-  bannerImageId?: string;
 
   @ApiPropertyOptional({
     description: "Tags IDs",
@@ -209,20 +183,6 @@ export class NewsResponseDto {
   @IsString()
   @Expose()
   newsLink: string;
-
-  @ApiProperty({
-    description: "Banner image URL",
-    example: "https://example.com/news-banner.jpg",
-  })
-  @IsString()
-  @Expose()
-  bannerImageUrl: string;
-
-  @ApiPropertyOptional({ description: "Banner image ID", required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  bannerImageId?: string;
 
   @ApiProperty({ description: "Tags IDs", type: [String], required: false })
   @Expose()
