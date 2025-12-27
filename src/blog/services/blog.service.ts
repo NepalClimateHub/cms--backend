@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import {
   CreateBlogDto,
@@ -19,16 +23,31 @@ export class BlogService {
   ): Promise<BlogResponseDto> {
     const { tagIds, ...blogData } = createBlogDto;
 
+    // If user is super admin, auto-approve the blog
+    const approvedByAdmin = ctx.user?.isSuperAdmin === true;
+
+    // Determine status based on draft status and user role
+    let status: "DRAFT" | "UNDER_REVIEW" | "PUBLISHED" = "DRAFT";
+    if (!blogData.isDraft) {
+      if (approvedByAdmin) {
+        status = "PUBLISHED";
+      } else {
+        status = "UNDER_REVIEW";
+      }
+    }
+
     const blog = await this.prisma.blog.create({
       data: {
         ...blogData,
-        contributedBy: ctx.user?.fullName || "Anonymous",
+        approvedByAdmin,
+        status,
+        authorId: ctx.user?.id,
         tags: tagIds
           ? {
               connect: tagIds.map((id) => ({ id })),
             }
           : undefined,
-      },
+      } as any,
       include: {
         tags: true,
       },
@@ -40,13 +59,19 @@ export class BlogService {
   }
 
   async findAllBlogs(
-    searchInput: BlogSearchInput
+    searchInput: BlogSearchInput,
+    ctx?: RequestContext
   ): Promise<{ blogs: BlogResponseDto[]; total: number }> {
     const { offset = 1, limit = 10, ...searchParams } = searchInput;
 
     const where: any = {
       deletedAt: null,
     };
+
+    // If user is authenticated and not a super admin, show only their blogs
+    if (ctx?.user && !ctx.user.isSuperAdmin) {
+      where.authorId = ctx.user.id;
+    }
 
     if (searchParams.title) {
       where.title = {
@@ -187,11 +212,49 @@ export class BlogService {
     });
   }
 
+  async blogAction(
+    id: string,
+    action: "approve" | "reject"
+  ): Promise<BlogResponseDto> {
+    const existingBlog = await this.prisma.blog.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
+
+    if (!existingBlog) {
+      throw new NotFoundException(`Blog with ID ${id} not found`);
+    }
+
+    if (action !== "approve" && action !== "reject") {
+      throw new BadRequestException(
+        `Invalid action. Action must be either "approve" or "reject"`
+      );
+    }
+
+    const blog = await this.prisma.blog.update({
+      where: { id },
+      data: {
+        approvedByAdmin: action === "approve",
+        status: action === "approve" ? "PUBLISHED" : "REJECTED",
+      } as any,
+      include: {
+        tags: true,
+      },
+    });
+
+    return plainToInstance(BlogResponseDto, blog, {
+      excludeExtraneousValues: true,
+    });
+  }
+
   async getFeaturedBlogs(): Promise<BlogResponseDto[]> {
     const blogs = await this.prisma.blog.findMany({
       where: {
         isFeatured: true,
         isDraft: false,
+        approvedByAdmin: true,
         deletedAt: null,
       },
       include: {
@@ -211,6 +274,7 @@ export class BlogService {
     const blogs = await this.prisma.blog.findMany({
       where: {
         isDraft: false,
+        approvedByAdmin: true,
         deletedAt: null,
       },
       include: {

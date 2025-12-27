@@ -59,6 +59,13 @@ enum UserType {
   INDIVIDUAL
 }
 
+enum BlogStatus {
+  DRAFT
+  UNDER_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
 model User {
   id                String    @id() @default(cuid())
   fullName          String
@@ -85,6 +92,7 @@ model User {
 
   gallery Gallery[]
   tags    Tags[]
+  blogs   Blog[]
 
   resetPasswordToken              String?
   resetPasswordExpires            DateTime?
@@ -223,7 +231,7 @@ model News {
 }
 
 model Blog {
-  id              String   @id() @default(cuid())
+  id              String     @id() @default(cuid())
   title           String
   content         String
   excerpt         String?
@@ -231,16 +239,17 @@ model Blog {
   category        String
   readingTime     String?
   publishedDate   DateTime?
-  isDraft         Boolean  @default(true)
-  isFeatured      Boolean  @default(false)
+  isDraft         Boolean    @default(true)
+  isFeatured      Boolean    @default(false)
+  approvedByAdmin Boolean    @default(false)
+  status          BlogStatus @default(DRAFT)
   bannerImageUrl  String?
   bannerImageId   String?
-  contentImageUrl String?
-  contentImageId  String?
 
   tags Tags[]
 
-  contributedBy String
+  authorId      String?
+  authorUser    User?    @relation(fields: [authorId], references: [id])
 
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt
