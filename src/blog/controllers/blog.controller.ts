@@ -31,6 +31,7 @@ import {
   BaseApiErrorResponse,
 } from "../../shared/dtos/base-api-response.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { OptionalJwtAuthGuard } from "../../auth/guards/optional-jwt-auth.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -65,6 +66,7 @@ export class BlogController {
   }
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Get all blogs with search and pagination" })
   @ApiResponse({
@@ -76,9 +78,10 @@ export class BlogController {
     type: BaseApiErrorResponse,
   })
   async findAllBlogs(
-    @Query() searchInput: BlogSearchInput
+    @Query() searchInput: BlogSearchInput,
+    @ReqContext() ctx: RequestContext
   ): Promise<BaseApiResponse<BlogResponseDto[]>> {
-    const result = await this.blogService.findAllBlogs(searchInput);
+    const result = await this.blogService.findAllBlogs(searchInput, ctx);
     return { data: result.blogs, meta: { count: result.total } };
   }
 
@@ -171,5 +174,31 @@ export class BlogController {
   async deleteBlog(@Param("id") id: string): Promise<BaseApiResponse<void>> {
     await this.blogService.deleteBlog(id);
     return { data: undefined, meta: {} };
+  }
+
+  @Patch(":id/action")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: "Approve or reject a blog" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(BlogResponseDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: BaseApiErrorResponse,
+  })
+  async blogAction(
+    @Param("id") id: string,
+    @Body() body: { action: "approve" | "reject" }
+  ): Promise<BaseApiResponse<BlogResponseDto>> {
+    const blog = await this.blogService.blogAction(id, body.action);
+    return { data: blog, meta: {} };
   }
 }

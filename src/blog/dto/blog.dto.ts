@@ -128,22 +128,6 @@ export class CreateBlogDto {
   bannerImageId?: string;
 
   @ApiPropertyOptional({
-    description: "Content image URL",
-    example: "https://example.com/blog-content.jpg",
-  })
-  @IsString()
-  @IsOptional()
-  contentImageUrl?: string;
-
-  @ApiPropertyOptional({
-    description: "Content image ID",
-    example: "img_789012",
-  })
-  @IsString()
-  @IsOptional()
-  contentImageId?: string;
-
-  @ApiPropertyOptional({
     description: "Tags IDs",
     type: [String],
     required: false,
@@ -242,22 +226,6 @@ export class UpdateBlogDto {
   bannerImageId?: string;
 
   @ApiPropertyOptional({
-    description: "Content image URL",
-    example: "https://example.com/blog-content.jpg",
-  })
-  @IsString()
-  @IsOptional()
-  contentImageUrl?: string;
-
-  @ApiPropertyOptional({
-    description: "Content image ID",
-    example: "img_789012",
-  })
-  @IsString()
-  @IsOptional()
-  contentImageId?: string;
-
-  @ApiPropertyOptional({
     description: "Tags IDs",
     type: [String],
     required: false,
@@ -348,6 +316,23 @@ export class BlogResponseDto {
   @Expose()
   isFeatured: boolean;
 
+  @ApiProperty({
+    description: "Approved by admin",
+    example: false,
+  })
+  @IsBoolean()
+  @Expose()
+  approvedByAdmin: boolean;
+
+  @ApiProperty({
+    description: "Blog status",
+    example: "DRAFT",
+    enum: ["DRAFT", "UNDER_REVIEW", "PUBLISHED", "REJECTED"],
+  })
+  @IsString()
+  @Expose()
+  status: string;
+
   @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/blog-banner.jpg",
@@ -366,35 +351,9 @@ export class BlogResponseDto {
   @Expose()
   bannerImageId?: string;
 
-  @ApiPropertyOptional({
-    description: "Content image URL",
-    example: "https://example.com/blog-content.jpg",
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  contentImageUrl?: string;
-
-  @ApiPropertyOptional({
-    description: "Content image ID",
-    example: "img_789012",
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  contentImageId?: string;
-
   @ApiProperty({ description: "Tags", type: [TagOutputDto], required: false })
   @Expose()
   tags?: TagOutputDto[];
-
-  @ApiProperty({
-    description: "Contributed by",
-    example: "admin",
-  })
-  @IsString()
-  @Expose()
-  contributedBy: string;
 
   @ApiProperty({
     description: "Created at",
