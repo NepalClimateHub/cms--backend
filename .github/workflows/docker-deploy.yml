@@ -39,6 +39,6 @@ jobs:
         run: |
           ssh -i ~/access.pem -o StrictHostKeyChecking=no ${{secrets.USER_AND_IP}} <<'EOF'
           docker pull dahalsaroj/nch-cms-backend:latest
-          cd /root/nch
+          cd /home/azureuser/cms--backend
           docker compose up -d
           EOF
