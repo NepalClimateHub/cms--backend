@@ -49,6 +49,10 @@ export class UserOutput {
 
   @ApiProperty()
   @Expose()
+  bio: string | null;
+
+  @ApiProperty()
+  @Expose()
   createdAt: string;
 
   @ApiProperty()

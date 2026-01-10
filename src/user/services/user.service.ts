@@ -196,19 +196,22 @@ export class UserService {
       // input.password = await hash(input.password, 10);
     }
 
+    // Map name to fullName for Prisma
+    const updateData: any = { ...input };
+    if (input.name !== undefined) {
+      updateData.fullName = input.name;
+      delete updateData.name;
+    }
+
     const user = await this.prismaService.user.update({
       where: {
         id: userId,
       },
-      data: input,
+      data: updateData,
     });
 
-    return plainToClass(
-      UserOutput,
-      {},
-      {
-        excludeExtraneousValues: true,
-      }
-    );
+    return plainToClass(UserOutput, user, {
+      excludeExtraneousValues: true,
+    });
   }
 }

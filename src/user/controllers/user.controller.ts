@@ -69,6 +69,31 @@ export class UserController {
     return { data: user, meta: {} };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch("me")
+  @ApiOperation({
+    summary: "Update current user profile API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateMyProfile(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: UpdateUserInput
+  ): Promise<BaseApiResponse<UserOutput>> {
+    this.logger.log(ctx, `${this.updateMyProfile.name} was called`);
+
+    const user = await this.userService.updateUser(ctx, ctx.user!.id, input);
+    return { data: user, meta: {} };
+  }
+
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   @ApiOperation({
@@ -142,12 +167,16 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   async updateUser(
     @ReqContext() ctx: RequestContext,
-    @Param("id") userId: number|string,
+    @Param("id") userId: number | string,
     @Body() input: UpdateUserInput
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.updateUser.name} was called`);
 
-    const user = await this.userService.updateUser(ctx, userId as string, input);
+    const user = await this.userService.updateUser(
+      ctx,
+      userId as string,
+      input
+    );
     return { data: user, meta: {} };
   }
 }

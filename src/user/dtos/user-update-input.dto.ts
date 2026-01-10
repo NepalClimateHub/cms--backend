@@ -41,4 +41,13 @@ export class UpdateUserInput {
   @IsOptional()
   @IsString()
   profilePhotoId?: string;
+
+  @ApiPropertyOptional({
+    description: "User bio",
+    example: "I am a climate enthusiast passionate about sustainability.",
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  bio?: string;
 }
