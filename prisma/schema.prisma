@@ -241,6 +241,7 @@ model Blog {
   publishedDate   DateTime?
   isDraft         Boolean    @default(true)
   isFeatured      Boolean    @default(false)
+  isTopRead       Boolean    @default(false)
   approvedByAdmin Boolean    @default(false)
   status          BlogStatus @default(DRAFT)
   bannerImageUrl  String?
