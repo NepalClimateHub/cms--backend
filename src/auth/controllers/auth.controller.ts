@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import {
@@ -39,9 +40,21 @@ import { RolesGuard } from "../guards/roles.guard";
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
     private readonly logger: AppLogger
   ) {
     this.logger.setContext(AuthController.name);
+  }
+
+  @Get("public-key")
+  @ApiOperation({ summary: "Get JWT public key for token verification" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Returns the public key used for JWT verification",
+  })
+  getPublicKey(): BaseApiResponse<{ publicKey: string }> {
+    const publicKey = this.configService.get<string>("jwt.publicKey") || "";
+    return { data: { publicKey }, meta: {} };
   }
 
   @Post("login")
