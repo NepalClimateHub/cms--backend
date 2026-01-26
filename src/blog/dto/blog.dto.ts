@@ -7,8 +7,52 @@ import {
   IsString,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
+
+export class AuthorOutputDto {
+  @ApiProperty({
+    description: "Author ID",
+    example: "clgf7xhig0000qof3m53ibdz1",
+  })
+  @IsString()
+  @Expose()
+  id: string;
+
+  @ApiProperty({
+    description: "Author full name",
+    example: "John Doe",
+  })
+  @IsString()
+  @Expose()
+  fullName: string;
+
+  @ApiProperty({
+    description: "Author email",
+    example: "john.doe@example.com",
+  })
+  @IsString()
+  @Expose()
+  email: string;
+
+  @ApiPropertyOptional({
+    description: "Author bio",
+    example: "Climate scientist and researcher",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  bio?: string;
+
+  @ApiPropertyOptional({
+    description: "Author profile photo URL",
+    example: "https://example.com/profile.jpg",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  profilePhotoUrl?: string;
+}
 
 export class BlogSearchInput extends PaginationParamsDto {
   @ApiProperty({ required: false })
@@ -112,6 +156,14 @@ export class CreateBlogDto {
   isFeatured?: boolean;
 
   @ApiPropertyOptional({
+    description: "Is top read",
+    example: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isTopRead?: boolean;
+
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/blog-banner.jpg",
   })
@@ -208,6 +260,14 @@ export class UpdateBlogDto {
   @IsBoolean()
   @IsOptional()
   isFeatured?: boolean;
+
+  @ApiPropertyOptional({
+    description: "Is top read",
+    example: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  isTopRead?: boolean;
 
   @ApiPropertyOptional({
     description: "Banner image URL",
@@ -317,6 +377,14 @@ export class BlogResponseDto {
   isFeatured: boolean;
 
   @ApiProperty({
+    description: "Is top read",
+    example: false,
+  })
+  @IsBoolean()
+  @Expose()
+  isTopRead: boolean;
+
+  @ApiProperty({
     description: "Approved by admin",
     example: false,
   })
@@ -354,6 +422,15 @@ export class BlogResponseDto {
   @ApiProperty({ description: "Tags", type: [TagOutputDto], required: false })
   @Expose()
   tags?: TagOutputDto[];
+
+  @ApiPropertyOptional({
+    description: "Author details",
+    type: AuthorOutputDto,
+    required: false,
+  })
+  @Type(() => AuthorOutputDto)
+  @Expose()
+  authorUser?: AuthorOutputDto;
 
   @ApiProperty({
     description: "Created at",

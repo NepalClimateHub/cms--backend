@@ -17,6 +17,28 @@ import { RequestContext } from "../../shared/request-context/request-context.dto
 export class BlogService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Calculate reading time based on content length
+   * Assumes average reading speed of 200 words per minute
+   */
+  private calculateReadingTime(content: string): string {
+    // Strip HTML tags to get plain text
+    const textContent = content
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    // Count words (split by spaces)
+    const wordCount = textContent
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length;
+
+    // Calculate reading time (200 words per minute)
+    const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+
+    return `${readingTimeMinutes} min read`;
+  }
+
   async createBlog(
     createBlogDto: CreateBlogDto,
     ctx: RequestContext
@@ -36,9 +58,13 @@ export class BlogService {
       }
     }
 
+    // Auto-calculate reading time from content
+    const readingTime = this.calculateReadingTime(blogData.content);
+
     const blog = await this.prisma.blog.create({
       data: {
         ...blogData,
+        readingTime,
         approvedByAdmin,
         status,
         authorId: ctx.user?.id,
@@ -50,6 +76,7 @@ export class BlogService {
       } as any,
       include: {
         tags: true,
+        authorUser: true,
       },
     });
 
@@ -117,6 +144,7 @@ export class BlogService {
         where,
         include: {
           tags: true,
+          authorUser: true,
         },
         take: limit,
         skip: offset,
@@ -143,6 +171,7 @@ export class BlogService {
       },
       include: {
         tags: true,
+        authorUser: true,
       },
     });
 
@@ -172,10 +201,16 @@ export class BlogService {
       throw new NotFoundException(`Blog with ID ${id} not found`);
     }
 
+    // Auto-calculate reading time if content is being updated
+    const updatedData: any = { ...blogData };
+    if (blogData.content) {
+      updatedData.readingTime = this.calculateReadingTime(blogData.content);
+    }
+
     const blog = await this.prisma.blog.update({
       where: { id },
       data: {
-        ...blogData,
+        ...updatedData,
         tags: tagIds
           ? {
               set: tagIds.map((tagId) => ({ id: tagId })),
@@ -184,6 +219,7 @@ export class BlogService {
       },
       include: {
         tags: true,
+        authorUser: true,
       },
     });
 
@@ -241,6 +277,7 @@ export class BlogService {
       } as any,
       include: {
         tags: true,
+        authorUser: true,
       },
     });
 
@@ -259,6 +296,7 @@ export class BlogService {
       },
       include: {
         tags: true,
+        authorUser: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -279,6 +317,7 @@ export class BlogService {
       },
       include: {
         tags: true,
+        authorUser: true,
       },
       orderBy: {
         publishedDate: "desc",

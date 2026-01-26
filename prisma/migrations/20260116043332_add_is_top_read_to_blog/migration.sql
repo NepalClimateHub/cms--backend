@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Blog" ADD COLUMN "isTopRead" BOOLEAN NOT NULL DEFAULT false;
