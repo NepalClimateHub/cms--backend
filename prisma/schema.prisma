@@ -138,9 +138,9 @@ model Organizations {
 }
 
 model Events {
-  id           String @id() @default(cuid())
+  id           String  @id() @default(cuid())
   title        String
-  organizer    String @map("organizer")
+  organizer    String  @map("organizer")
   description  String
   // location is like venue
   location     String?
@@ -162,7 +162,7 @@ model Events {
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials  Json?
+  socials   Json?
   socialsId String?
 
   bannerImageId  String?
@@ -191,14 +191,14 @@ model Opportunity {
   contactEmail        String?
   status              String?
   cost                String?
-  websiteUrl         String?
+  websiteUrl          String?
 
   tags Tags[]
 
   address   Address? @relation(fields: [addressId], references: [id])
   addressId String?
 
-  socials   Json?
+  socials Json?
 
   bannerImageId  String?
   bannerImageUrl String?
@@ -249,8 +249,8 @@ model Blog {
 
   tags Tags[]
 
-  authorId      String?
-  authorUser    User?    @relation(fields: [authorId], references: [id])
+  authorId   String?
+  authorUser User?   @relation(fields: [authorId], references: [id])
 
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt
@@ -274,7 +274,6 @@ model Address {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
-
 
 model Tags {
   id                String  @id() @default(cuid())
@@ -313,8 +312,152 @@ model Gallery {
 }
 
 model SubscribedEmailUser {
-  id        String   @id() @default(cuid())
-  email     String   @unique() @db.VarChar(254)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  id        String    @id() @default(cuid())
+  email     String    @unique() @db.VarChar(254)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
   deletedAt DateTime?
+}
+
+// ===== NCH Climate Assistant Schemas =====
+
+model NchChatSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.VarChar(255)
+  title     String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  messages NchChatMessage[]
+
+  @@index([userId])
+  @@map("chat_sessions")
+}
+
+model NchChatMessage {
+  id        String   @id @default(uuid()) @db.Uuid
+  sessionId String   @map("session_id") @db.Uuid
+  role      String   @db.VarChar(50)
+  content   String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  session NchChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@map("chat_messages")
+}
+
+model NchDocument {
+  id         String   @id @default(uuid()) @db.Uuid
+  title      String   @db.VarChar(300)
+  sourceUrl  String?  @map("source_url")
+  totalPages Int?     @map("total_pages")
+  mediaType  String   @default("text/pdf") @map("media_type") @db.VarChar(40)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  chunks NchChunk[]
+
+  @@index([title])
+  @@map("documents")
+}
+
+model NchChunk {
+  id         String   @id @default(uuid()) @db.Uuid
+  documentId String   @map("document_id") @db.Uuid
+  chunkIndex Int      @map("chunk_index")
+  pageStart  Int?     @map("page_start")
+  pageEnd    Int?     @map("page_end")
+  text       String
+  vector     Json
+  meta       Json     @default("{}")
+  collection String   @default("main") @db.VarChar(64)
+  embedModel String   @default("intfloat/multilingual-e5-base") @map("embed_model") @db.VarChar(120)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  document      NchDocument       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  citations     NchCitation[]
+  retrievalHits NchRetrievalHit[]
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+  @@index([collection])
+  @@map("chunks")
+}
+
+model NchQuery {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String?  @map("user_id") @db.Uuid
+  text        String
+  language    String?  @db.VarChar(10)
+  routedModel String   @map("routed_model") @db.VarChar(80)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  answers    NchAnswer[]
+  retrievals NchRetrieval[]
+
+  @@index([userId])
+  @@map("queries")
+}
+
+model NchRetrieval {
+  id        String   @id @default(uuid()) @db.Uuid
+  queryId   String   @map("query_id") @db.Uuid
+  topK      Int      @default(10) @map("top_k")
+  filters   Json     @default("{}")
+  latencyMs Int      @map("latency_ms")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  query NchQuery          @relation(fields: [queryId], references: [id], onDelete: Cascade)
+  hits  NchRetrievalHit[]
+
+  @@index([queryId])
+  @@map("retrievals")
+}
+
+model NchRetrievalHit {
+  id          String @id @default(uuid()) @db.Uuid
+  retrievalId String @map("retrieval_id") @db.Uuid
+  rank        Int
+  chunkId     String @map("chunk_id") @db.Uuid
+  score       Float
+
+  retrieval NchRetrieval @relation(fields: [retrievalId], references: [id], onDelete: Cascade)
+  chunk     NchChunk     @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  @@index([retrievalId])
+  @@index([chunkId])
+  @@map("retrieval_hits")
+}
+
+model NchAnswer {
+  id        String   @id @default(uuid()) @db.Uuid
+  queryId   String   @map("query_id") @db.Uuid
+  model     String   @db.VarChar(80)
+  answerEn  String   @map("answer_en")
+  answerNe  String?  @map("answer_ne")
+  raw       Json?
+  tokensIn  Int      @map("tokens_in")
+  tokensOut Int      @map("tokens_out")
+  latencyMs Int      @map("latency_ms")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  query     NchQuery      @relation(fields: [queryId], references: [id], onDelete: Cascade)
+  citations NchCitation[]
+
+  @@index([queryId])
+  @@map("answers")
+}
+
+model NchCitation {
+  id       String  @id @default(uuid()) @db.Uuid
+  answerId String  @map("answer_id") @db.Uuid
+  chunkId  String  @map("chunk_id") @db.Uuid
+  title    String  @db.VarChar(300)
+  page     String? @db.VarChar(40)
+  url      String?
+
+  answer NchAnswer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  chunk  NchChunk  @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  @@index([answerId])
+  @@map("citations")
 }
