@@ -46,17 +46,6 @@ export class AuthController {
     this.logger.setContext(AuthController.name);
   }
 
-  @Get("public-key")
-  @ApiOperation({ summary: "Get JWT public key for token verification" })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Returns the public key used for JWT verification",
-  })
-  getPublicKey(): BaseApiResponse<{ publicKey: string }> {
-    const publicKey = this.configService.get<string>("jwt.publicKey") || "";
-    return { data: { publicKey }, meta: {} };
-  }
-
   @Post("login")
   @ApiOperation({
     summary: "User login API",
