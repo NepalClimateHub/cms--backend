@@ -27,6 +27,7 @@ import {
   CreateDocumentDto,
   CreateChunkDto,
   GetChunksDto,
+  ChatRequestDto,
 } from "../dtos";
 
 @ApiTags("ai-assistant")
@@ -235,5 +236,27 @@ export class AiAssistantController {
       dto.chunkIds
     );
     return { data: chunks, meta: {} };
+  }
+
+  // ============== Chat Proxy (API Gateway) ==============
+
+  @Post("chat")
+  @ApiOperation({ summary: "Chat with AI Assistant (proxies to RAG service)" })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "Returns AI response with sources and session ID",
+  })
+  async chat(
+    @ReqContext() ctx: RequestContext,
+    @Body() dto: ChatRequestDto
+  ): Promise<BaseApiResponse<any>> {
+    const result = await this.aiAssistantService.chat(
+      ctx,
+      dto.query,
+      dto.conversation_id,
+      dto.conversation_history,
+      dto.top_k
+    );
+    return { data: result, meta: {} };
   }
 }
