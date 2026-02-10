@@ -1,13 +1,18 @@
 import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+
+const RAG_SERVICE_URL = process.env.RAG_SERVICE_URL || "http://localhost:8000";
 
 @Injectable()
 export class AiAssistantService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly httpService: HttpService
   ) {
     this.logger.setContext(AiAssistantService.name);
   }
@@ -297,6 +302,81 @@ export class AiAssistantService {
         mediaType: chunk.document.mediaType,
       },
     }));
+  }
+
+  // ============== Chat Proxy (API Gateway) ==============
+
+  async chat(
+    ctx: RequestContext,
+    query: string,
+    conversationId?: string,
+    conversationHistory?: Array<{ role: string; content: string }>,
+    topK?: number
+  ) {
+    const userId = this.getUserId(ctx);
+    this.logger.log(ctx, `Chat request from user ${userId}: "${query.substring(0, 50)}..."`);
+
+    // Create or use existing session
+    let sessionId = conversationId;
+    if (!sessionId) {
+      const session = await this.prismaService.nchChatSession.create({
+        data: {
+          userId,
+          title: query.substring(0, 50),
+        },
+      });
+      sessionId = session.id;
+      this.logger.log(ctx, `Created new session ${sessionId}`);
+    }
+
+    // Call RAG service 
+    let ragResponse: any;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(`${RAG_SERVICE_URL}/chat`, {
+          query,
+          conversation_history: conversationHistory,
+          top_k: topK || 5,
+        })
+      );
+      ragResponse = response.data;
+    } catch (error: any) {
+      this.logger.error(ctx, `RAG service error: ${error.message || error}`);
+      throw new Error(`Failed to get response from AI service: ${error.message || 'Unknown error'}`);
+    }
+
+    //  Save user message to DB
+    await this.prismaService.nchChatMessage.create({
+      data: {
+        sessionId,
+        role: "user",
+        content: query,
+      },
+    });
+
+    // Save assistant response to DB
+    await this.prismaService.nchChatMessage.create({
+      data: {
+        sessionId,
+        role: "assistant",
+        content: ragResponse.response || "",
+      },
+    });
+
+    // Update session timestamp
+    await this.prismaService.nchChatSession.update({
+      where: { id: sessionId },
+      data: { updatedAt: new Date() },
+    });
+
+    this.logger.log(ctx, `Chat completed for session ${sessionId}`);
+
+    return {
+      response: ragResponse.response,
+      conversation_id: sessionId,
+      sources: ragResponse.sources || [],
+      metadata: ragResponse.metadata || {},
+    };
   }
 }
 
