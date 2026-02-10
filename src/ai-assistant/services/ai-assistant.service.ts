@@ -355,7 +355,7 @@ export class AiAssistantService {
     });
 
     // Save assistant response to DB
-    await this.prismaService.nchChatMessage.create({
+    const assistantMessage = await this.prismaService.nchChatMessage.create({
       data: {
         sessionId,
         role: "assistant",
@@ -376,6 +376,7 @@ export class AiAssistantService {
       conversation_id: sessionId,
       sources: ragResponse.sources || [],
       metadata: ragResponse.metadata || {},
+      createdAt: assistantMessage.createdAt,
     };
   }
 }
