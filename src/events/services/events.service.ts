@@ -68,6 +68,13 @@ export class EventsService {
               },
             };
           },
+          status: async ({ filter }) => {
+            return {
+              where: {
+                status: String(filter),
+              },
+            };
+          },
         },
       });
 

@@ -68,6 +68,13 @@ export class OpportunityService {
               },
             };
           },
+          status: async ({ filter }) => {
+            return {
+              where: {
+                status: String(filter),
+              },
+            };
+          },
         },
       });
 
