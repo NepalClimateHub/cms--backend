@@ -21,4 +21,16 @@ export class AdminAnalyticsOutput {
   @Expose()
   @ApiProperty()
   blogCount: string;
+
+  @Expose()
+  @ApiProperty()
+  adminCount: number;
+
+  @Expose()
+  @ApiProperty()
+  organizationCount: number;
+
+  @Expose()
+  @ApiProperty()
+  individualCount: number;
 }

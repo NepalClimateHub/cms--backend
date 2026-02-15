@@ -22,10 +22,15 @@ export class OpportunitySearchInput extends PaginationParamsDto {
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  tagIds: string[];
+  tagIds?: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
 
 export class CreateOpportunityDto {

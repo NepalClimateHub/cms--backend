@@ -15,15 +15,20 @@ import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 import { GalleryInput, GalleryResponse } from "../../shared/dtos/gallery.dto";
 
 export class EventsSearchInput extends PaginationParamsDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  title: string;
+  title?: string;
 
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
-  tagIds: string[];
+  tagIds?: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
 
 export class CreateEventDto {

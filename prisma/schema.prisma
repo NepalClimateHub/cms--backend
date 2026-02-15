@@ -23,8 +23,6 @@ model User {
   gender                          String?
   phoneCountryCode                String?
   phoneNumber                     String?
-  linkedin                        String?   // New field
-  currentRole                     String?   // New field (Position)
   addressId                       String?
   socialsId                       String?
   resetPasswordToken              String?
@@ -38,6 +36,8 @@ model User {
   userType                        UserType  @default(INDIVIDUAL)
   profilePhotoId                  String?
   profilePhotoUrl                 String?
+  currentRole                     String?
+  linkedin                        String?
   blogs                           Blog[]
   address                         Address?  @relation(fields: [addressId], references: [id])
   gallery                         Gallery[] @relation("GalleryToUser")
@@ -151,8 +151,6 @@ model Blog {
   excerpt         String?
   author          String
   category        String
-  categoryId      String?
-  categoryData    Category?  @relation(fields: [categoryId], references: [id])
   readingTime     String?
   publishedDate   DateTime?
   isDraft         Boolean    @default(true)
@@ -166,7 +164,9 @@ model Blog {
   authorId        String?
   status          BlogStatus @default(DRAFT)
   isTopRead       Boolean    @default(false)
+  categoryId      String?
   authorUser      User?      @relation(fields: [authorId], references: [id])
+  categoryData    Category?  @relation(fields: [categoryId], references: [id])
   tags            Tags[]     @relation("BlogToTags")
 }
 
@@ -205,58 +205,30 @@ model Tags {
   news              News[]          @relation("NewsToTags")
   opportunity       Opportunity[]   @relation("OpportunityToTags")
   organization      Organizations[] @relation("OrganizationsToTags")
-  user              User[]          @relation("TagsToUser")
-  project           Project[]
+  project           Project[]       @relation("ProjectToTags")
   resources         Resource[]      @relation("ResourceToTags")
+  user              User[]          @relation("TagsToUser")
 }
 
 model Resource {
-  id              String        @id @default(cuid())
+  id              String         @id @default(cuid())
   title           String
-  overview        String?       @db.Text
+  overview        String?
   type            ResourceType
   level           ResourceLevel?
-  
-  // Specific fields based on type
-  link            String?       // For Link/Source/Website
-  courseProvider  String?       // For Courses: provider
-  platform        String?       // For Courses: platform
-  duration        String?       // For Courses: duration
-  author          String?       // For Research Articles/Theses
-  publicationYear String?       // For "Year" / Date: just year
-  
-  // Images
+  link            String?
+  courseProvider  String?
+  platform        String?
+  duration        String?
+  author          String?
+  publicationYear String?
   bannerImageUrl  String?
   bannerImageId   String?
-
-  isDraft         Boolean       @default(true)
-  tags            Tags[]        @relation("ResourceToTags")
-  
-  createdAt       DateTime      @default(now()) @db.Timestamptz(6)
-  updatedAt       DateTime      @updatedAt
+  isDraft         Boolean        @default(true)
+  createdAt       DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
-}
-
-enum ResourceType {
-  DOCUMENTARY
-  PODCASTS_AND_TELEVISION
-  COURSES
-  PLANS_AND_POLICIES
-  DATA_RESOURCES
-  PLATFORMS
-  RESEARCH_ARTICLES
-  THESES_AND_DISSERTATIONS
-  CASE_STUDIES
-  REPORTS
-  TOOLKITS_AND_GUIDES
-}
-
-enum ResourceLevel {
-  INTERNATIONAL
-  REGIONAL
-  NATIONAL
-  PROVINCIAL
-  LOCAL
+  tags            Tags[]         @relation("ResourceToTags")
 }
 
 model Gallery {
@@ -279,24 +251,19 @@ model SubscribedEmailUser {
 }
 
 model Project {
-  id             String        @id() @default(cuid())
+  id             String        @id @default(cuid())
   title          String
-  // This will store duration string like "Oct 2025 - Present"
   duration       String?
-  overview       String        @db.Text
-  description    String        @db.Text
+  overview       String
+  description    String
   status         ProjectStatus @default(ONGOING)
-  
-  // Card image
   bannerImageUrl String?
   bannerImageId  String?
-
-  tags Tags[]
-
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  isDraft        Boolean       @default(true)
+  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  tags           Tags[]        @relation("ProjectToTags")
 }
 
 model answers {
@@ -423,6 +390,39 @@ model retrievals {
   @@index([query_id])
 }
 
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        CategoryType
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  blogs       Blog[]
+}
+
+enum ResourceType {
+  DOCUMENTARY
+  PODCASTS_AND_TELEVISION
+  COURSES
+  PLANS_AND_POLICIES
+  DATA_RESOURCES
+  PLATFORMS
+  RESEARCH_ARTICLES
+  THESES_AND_DISSERTATIONS
+  CASE_STUDIES
+  REPORTS
+  TOOLKITS_AND_GUIDES
+}
+
+enum ResourceLevel {
+  INTERNATIONAL
+  REGIONAL
+  NATIONAL
+  PROVINCIAL
+  LOCAL
+}
+
 enum UserType {
   ADMIN
   ORGANIZATION
@@ -440,17 +440,6 @@ enum ProjectStatus {
   ONGOING
   COMPLETED
   UPCOMING
-}
-
-model Category {
-  id          String       @id @default(cuid())
-  name        String
-  description String?
-  type        CategoryType
-  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?
-  blogs       Blog[]
 }
 
 enum CategoryType {
