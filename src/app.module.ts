@@ -14,6 +14,9 @@ import { OpportunityModule } from "./opportunity/opportunities.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { BlogModule } from "./blog/blog.module";
 import { EmailSubscriptionModule } from "./email-subscription/email-subscription.module";
+import { ProjectModule } from "./project/project.module";
+import { ResourceModule } from "./resource/resource.module";
+import { CategoryModule } from "./category/category.module";
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { EmailSubscriptionModule } from "./email-subscription/email-subscription
     AnalyticsModule,
     BlogModule,
     EmailSubscriptionModule,
+    ProjectModule,
+    ResourceModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

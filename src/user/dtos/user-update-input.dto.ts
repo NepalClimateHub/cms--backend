@@ -50,4 +50,14 @@ export class UpdateUserInput {
   @IsString()
   @MaxLength(500)
   bio?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  linkedin?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  currentRole?: string;
 }

@@ -81,6 +81,13 @@ export class TagsService {
               },
             };
           },
+          isProjectTag: async ({ filter }) => {
+            return {
+              where: {
+                isProjectTag: true,
+              },
+            };
+          },
         },
       });
 
@@ -163,6 +170,13 @@ export class TagsService {
               return {
                 where: {
                   isBlogTag: true,
+                },
+              };
+            }
+            if (tagType === "PROJECT") {
+              return {
+                where: {
+                  isProjectTag: true,
                 },
               };
             }

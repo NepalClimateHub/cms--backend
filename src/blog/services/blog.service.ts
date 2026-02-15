@@ -77,6 +77,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
     });
 
@@ -129,6 +130,10 @@ export class BlogService {
       where.isFeatured = searchParams.isFeatured;
     }
 
+    if (searchParams.categoryId) {
+      where.categoryId = searchParams.categoryId;
+    }
+
     if (searchParams.tagIds && searchParams.tagIds.length > 0) {
       where.tags = {
         some: {
@@ -145,6 +150,7 @@ export class BlogService {
         include: {
           tags: true,
           authorUser: true,
+          categoryData: true,
         },
         take: limit,
         skip: offset,
@@ -172,6 +178,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
     });
 
@@ -220,6 +227,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
     });
 
@@ -278,6 +286,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
     });
 
@@ -297,6 +306,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -318,6 +328,7 @@ export class BlogService {
       include: {
         tags: true,
         authorUser: true,
+        categoryData: true,
       },
       orderBy: {
         publishedDate: "desc",
