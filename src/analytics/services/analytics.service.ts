@@ -66,6 +66,15 @@ export class AnalyticsService {
         eventCount: (await res)[2],
         opportunityCount: (await res)[3],
         blogCount: (await res)[4],
+        adminCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: "ADMIN" },
+        }),
+        organizationCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: "ORGANIZATION" },
+        }),
+        individualCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: "INDIVIDUAL" },
+        }),
       },
 
       {
