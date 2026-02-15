@@ -1,17 +1,33 @@
 -- CreateEnum
-CREATE TYPE "ResourceType" AS ENUM ('DOCUMENTARY', 'PODCASTS_AND_TELEVISION', 'COURSES', 'PLANS_AND_POLICIES', 'DATA_RESOURCES', 'PLATFORMS', 'RESEARCH_ARTICLES', 'THESES_AND_DISSERTATIONS', 'CASE_STUDIES', 'REPORTS', 'TOOLKITS_AND_GUIDES');
+DO $$ BEGIN
+    CREATE TYPE "ResourceType" AS ENUM ('DOCUMENTARY', 'PODCASTS_AND_TELEVISION', 'COURSES', 'PLANS_AND_POLICIES', 'DATA_RESOURCES', 'PLATFORMS', 'RESEARCH_ARTICLES', 'THESES_AND_DISSERTATIONS', 'CASE_STUDIES', 'REPORTS', 'TOOLKITS_AND_GUIDES');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "ResourceLevel" AS ENUM ('INTERNATIONAL', 'REGIONAL', 'NATIONAL', 'PROVINCIAL', 'LOCAL');
+DO $$ BEGIN
+    CREATE TYPE "ResourceLevel" AS ENUM ('INTERNATIONAL', 'REGIONAL', 'NATIONAL', 'PROVINCIAL', 'LOCAL');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "ProjectStatus" AS ENUM ('ONGOING', 'COMPLETED', 'UPCOMING');
+DO $$ BEGIN
+    CREATE TYPE "ProjectStatus" AS ENUM ('ONGOING', 'COMPLETED', 'UPCOMING');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "CategoryType" AS ENUM ('BLOG', 'NEWS', 'EVENTS', 'OPPORTUNITY', 'PROJECT', 'RESOURCE', 'ORGANIZATION');
+DO $$ BEGIN
+    CREATE TYPE "CategoryType" AS ENUM ('BLOG', 'NEWS', 'EVENTS', 'OPPORTUNITY', 'PROJECT', 'RESOURCE', 'ORGANIZATION');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "Project" (
+CREATE TABLE IF NOT EXISTS "Project" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "duration" TEXT,
@@ -29,7 +45,7 @@ CREATE TABLE "Project" (
 );
 
 -- CreateTable
-CREATE TABLE "Resource" (
+CREATE TABLE IF NOT EXISTS "Resource" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "overview" TEXT,
@@ -52,7 +68,7 @@ CREATE TABLE "Resource" (
 );
 
 -- CreateTable
-CREATE TABLE "Category" (
+CREATE TABLE IF NOT EXISTS "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
@@ -65,7 +81,7 @@ CREATE TABLE "Category" (
 );
 
 -- CreateTable
-CREATE TABLE "_ProjectToTags" (
+CREATE TABLE IF NOT EXISTS "_ProjectToTags" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
@@ -73,38 +89,56 @@ CREATE TABLE "_ProjectToTags" (
 );
 
 -- CreateTable
-CREATE TABLE "_ResourceToTags" (
+CREATE TABLE IF NOT EXISTS "_ResourceToTags" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_ResourceToTags_AB_pkey" PRIMARY KEY ("A","B")
 );
 
--- AlterTable
-ALTER TABLE "Blog" ADD COLUMN "categoryId" TEXT;
+-- AlterTable Tags
+ALTER TABLE "Tags" ADD COLUMN IF NOT EXISTS "isProjectTag" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Tags" ADD COLUMN IF NOT EXISTS "isResourceTag" BOOLEAN NOT NULL DEFAULT false;
 
--- AlterTable
-ALTER TABLE "Tags" ADD COLUMN "isBlogTag" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN "isProjectTag" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN "isResourceTag" BOOLEAN NOT NULL DEFAULT false;
+-- AlterTable Blog
+ALTER TABLE "Blog" ADD COLUMN IF NOT EXISTS "categoryId" TEXT;
+
+-- AlterTable User
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "currentRole" TEXT;
 
 -- CreateIndex
-CREATE INDEX "_ProjectToTags_B_index" ON "_ProjectToTags"("B");
+CREATE INDEX IF NOT EXISTS "_ProjectToTags_B_index" ON "_ProjectToTags"("B");
 
 -- CreateIndex
-CREATE INDEX "_ResourceToTags_B_index" ON "_ResourceToTags"("B");
+CREATE INDEX IF NOT EXISTS "_ResourceToTags_B_index" ON "_ResourceToTags"("B");
 
 -- AddForeignKey
-ALTER TABLE "Blog" ADD CONSTRAINT "Blog_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "Blog" ADD CONSTRAINT "Blog_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "_ProjectToTags" ADD CONSTRAINT "_ProjectToTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_ProjectToTags" ADD CONSTRAINT "_ProjectToTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "_ProjectToTags" ADD CONSTRAINT "_ProjectToTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_ProjectToTags" ADD CONSTRAINT "_ProjectToTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "_ResourceToTags" ADD CONSTRAINT "_ResourceToTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Resource"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_ResourceToTags" ADD CONSTRAINT "_ResourceToTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Resource"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "_ResourceToTags" ADD CONSTRAINT "_ResourceToTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+    ALTER TABLE "_ResourceToTags" ADD CONSTRAINT "_ResourceToTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
