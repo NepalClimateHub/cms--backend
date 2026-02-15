@@ -8,51 +8,421 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// enum EventType {
-//   CONFERENCE
-//   SIDE_EVENT
-//   SEMINAR
-//   SUMMIT
-//   SYMPOSIUM
-//   WEBINAR
-//   WORKSHOP
-// }
+model User {
+  id                              String    @id @default(cuid())
+  fullName                        String
+  email                           String    @unique @db.VarChar(254)
+  password                        String
+  isAccountVerified               Boolean   @default(false)
+  isSuperAdmin                    Boolean   @default(false)
+  profession                      String?
+  expertise                       String?
+  bio                             String?
+  dateOfBirth                     DateTime? @db.Timestamptz(6)
+  dateOfJoin                      DateTime? @db.Timestamptz(6)
+  gender                          String?
+  phoneCountryCode                String?
+  phoneNumber                     String?
+  linkedin                        String?   // New field
+  currentRole                     String?   // New field (Position)
+  addressId                       String?
+  socialsId                       String?
+  resetPasswordToken              String?
+  resetPasswordExpires            DateTime?
+  accountVerificationToken        String?
+  accountVerificationTokenExpires DateTime?
+  createdAt                       DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt                       DateTime  @updatedAt
+  deletedAt                       DateTime?
+  socials                         Json?
+  userType                        UserType  @default(INDIVIDUAL)
+  profilePhotoId                  String?
+  profilePhotoUrl                 String?
+  blogs                           Blog[]
+  address                         Address?  @relation(fields: [addressId], references: [id])
+  gallery                         Gallery[] @relation("GalleryToUser")
+  tags                            Tags[]    @relation("TagsToUser")
 
-// enum LocationType {
-//   NATIONAL
-//   INTERNATIONAL
-// }
+  @@index([email])
+}
 
-// enum Province {
-//   KOSHI
-//   MADHESH
-//   BAGMATI
-//   GANDAKI
-//   LUMBINI
-//   KARNALI
-//   SUDURPASCHIM
-// }
+model Organizations {
+  id                  String    @id @default(cuid())
+  name                String
+  description         String
+  email               String
+  phoneCountryCode    String?
+  phoneNumber         String?
+  addressId           String?
+  socialsId           String?
+  bannerImageId       String?
+  bannerImageUrl      String?
+  logoImageUrl        String
+  logoImageId         String?
+  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+  isDraft             Boolean   @default(true)
+  socials             Json?
+  address             Address?  @relation(fields: [addressId], references: [id])
+  organizationGallery Gallery[] @relation("GalleryToOrganizations")
+  tags                Tags[]    @relation("OrganizationsToTags")
+}
 
-// enum EventStatus {
-//   OPEN
-//   UPCOMING
-//   CLOSED
-// }
+model Events {
+  id                   String    @id @default(cuid())
+  title                String
+  description          String
+  location             String?
+  type                 String
+  format               String
+  startDate            DateTime?
+  registrationDeadline DateTime?
+  registrationLink     String?
+  contactEmail         String?
+  status               String?
+  cost                 String?
+  addressId            String?
+  socialsId            String?
+  bannerImageId        String?
+  bannerImageUrl       String?
+  contributedBy        String
+  createdAt            DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
+  locationType         String
+  organizer            String    @map("organizer")
+  isDraft              Boolean   @default(true)
+  website              String?
+  socials              Json?
+  address              Address?  @relation(fields: [addressId], references: [id])
+  eventGallery         Gallery[] @relation("EventsToGallery")
+  tags                 Tags[]    @relation("EventsToTags")
+}
 
-// enum EventFormat {
-//   IN_PERSON
-//   VIRTUAL
-//   HYBRID
-// }
+model Opportunity {
+  id                  String    @id @default(cuid())
+  title               String
+  description         String
+  location            String
+  type                String
+  format              String
+  applicationDeadline DateTime?
+  duration            String?
+  contactEmail        String?
+  status              String?
+  cost                String?
+  addressId           String?
+  bannerImageId       String?
+  bannerImageUrl      String?
+  contributedBy       String
+  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+  locationType        String
+  organizer           String    @map("organizer")
+  isDraft             Boolean   @default(true)
+  websiteUrl          String?
+  socials             Json?
+  address             Address?  @relation(fields: [addressId], references: [id])
+  tags                Tags[]    @relation("OpportunityToTags")
+}
 
-// enum EventCost {
-//   FULLY_FUNDED
-//   PARTIALLY_FUNDED
-//   PAID
-//   FREE
-// }
+model News {
+  id            String    @id @default(cuid())
+  title         String
+  source        String
+  publishedDate DateTime
+  publishedYear DateTime
+  newsLink      String
+  contributedBy String
+  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  mode          String
+  isDraft       Boolean   @default(true)
+  tags          Tags[]    @relation("NewsToTags")
+}
 
-// Add this enum for user types
+model Blog {
+  id              String     @id @default(cuid())
+  title           String
+  content         String
+  excerpt         String?
+  author          String
+  category        String
+  categoryId      String?
+  categoryData    Category?  @relation(fields: [categoryId], references: [id])
+  readingTime     String?
+  publishedDate   DateTime?
+  isDraft         Boolean    @default(true)
+  isFeatured      Boolean    @default(false)
+  bannerImageUrl  String?
+  bannerImageId   String?
+  createdAt       DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+  approvedByAdmin Boolean    @default(false)
+  authorId        String?
+  status          BlogStatus @default(DRAFT)
+  isTopRead       Boolean    @default(false)
+  authorUser      User?      @relation(fields: [authorId], references: [id])
+  tags            Tags[]     @relation("BlogToTags")
+}
+
+model Address {
+  id           String          @id @default(cuid())
+  street       String?
+  country      String?
+  city         String?
+  state        String?
+  postcode     String?
+  createdAt    DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+  event        Events[]
+  opportunity  Opportunity[]
+  organization Organizations[]
+  user         User[]
+}
+
+model Tags {
+  id                String          @id @default(cuid())
+  tag               String
+  isUserTag         Boolean         @default(false)
+  isOrganizationTag Boolean         @default(false)
+  isEventTag        Boolean         @default(false)
+  isNewsTag         Boolean         @default(false)
+  isOpportunityTag  Boolean         @default(false)
+  createdAt         DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  isBlogTag         Boolean         @default(false)
+  isProjectTag      Boolean         @default(false)
+  isResourceTag     Boolean         @default(false)
+  blog              Blog[]          @relation("BlogToTags")
+  event             Events[]        @relation("EventsToTags")
+  news              News[]          @relation("NewsToTags")
+  opportunity       Opportunity[]   @relation("OpportunityToTags")
+  organization      Organizations[] @relation("OrganizationsToTags")
+  user              User[]          @relation("TagsToUser")
+  project           Project[]
+  resources         Resource[]      @relation("ResourceToTags")
+}
+
+model Resource {
+  id              String        @id @default(cuid())
+  title           String
+  overview        String?       @db.Text
+  type            ResourceType
+  level           ResourceLevel?
+  
+  // Specific fields based on type
+  link            String?       // For Link/Source/Website
+  courseProvider  String?       // For Courses: provider
+  platform        String?       // For Courses: platform
+  duration        String?       // For Courses: duration
+  author          String?       // For Research Articles/Theses
+  publicationYear String?       // For "Year" / Date: just year
+  
+  // Images
+  bannerImageUrl  String?
+  bannerImageId   String?
+
+  isDraft         Boolean       @default(true)
+  tags            Tags[]        @relation("ResourceToTags")
+  
+  createdAt       DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+}
+
+enum ResourceType {
+  DOCUMENTARY
+  PODCASTS_AND_TELEVISION
+  COURSES
+  PLANS_AND_POLICIES
+  DATA_RESOURCES
+  PLATFORMS
+  RESEARCH_ARTICLES
+  THESES_AND_DISSERTATIONS
+  CASE_STUDIES
+  REPORTS
+  TOOLKITS_AND_GUIDES
+}
+
+enum ResourceLevel {
+  INTERNATIONAL
+  REGIONAL
+  NATIONAL
+  PROVINCIAL
+  LOCAL
+}
+
+model Gallery {
+  id           String          @id @default(cuid())
+  sourceId     String?
+  publicUrl    String
+  createdAt    DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+  events       Events[]        @relation("EventsToGallery")
+  organization Organizations[] @relation("GalleryToOrganizations")
+  user         User[]          @relation("GalleryToUser")
+}
+
+model SubscribedEmailUser {
+  id        String    @id @default(cuid())
+  email     String    @unique @db.VarChar(254)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  deletedAt DateTime?
+}
+
+model Project {
+  id             String        @id() @default(cuid())
+  title          String
+  // This will store duration string like "Oct 2025 - Present"
+  duration       String?
+  overview       String        @db.Text
+  description    String        @db.Text
+  status         ProjectStatus @default(ONGOING)
+  
+  // Card image
+  bannerImageUrl String?
+  bannerImageId  String?
+
+  tags Tags[]
+
+  isDraft   Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model answers {
+  id         String      @id @db.Uuid
+  query_id   String      @db.Uuid
+  model      String      @db.VarChar(80)
+  answer_en  String
+  answer_ne  String?
+  raw        Json?
+  tokens_in  Int
+  tokens_out Int
+  latency_ms Int
+  created_at DateTime    @default(now()) @db.Timestamptz(6)
+  queries    queries     @relation(fields: [query_id], references: [id], onDelete: Cascade)
+  citations  citations[]
+
+  @@index([query_id])
+}
+
+model chat_messages {
+  id            String        @id @db.Uuid
+  session_id    String        @db.Uuid
+  role          String        @db.VarChar(50)
+  content       String
+  created_at    DateTime      @default(now()) @db.Timestamptz(6)
+  chat_sessions chat_sessions @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([session_id])
+}
+
+model chat_sessions {
+  id            String          @id @db.Uuid
+  user_id       String          @db.VarChar(255)
+  title         String?         @db.VarChar(255)
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @db.Timestamptz(6)
+  chat_messages chat_messages[]
+
+  @@index([user_id])
+}
+
+model chunks {
+  id             String           @id @db.Uuid
+  document_id    String           @db.Uuid
+  chunk_index    Int
+  page_start     Int?
+  page_end       Int?
+  text           String
+  vector         Json
+  meta           Json             @default("{}")
+  collection     String           @default("main") @db.VarChar(64)
+  embed_model    String           @default("intfloat/multilingual-e5-base") @db.VarChar(120)
+  created_at     DateTime         @default(now()) @db.Timestamptz(6)
+  documents      documents        @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  citations      citations[]
+  retrieval_hits retrieval_hits[]
+
+  @@unique([document_id, chunk_index])
+  @@index([collection])
+  @@index([document_id])
+}
+
+model citations {
+  id        String  @id @db.Uuid
+  answer_id String  @db.Uuid
+  chunk_id  String  @db.Uuid
+  title     String  @db.VarChar(300)
+  page      String? @db.VarChar(40)
+  url       String?
+  answers   answers @relation(fields: [answer_id], references: [id], onDelete: Cascade)
+  chunks    chunks  @relation(fields: [chunk_id], references: [id], onDelete: Cascade)
+
+  @@index([answer_id])
+}
+
+model documents {
+  id          String   @id @db.Uuid
+  title       String   @db.VarChar(300)
+  source_url  String?
+  total_pages Int?
+  media_type  String   @default("text/pdf") @db.VarChar(40)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  chunks      chunks[]
+
+  @@index([title])
+}
+
+model queries {
+  id           String       @id @db.Uuid
+  user_id      String?      @db.Uuid
+  text         String
+  language     String?      @db.VarChar(10)
+  routed_model String       @db.VarChar(80)
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  answers      answers[]
+  retrievals   retrievals[]
+
+  @@index([user_id])
+}
+
+model retrieval_hits {
+  id           String     @id @db.Uuid
+  retrieval_id String     @db.Uuid
+  rank         Int
+  chunk_id     String     @db.Uuid
+  score        Float
+  chunks       chunks     @relation(fields: [chunk_id], references: [id], onDelete: Cascade)
+  retrievals   retrievals @relation(fields: [retrieval_id], references: [id], onDelete: Cascade)
+
+  @@index([chunk_id])
+  @@index([retrieval_id])
+}
+
+model retrievals {
+  id             String           @id @db.Uuid
+  query_id       String           @db.Uuid
+  top_k          Int              @default(10)
+  filters        Json             @default("{}")
+  latency_ms     Int
+  created_at     DateTime         @default(now()) @db.Timestamptz(6)
+  retrieval_hits retrieval_hits[]
+  queries        queries          @relation(fields: [query_id], references: [id], onDelete: Cascade)
+
+  @@index([query_id])
+}
+
 enum UserType {
   ADMIN
   ORGANIZATION
@@ -66,255 +436,29 @@ enum BlogStatus {
   REJECTED
 }
 
-model User {
-  id                String    @id() @default(cuid())
-  fullName          String
-  email             String    @unique() @db.VarChar(254)
-  password          String
-  isAccountVerified Boolean   @default(false)
-  isSuperAdmin      Boolean   @default(false)
-  profession        String?
-  expertise         String?
-  bio               String?
-  dateOfBirth       DateTime? @db.Timestamptz(6)
-  dateOfJoin        DateTime? @db.Timestamptz(6)
-  gender            String?
-  phoneCountryCode  String?
-  phoneNumber       String?
-  profilePhotoUrl   String?
-  profilePhotoId    String?
-
-  address   Address? @relation(fields: [addressId], references: [id])
-  addressId String?
-
-  socials   Json?
-  socialsId String?
-
-  gallery Gallery[]
-  tags    Tags[]
-  blogs   Blog[]
-
-  resetPasswordToken              String?
-  resetPasswordExpires            DateTime?
-  accountVerificationToken        String?
-  accountVerificationTokenExpires DateTime?
-
-  userType UserType @default(INDIVIDUAL)
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@index([email])
+enum ProjectStatus {
+  ONGOING
+  COMPLETED
+  UPCOMING
 }
 
-model Organizations {
-  id               String  @id() @default(cuid())
-  name             String
-  description      String
-  email            String
-  phoneCountryCode String?
-  phoneNumber      String?
-
-  tags                Tags[]
-  organizationGallery Gallery[]
-
-  address   Address? @relation(fields: [addressId], references: [id])
-  addressId String?
-
-  socials   Json?
-  socialsId String?
-
-  bannerImageId  String?
-  bannerImageUrl String?
-
-  logoImageUrl String
-  logoImageId  String?
-
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  type        CategoryType
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  blogs       Blog[]
 }
 
-model Events {
-  id           String @id() @default(cuid())
-  title        String
-  organizer    String @map("organizer")
-  description  String
-  // location is like venue
-  location     String?
-  locationType String
-  type         String
-  format       String
-  website      String?
-
-  startDate            DateTime?
-  registrationDeadline DateTime?
-  registrationLink     String?
-  contactEmail         String?
-  status               String?
-  cost                 String?
-
-  tags         Tags[]
-  eventGallery Gallery[]
-
-  address   Address? @relation(fields: [addressId], references: [id])
-  addressId String?
-
-  socials  Json?
-  socialsId String?
-
-  bannerImageId  String?
-  bannerImageUrl String?
-
-  contributedBy String
-
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model Opportunity {
-  id                  String    @id() @default(cuid())
-  title               String
-  organizer           String    @map("organizer")
-  description         String
-  // location is like venue
-  location            String
-  locationType        String
-  type                String
-  format              String
-  applicationDeadline DateTime?
-  duration            String?
-  contactEmail        String?
-  status              String?
-  cost                String?
-  websiteUrl         String?
-
-  tags Tags[]
-
-  address   Address? @relation(fields: [addressId], references: [id])
-  addressId String?
-
-  socials   Json?
-
-  bannerImageId  String?
-  bannerImageUrl String?
-
-  contributedBy String
-
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model News {
-  id            String   @id() @default(cuid())
-  title         String
-  source        String
-  mode          String
-  publishedDate DateTime
-  publishedYear DateTime
-  newsLink      String
-
-  tags Tags[]
-
-  contributedBy String
-
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model Blog {
-  id              String     @id() @default(cuid())
-  title           String
-  content         String
-  excerpt         String?
-  author          String
-  category        String
-  readingTime     String?
-  publishedDate   DateTime?
-  isDraft         Boolean    @default(true)
-  isFeatured      Boolean    @default(false)
-  isTopRead       Boolean    @default(false)
-  approvedByAdmin Boolean    @default(false)
-  status          BlogStatus @default(DRAFT)
-  bannerImageUrl  String?
-  bannerImageId   String?
-
-  tags Tags[]
-
-  authorId      String?
-  authorUser    User?    @relation(fields: [authorId], references: [id])
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model Address {
-  id       String  @id() @default(cuid())
-  street   String?
-  country  String?
-  city     String?
-  state    String?
-  postcode String?
-
-  user         User[]
-  event        Events[]
-  opportunity  Opportunity[]
-  organization Organizations[]
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-
-model Tags {
-  id                String  @id() @default(cuid())
-  tag               String
-  isUserTag         Boolean @default(false)
-  isOrganizationTag Boolean @default(false)
-  isEventTag        Boolean @default(false)
-  isNewsTag         Boolean @default(false)
-  isOpportunityTag  Boolean @default(false)
-  isBlogTag         Boolean @default(false)
-
-  user         User[]
-  event        Events[]
-  news         News[]
-  blog         Blog[]
-  organization Organizations[]
-  opportunity  Opportunity[]
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model Gallery {
-  id        String  @id() @default(cuid())
-  sourceId  String?
-  publicUrl String
-
-  user         User[]
-  events       Events[]
-  organization Organizations[]
-
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-}
-
-model SubscribedEmailUser {
-  id        String   @id() @default(cuid())
-  email     String   @unique() @db.VarChar(254)
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  deletedAt DateTime?
+enum CategoryType {
+  BLOG
+  NEWS
+  EVENTS
+  OPPORTUNITY
+  PROJECT
+  RESOURCE
+  ORGANIZATION
 }

@@ -53,6 +53,14 @@ export class UserOutput {
 
   @ApiProperty()
   @Expose()
+  linkedin: string | null;
+
+  @ApiProperty()
+  @Expose()
+  currentRole: string | null;
+
+  @ApiProperty()
+  @Expose()
   createdAt: string;
 
   @ApiProperty()

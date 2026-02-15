@@ -7,8 +7,9 @@ import {
   IsString,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
-import { Expose, Type } from "class-transformer";
+import { Expose, Type, Transform } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
+import { CategoryResponseDto } from "../../category/dto/category.dto";
 
 export class AuthorOutputDto {
   @ApiProperty({
@@ -18,6 +19,24 @@ export class AuthorOutputDto {
   @IsString()
   @Expose()
   id: string;
+
+  @ApiPropertyOptional({
+    description: "Author LinkedIn profile URL",
+    example: "https://www.linkedin.com/in/johndoe/",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  linkedin?: string;
+
+  @ApiPropertyOptional({
+    description: "Author current role",
+    example: "Senior Researcher",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  currentRole?: string;
 
   @ApiProperty({
     description: "Author full name",
@@ -84,6 +103,11 @@ export class BlogSearchInput extends PaginationParamsDto {
   @IsBoolean()
   @IsOptional()
   isFeatured?: boolean;
+
+  @ApiPropertyOptional({ description: "Category ID" })
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }
 
 export class CreateBlogDto {
@@ -122,6 +146,13 @@ export class CreateBlogDto {
   })
   @IsString()
   category: string;
+
+  @ApiPropertyOptional({
+    description: "Category ID",
+  })
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 
   @ApiPropertyOptional({
     description: "Estimated reading time",
@@ -228,6 +259,13 @@ export class UpdateBlogDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @ApiPropertyOptional({
+    description: "Category ID",
+  })
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 
   @ApiPropertyOptional({
     description: "Estimated reading time",
@@ -450,4 +488,20 @@ export class BlogResponseDto {
   @IsOptional()
   @Expose()
   deletedAt?: Date;
+
+  @ApiPropertyOptional({
+    description: "Category ID",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  categoryId?: string;
+
+  @ApiPropertyOptional({
+    description: "Category data",
+    type: CategoryResponseDto,
+  })
+  @Type(() => CategoryResponseDto)
+  @Expose()
+  categoryData?: CategoryResponseDto;
 }

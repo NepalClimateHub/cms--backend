@@ -8,7 +8,9 @@ export type TagsType =
   | "EVENT"
   | "NEWS"
   | "OPPORTUNITY"
-  | "BLOG";
+  | "BLOG"
+  | "PROJECT"
+  | "RESOURCE";
 
 export class TagSearchInput extends PaginationParamsDto {
   @ApiPropertyOptional()
@@ -40,6 +42,16 @@ export class TagSearchInput extends PaginationParamsDto {
   @IsOptional()
   @IsString()
   isOpportunityTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isProjectTag?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  isResourceTag?: boolean;
 }
 
 export class AddTagDto {
@@ -104,4 +116,22 @@ export class AddTagDto {
   @IsOptional()
   @IsBoolean()
   isOpportunityTag?: boolean;
+
+  @ApiProperty({
+    description: "Indicates if this is a project tag",
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isProjectTag?: boolean;
+
+  @ApiProperty({
+    description: "Indicates if this is a resource tag",
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isResourceTag?: boolean;
 }

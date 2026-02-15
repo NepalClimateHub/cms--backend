@@ -34,6 +34,14 @@ export class TagOutputDto {
   @Expose()
   isOpportunityTag: boolean;
 
+  @IsBoolean()
+  @Expose()
+  isProjectTag: boolean;
+
+  @IsBoolean()
+  @Expose()
+  isResourceTag: boolean;
+
   @IsDate()
   @Expose()
   createdAt: Date;
