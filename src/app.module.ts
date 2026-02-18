@@ -17,6 +17,7 @@ import { EmailSubscriptionModule } from "./email-subscription/email-subscription
 import { ProjectModule } from "./project/project.module";
 import { ResourceModule } from "./resource/resource.module";
 import { CategoryModule } from "./category/category.module";
+import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CategoryModule } from "./category/category.module";
     ProjectModule,
     ResourceModule,
     CategoryModule,
+    AiAssistantModule,
   ],
   controllers: [AppController],
   providers: [AppService],
