@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import {
@@ -39,6 +40,7 @@ import { RolesGuard } from "../guards/roles.guard";
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
     private readonly logger: AppLogger
   ) {
     this.logger.setContext(AuthController.name);
