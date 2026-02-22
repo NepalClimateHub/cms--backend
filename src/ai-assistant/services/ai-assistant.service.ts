@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
+import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 
 const RAG_SERVICE_URL = process.env.RAG_SERVICE_URL || "http://localhost:8000";
+
+console.log("RAG_SERVICE_URL",RAG_SERVICE_URL)
 
 @Injectable()
 export class AiAssistantService {
@@ -34,10 +37,12 @@ export class AiAssistantService {
     const userId = this.getUserId(ctx);
     this.logger.log(ctx, `Creating chat session for user ${userId}`);
 
-    return this.prismaService.nchChatSession.create({
+    return this.prismaService.chat_sessions.create({
       data: {
-        userId,
+        id: uuidv4(),
+        user_id: userId,
         title,
+        updated_at: new Date(),
       },
     });
   }
@@ -49,12 +54,12 @@ export class AiAssistantService {
     const userId = this.getUserId(ctx);
     this.logger.log(ctx, `Fetching chat sessions for user ${userId}`);
 
-    return this.prismaService.nchChatSession.findMany({
+    return this.prismaService.chat_sessions.findMany({
       where: {
-        userId,
+        user_id: userId,
       },
       orderBy: {
-        updatedAt: "desc",
+        updated_at: "desc",
       },
     });
   }
@@ -67,7 +72,7 @@ export class AiAssistantService {
     this.logger.log(ctx, `Fetching messages for session ${sessionId}`);
 
     // Verify session exists and belongs to user
-    const session = await this.prismaService.nchChatSession.findUnique({
+    const session = await this.prismaService.chat_sessions.findUnique({
       where: { id: sessionId },
     });
 
@@ -75,16 +80,16 @@ export class AiAssistantService {
       throw new NotFoundException(`Session ${sessionId} not found`);
     }
 
-    if (session.userId !== userId) {
+    if (session.user_id !== userId) {
       throw new ForbiddenException("Not authorized to access this session");
     }
 
-    return this.prismaService.nchChatMessage.findMany({
+    return this.prismaService.chat_messages.findMany({
       where: {
-        sessionId,
+        session_id: sessionId,
       },
       orderBy: {
-        createdAt: "asc",
+        created_at: "asc",
       },
     });
   }
@@ -102,7 +107,7 @@ export class AiAssistantService {
     this.logger.log(ctx, `Adding ${role} message to session ${sessionId}`);
 
     // Verify session exists and belongs to user
-    const session = await this.prismaService.nchChatSession.findUnique({
+    const session = await this.prismaService.chat_sessions.findUnique({
       where: { id: sessionId },
     });
 
@@ -110,23 +115,24 @@ export class AiAssistantService {
       throw new NotFoundException(`Session ${sessionId} not found`);
     }
 
-    if (session.userId !== userId) {
+    if (session.user_id !== userId) {
       throw new ForbiddenException("Not authorized to access this session");
     }
 
     // Create message
-    const message = await this.prismaService.nchChatMessage.create({
+    const message = await this.prismaService.chat_messages.create({
       data: {
-        sessionId,
+        id: uuidv4(),
+        session_id: sessionId,
         role,
         content,
       },
     });
 
     // Update session's updatedAt timestamp
-    await this.prismaService.nchChatSession.update({
+    await this.prismaService.chat_sessions.update({
       where: { id: sessionId },
-      data: { updatedAt: new Date() },
+      data: { updated_at: new Date() },
     });
 
     return message;
@@ -144,7 +150,7 @@ export class AiAssistantService {
     this.logger.log(ctx, `Updating session ${sessionId} title to "${title}"`);
 
     // Verify session exists and belongs to user
-    const session = await this.prismaService.nchChatSession.findUnique({
+    const session = await this.prismaService.chat_sessions.findUnique({
       where: { id: sessionId },
     });
 
@@ -152,11 +158,11 @@ export class AiAssistantService {
       throw new NotFoundException(`Session ${sessionId} not found`);
     }
 
-    if (session.userId !== userId) {
+    if (session.user_id !== userId) {
       throw new ForbiddenException("Not authorized to update this session");
     }
 
-    return this.prismaService.nchChatSession.update({
+    return this.prismaService.chat_sessions.update({
       where: { id: sessionId },
       data: { title },
     });
@@ -170,7 +176,7 @@ export class AiAssistantService {
     this.logger.log(ctx, `Deleting session ${sessionId}`);
 
     // Verify session exists and belongs to user
-    const session = await this.prismaService.nchChatSession.findUnique({
+    const session = await this.prismaService.chat_sessions.findUnique({
       where: { id: sessionId },
     });
 
@@ -178,12 +184,12 @@ export class AiAssistantService {
       throw new NotFoundException(`Session ${sessionId} not found`);
     }
 
-    if (session.userId !== userId) {
+    if (session.user_id !== userId) {
       throw new ForbiddenException("Not authorized to delete this session");
     }
 
     // Delete session (messages cascade delete due to Prisma relation)
-    await this.prismaService.nchChatSession.delete({
+    await this.prismaService.chat_sessions.delete({
       where: { id: sessionId },
     });
 
@@ -204,12 +210,13 @@ export class AiAssistantService {
   ) {
     this.logger.log(ctx, `Creating document: ${title}`);
 
-    return this.prismaService.nchDocument.create({
+    return this.prismaService.documents.create({
       data: {
+        id: uuidv4(),
         title,
-        sourceUrl,
-        totalPages,
-        mediaType: mediaType || "text/plain",
+        source_url: sourceUrl,
+        total_pages: totalPages,
+        media_type: mediaType || "text/plain",
       },
     });
   }
@@ -218,8 +225,8 @@ export class AiAssistantService {
    * Get document by source URL
    */
   async getDocumentBySource(ctx: RequestContext, sourceUrl: string) {
-    return this.prismaService.nchDocument.findFirst({
-      where: { sourceUrl },
+    return this.prismaService.documents.findFirst({
+      where: { source_url: sourceUrl },
     });
   }
 
@@ -230,8 +237,8 @@ export class AiAssistantService {
     this.logger.log(ctx, "Deleting all documents and chunks");
 
     // Delete chunks first (foreign key constraint)
-    await this.prismaService.nchChunk.deleteMany({});
-    await this.prismaService.nchDocument.deleteMany({});
+    await this.prismaService.chunks.deleteMany({});
+    await this.prismaService.documents.deleteMany({});
 
     return { success: true, message: "All documents deleted" };
   }
@@ -255,17 +262,18 @@ export class AiAssistantService {
   ) {
     this.logger.log(ctx, `Creating chunk ${chunkIndex} for document ${documentId}`);
 
-    return this.prismaService.nchChunk.create({
+    return this.prismaService.chunks.create({
       data: {
-        documentId,
-        chunkIndex,
+        id: uuidv4(),
+        document_id: documentId,
+        chunk_index: chunkIndex,
         text,
-        vector,
-        pageStart,
-        pageEnd,
+        vector: vector as any,
+        page_start: pageStart,
+        page_end: pageEnd,
         meta: meta || {},
         collection: collection || "nch_assistant_index",
-        embedModel: embedModel || "intfloat/multilingual-e5-base",
+        embed_model: embedModel || "intfloat/multilingual-e5-base",
       },
     });
   }
@@ -276,31 +284,31 @@ export class AiAssistantService {
   async getChunksByIds(ctx: RequestContext, chunkIds: string[]) {
     this.logger.log(ctx, `Fetching ${chunkIds.length} chunks`);
 
-    const chunks = await this.prismaService.nchChunk.findMany({
+    const chunks = await this.prismaService.chunks.findMany({
       where: {
         id: { in: chunkIds },
       },
       include: {
-        document: true,
+        documents: true,
       },
     });
 
     return chunks.map((chunk) => ({
       id: chunk.id,
-      documentId: chunk.documentId,
-      chunkIndex: chunk.chunkIndex,
+      documentId: chunk.document_id,
+      chunkIndex: chunk.chunk_index,
       text: chunk.text,
-      vector: chunk.vector,
-      pageStart: chunk.pageStart,
-      pageEnd: chunk.pageEnd,
+      vector: Array.isArray(chunk.vector) ? chunk.vector : [],
+      pageStart: chunk.page_start,
+      pageEnd: chunk.page_end,
       meta: chunk.meta,
       collection: chunk.collection,
-      embedModel: chunk.embedModel,
-      document: {
-        title: chunk.document.title,
-        sourceUrl: chunk.document.sourceUrl,
-        mediaType: chunk.document.mediaType,
-      },
+      embedModel: chunk.embed_model,
+      document: chunk.documents ? {
+        title: chunk.documents.title,
+        sourceUrl: chunk.documents.source_url,
+        mediaType: chunk.documents.media_type,
+      } : undefined,
     }));
   }
 
@@ -319,10 +327,12 @@ export class AiAssistantService {
     // Create or use existing session
     let sessionId = conversationId;
     if (!sessionId) {
-      const session = await this.prismaService.nchChatSession.create({
+      const session = await this.prismaService.chat_sessions.create({
         data: {
-          userId,
+          id: uuidv4(),
+          user_id: userId,
           title: query.substring(0, 50),
+          updated_at: new Date(),
         },
       });
       sessionId = session.id;
@@ -346,27 +356,29 @@ export class AiAssistantService {
     }
 
     //  Save user message to DB
-    await this.prismaService.nchChatMessage.create({
+    await this.prismaService.chat_messages.create({
       data: {
-        sessionId,
+        id: uuidv4(),
+        session_id: sessionId,
         role: "user",
         content: query,
       },
     });
 
     // Save assistant response to DB
-    const assistantMessage = await this.prismaService.nchChatMessage.create({
+    const assistantMessage = await this.prismaService.chat_messages.create({
       data: {
-        sessionId,
+        id: uuidv4(),
+        session_id: sessionId,
         role: "assistant",
-        content: ragResponse.response || "",
+        content: String(ragResponse.response || ""),
       },
     });
 
     // Update session timestamp
-    await this.prismaService.nchChatSession.update({
+    await this.prismaService.chat_sessions.update({
       where: { id: sessionId },
-      data: { updatedAt: new Date() },
+      data: { updated_at: new Date() },
     });
 
     this.logger.log(ctx, `Chat completed for session ${sessionId}`);
@@ -376,7 +388,7 @@ export class AiAssistantService {
       conversation_id: sessionId,
       sources: ragResponse.sources || [],
       metadata: ragResponse.metadata || {},
-      createdAt: assistantMessage.createdAt,
+      createdAt: assistantMessage.created_at,
     };
   }
 }
