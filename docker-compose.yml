@@ -1,0 +1,44 @@
+services:
+  api:
+    container_name: nch-cms-backend
+    image: dahalsaroj/nch-cms-backend:latest
+    platform: linux/arm64
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3111:8080"
+    env_file: .env
+    command: sh -c "pnpm --version && pnpm dlx prisma@6.4.1 migrate deploy && node dist/src/main"
+    restart: always
+
+  postgres:
+    container_name: nch-postgres
+    image: postgres:16
+    platform: linux/arm64
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    platform: linux/arm64
+    environment:
+      - WATCHTOWER_CLEANUP=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 nch-cms-backend
+
+volumes:
+  pgdata:
+  

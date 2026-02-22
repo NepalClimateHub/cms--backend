@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import {
@@ -39,6 +40,7 @@ import { RolesGuard } from "../guards/roles.guard";
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
     private readonly logger: AppLogger
   ) {
     this.logger.setContext(AuthController.name);
@@ -83,21 +85,24 @@ export class AuthController {
     const registeredUser = await this.authService.register(ctx, input);
 
     // Send welcome email
-     await sendEmail(EmailType.WELCOME_EMAIL, {
+    await sendEmail(EmailType.WELCOME_EMAIL, {
       to: registeredUser.email,
       fullName: registeredUser.name,
     });
-    
+
     const jwtService = new JwtService();
 
-    const accountVerificationToken = jwtService.sign({ email: registeredUser.email }, {secret:"temp-secret-key",  expiresIn: '10m' });
+    const accountVerificationToken = jwtService.sign(
+      { email: registeredUser.email },
+      { secret: "temp-secret-key", expiresIn: "10m" }
+    );
     // Send verification email
     await sendEmail(EmailType.EMAIL_VERIFICATION, {
       to: registeredUser.email,
       fullName: registeredUser.name,
       verificationCode: accountVerificationToken,
     });
-    
+
     return { data: registeredUser, meta: {} };
   }
 
@@ -128,17 +133,18 @@ export class AuthController {
     this.logger.log(ctx, `${this.resendVerification.name} was called`);
 
     const result = await this.authService.resendVerification(ctx, input.email);
-    
-    return { 
-      data: { message: result.message }, 
-      meta: {} 
+
+    return {
+      data: { message: result.message },
+      meta: {},
     };
   }
 
   @Get("verify-email")
   @ApiOperation({
     summary: "Verify email address API",
-    description: "Verifies user email address using JWT token from verification link",
+    description:
+      "Verifies user email address using JWT token from verification link",
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -158,8 +164,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async verifyEmail(
     @ReqContext() ctx: RequestContext,
-    @Query('token') token: string
-  ): Promise<BaseApiResponse<{ message: string; email: string; status: string }>> {
+    @Query("token") token: string
+  ): Promise<
+    BaseApiResponse<{ message: string; email: string; status: string }>
+  > {
     this.logger.log(ctx, `${this.verifyEmail.name} was called`);
 
     const result = await this.authService.verifyEmail(ctx, token);
@@ -169,17 +177,22 @@ export class AuthController {
       to: result.email,
       fullName: result.email,
     });
-    
-    return { 
-      data: { message: "Email Verified Successfully", email: result.email, status:"EMAIL_VERIFIED" }, 
-      meta: {} 
+
+    return {
+      data: {
+        message: "Email Verified Successfully",
+        email: result.email,
+        status: "EMAIL_VERIFIED",
+      },
+      meta: {},
     };
   }
 
   @Post("change-password")
   @ApiOperation({
     summary: "Change user password API",
-    description: "Changes the user's password after verifying the current password",
+    description:
+      "Changes the user's password after verifying the current password",
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -205,10 +218,10 @@ export class AuthController {
     this.logger.log(ctx, `${this.changePassword.name} was called`);
 
     const result = await this.authService.changePassword(ctx, input);
-    
-    return { 
-      data: { message: result.message }, 
-      meta: {} 
+
+    return {
+      data: { message: result.message },
+      meta: {},
     };
   }
 

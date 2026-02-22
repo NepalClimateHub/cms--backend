@@ -162,7 +162,7 @@ class EmailService {
       case EmailType.PASSWORD_RESET_SUCCESS:
         return {
           ...baseData,
-          loginLink: `${baseData.siteUrl}/login`,
+          loginLink: `${baseData.frontendBaseUrl}/login`,
         };
 
       default:
