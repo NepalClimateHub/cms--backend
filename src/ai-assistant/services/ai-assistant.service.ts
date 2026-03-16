@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException, HttpException, HttpStatus } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+
+const DAILY_PROMPT_LIMIT = 3;
 
 const RAG_SERVICE_URL = process.env.RAG_SERVICE_URL || "http://localhost:8000";
 
@@ -28,6 +30,29 @@ export class AiAssistantService {
       throw new UnauthorizedException("User not authenticated");
     }
     return ctx.user.id;
+  }
+
+  /**
+   * Get how many prompts the user has used today (UTC midnight reset)
+   */
+  async getDailyUsage(ctx: RequestContext) {
+    const userId = this.getUserId(ctx);
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const count = await this.prismaService.chat_messages.count({
+      where: {
+        role: 'user',
+        created_at: { gte: todayStart },
+        chat_sessions: { user_id: userId },
+      },
+    });
+
+    return {
+      used: count,
+      limit: DAILY_PROMPT_LIMIT,
+      remaining: Math.max(0, DAILY_PROMPT_LIMIT - count),
+    };
   }
 
   /**
@@ -323,6 +348,21 @@ export class AiAssistantService {
   ) {
     const userId = this.getUserId(ctx);
     this.logger.log(ctx, `Chat request from user ${userId}: "${query.substring(0, 50)}..."`);
+
+    // Rate-limit check: 3 prompts per day (admins exempt)
+    const isAdmin = ctx.user?.isSuperAdmin === true;
+    if (!isAdmin) {
+      const usage = await this.getDailyUsage(ctx);
+      if (usage.remaining <= 0) {
+        throw new HttpException(
+          {
+            message: `Daily prompt limit reached (${usage.limit}/${usage.limit}). Try again tomorrow!`,
+            usage,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+    }
 
     // Create or use existing session
     let sessionId = conversationId;

@@ -72,6 +72,19 @@ export class AiAssistantController {
     return { data: sessions, meta: {} };
   }
 
+  @Get("usage")
+  @ApiOperation({ summary: "Get daily prompt usage for the current user" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Returns daily prompt usage (used, limit, remaining)",
+  })
+  async getUsage(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<any>> {
+    const usage = await this.aiAssistantService.getDailyUsage(ctx);
+    return { data: usage, meta: {} };
+  }
+
   @Get("sessions/:sessionId/messages")
   @ApiOperation({ summary: "Get all messages for a chat session" })
   @ApiResponse({
