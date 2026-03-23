@@ -18,6 +18,7 @@ import { ProjectModule } from "./project/project.module";
 import { ResourceModule } from "./resource/resource.module";
 import { CategoryModule } from "./category/category.module";
 import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
+import { DatabaseModule } from "./database/database.module";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
     ResourceModule,
     CategoryModule,
     AiAssistantModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

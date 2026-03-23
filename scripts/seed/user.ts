@@ -3,7 +3,7 @@ import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
-const seedSuperAdmin = async () => {
+export const seedSuperAdmin = async () => {
   const pass = "Test@123";
   const hasedPW = await hash(pass, 10);
 
@@ -11,15 +11,6 @@ const seedSuperAdmin = async () => {
     {
       fullName: "NCH Admin",
       email: "nchadmin@mailinator.com",
-      password: hasedPW,
-      isAccountVerified: true,
-      isSuperAdmin: true,
-      gender: "Male",
-      userType: "ADMIN",
-    },
-    {
-      fullName: "Mukesh Kumar Chaudhary",
-      email: "mukezhz@gmail.com",
       password: hasedPW,
       isAccountVerified: true,
       isSuperAdmin: true,
@@ -34,7 +25,3 @@ const seedSuperAdmin = async () => {
   });
   console.log("Super admin seeded!");
 };
-
-(() => {
-  seedSuperAdmin();
-})();

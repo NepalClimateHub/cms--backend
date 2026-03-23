@@ -7,11 +7,13 @@ import {
   HttpStatus,
   Post,
   Query,
+  Res,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Response } from "express";
 
 import {
   BaseApiErrorResponse,
@@ -83,12 +85,6 @@ export class AuthController {
     @Body() input: RegisterInput // RegisterInput now includes userType
   ): Promise<BaseApiResponse<RegisterOutput>> {
     const registeredUser = await this.authService.register(ctx, input);
-
-    // Send welcome email
-    await sendEmail(EmailType.WELCOME_EMAIL, {
-      to: registeredUser.email,
-      fullName: registeredUser.name,
-    });
 
     const jwtService = new JwtService();
 
@@ -164,28 +160,38 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async verifyEmail(
     @ReqContext() ctx: RequestContext,
-    @Query("token") token: string
-  ): Promise<
-    BaseApiResponse<{ message: string; email: string; status: string }>
-  > {
+    @Query("token") token: string,
+    @Res() res: Response
+  ) {
     this.logger.log(ctx, `${this.verifyEmail.name} was called`);
 
-    const result = await this.authService.verifyEmail(ctx, token);
+    try {
+      const result = await this.authService.verifyEmail(ctx, token);
 
-    // send email verified email
-    await sendEmail(EmailType.EMAIL_VERIFIED, {
-      to: result.email,
-      fullName: result.email,
-    });
+      // send email verified email
+      await sendEmail(EmailType.EMAIL_VERIFIED, {
+        to: result.email,
+        fullName: result.email,
+      });
 
-    return {
-      data: {
-        message: "Email Verified Successfully",
-        email: result.email,
-        status: "EMAIL_VERIFIED",
-      },
-      meta: {},
-    };
+      const frontendUrl =
+        this.configService.get("urls.frontendBaseUrl") ||
+        process.env.FRONTEND_BASE_URL ||
+        "http://localhost:5173";
+
+      return res.redirect(`${frontendUrl}/?verified=true`);
+    } catch (error: any) {
+      const frontendUrl =
+        this.configService.get("urls.frontendBaseUrl") ||
+        process.env.FRONTEND_BASE_URL ||
+        "http://localhost:5173";
+
+      return res.redirect(
+        `${frontendUrl}/login?verified=false&error=${encodeURIComponent(
+          error.message
+        )}`
+      );
+    }
   }
 
   @Post("change-password")
