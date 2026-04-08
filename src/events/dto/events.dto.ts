@@ -3,11 +3,13 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
+  IsEnum,
   IsOptional,
   IsString,
   IsUrl,
   ValidateNested,
 } from "class-validator";
+import { ContentStatus } from "@prisma/client";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
 import { Expose, Type } from "class-transformer";
@@ -25,10 +27,10 @@ export class EventsSearchInput extends PaginationParamsDto {
   @IsArray()
   tagIds?: string[];
 
-  @ApiProperty({ required: false })
+  @ApiPropertyOptional({ enum: ContentStatus })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(ContentStatus)
+  status?: ContentStatus;
 }
 
 export class CreateEventDto {
@@ -111,11 +113,12 @@ export class CreateEventDto {
 
   @ApiPropertyOptional({
     description: "status",
+    enum: ContentStatus,
     required: false,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(ContentStatus)
+  status?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",
@@ -273,11 +276,12 @@ export class UpdateEventDto {
 
   @ApiPropertyOptional({
     description: "status",
+    enum: ContentStatus,
     required: false,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(ContentStatus)
+  status?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",
@@ -450,12 +454,13 @@ export class EventResponseDto {
 
   @ApiPropertyOptional({
     description: "status",
+    enum: ContentStatus,
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsEnum(ContentStatus)
   @Expose()
-  status?: string;
+  status?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
-import { ROLE } from "../constants/role.constant";
+import { ROLE, USER_TYPE } from "../constants/role.constant";
 import { ROLES_KEY } from "../decorators/role.decorator";
 
 @Injectable()
@@ -24,14 +24,34 @@ export class RolesGuard implements CanActivate {
     }
     const { user } = context.switchToHttp().getRequest();
 
-    // if (requiredRoles.some((role) => user.roles?.includes(role))) {
-    //   return true;
-    // }
+    if (!user) {
+      return false;
+    }
+
+    // Super Admin has access to everything
+    if (user.userType === USER_TYPE.SUPER_ADMIN) {
+      return true;
+    }
+
+    const hasRole = requiredRoles.some((role) => {
+      if (role === ROLE.SUPER_ADMIN && user.userType === USER_TYPE.SUPER_ADMIN)
+        return true;
+      if (role === ROLE.ADMIN && user.userType === USER_TYPE.ADMIN) return true;
+      if (
+        role === ROLE.CONTENT_ADMIN &&
+        user.userType === USER_TYPE.CONTENT_ADMIN
+      )
+        return true;
+      if (role === ROLE.USER) return true; // Everyone is a user
+      return false;
+    });
+
+    if (!hasRole) {
+      throw new UnauthorizedException(
+        `User with type ${user.userType} does not have access to this route with roles ${requiredRoles}`,
+      );
+    }
 
     return true;
-
-    throw new UnauthorizedException(
-      `User with roles ${user.roles} does not have access to this route with roles ${requiredRoles}`
-    );
   }
 }

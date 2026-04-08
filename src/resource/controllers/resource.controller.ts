@@ -35,6 +35,9 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
 import { RolesGuard } from "../../auth/guards/roles.guard";
+import { ContentModerationDto } from "../../shared/dtos/moderation.dto";
+import { ReqContext } from "../../shared/request-context/req-context.decorator";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
 
 @ApiTags("Resources")
 @Controller("resources")
@@ -133,5 +136,28 @@ export class ResourceController {
   async deleteResource(@Param("id") id: string): Promise<BaseApiResponse<void>> {
     await this.resourceService.deleteResource(id);
     return { data: undefined, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.CONTENT_ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch("/:id/moderate")
+  @ApiOperation({ summary: "Moderate a resource" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(ResourceResponseDto),
+  })
+  async moderateResource(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() payload: ContentModerationDto
+  ): Promise<BaseApiResponse<ResourceResponseDto>> {
+    const resource = await this.resourceService.moderateResource(
+      ctx,
+      id,
+      payload
+    );
+    return { data: resource, meta: {} };
   }
 }

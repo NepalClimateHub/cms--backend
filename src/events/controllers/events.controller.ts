@@ -20,6 +20,10 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { Roles } from "../../auth/decorators/role.decorator";
+import { ROLE } from "../../auth/constants/role.constant";
+import { ContentModerationDto } from "../../shared/dtos/moderation.dto";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -167,6 +171,29 @@ export class EventsController {
     console.log("body payload", payload);
 
     const event = await this.eventsService.updateEvent(ctx, id, payload);
+    return { data: event, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.CONTENT_ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch("/:id/moderate")
+  @ApiOperation({
+    summary: "Moderate event API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(EventResponseDto),
+  })
+  async moderateEvent(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() payload: ContentModerationDto
+  ): Promise<BaseApiResponse<EventResponseDto>> {
+    this.logger.log(ctx, `${this.moderateEvent.name} was called`);
+
+    const event = await this.eventsService.moderateEvent(ctx, id, payload);
     return { data: event, meta: {} };
   }
 }

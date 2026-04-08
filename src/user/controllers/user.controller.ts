@@ -32,7 +32,9 @@ import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { UserOutput } from "../dtos/user-output.dto";
+import { UpdateMyOrganizationInput } from "../dtos/update-my-organization.dto";
 import { UpdateUserInput } from "../dtos/user-update-input.dto";
+import { PromoteUserInput, VerifyUserInput } from "../dtos/promote-user.dto";
 import { UserService } from "../services/user.service";
 
 @ApiTags("users")
@@ -40,7 +42,7 @@ import { UserService } from "../services/user.service";
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(UserController.name);
   }
@@ -61,7 +63,7 @@ export class UserController {
     type: BaseApiErrorResponse,
   })
   async getMyProfile(
-    @ReqContext() ctx: RequestContext
+    @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.getMyProfile.name} was called`);
 
@@ -86,11 +88,36 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   async updateMyProfile(
     @ReqContext() ctx: RequestContext,
-    @Body() input: UpdateUserInput
+    @Body() input: UpdateUserInput,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.updateMyProfile.name} was called`);
 
     const user = await this.userService.updateUser(ctx, ctx.user!.id, input);
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch("me/organization")
+  @ApiOperation({
+    summary: "Update linked organization (logo, verification request) — organization accounts only",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateMyOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: UpdateMyOrganizationInput,
+  ): Promise<BaseApiResponse<UserOutput>> {
+    this.logger.log(ctx, `${this.updateMyOrganization.name} was called`);
+
+    const user = await this.userService.updateMyOrganization(ctx, input);
     return { data: user, meta: {} };
   }
 
@@ -112,14 +139,14 @@ export class UserController {
   @ApiBearerAuth()
   async getUsers(
     @ReqContext() ctx: RequestContext,
-    @Query() query: PaginationParamsDto
+    @Query() query: PaginationParamsDto,
   ): Promise<BaseApiResponse<UserOutput[]>> {
     this.logger.log(ctx, `${this.getUsers.name} was called`);
 
     const { users, count } = await this.userService.getUsers(
       ctx,
       query.limit,
-      query.offset
+      query.offset,
     );
 
     return { data: users, meta: { count } };
@@ -142,7 +169,7 @@ export class UserController {
   })
   async getUser(
     @ReqContext() ctx: RequestContext,
-    @Param("id") id: number
+    @Param("id") id: number,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.getUser.name} was called`);
 
@@ -150,8 +177,9 @@ export class UserController {
     return { data: user, meta: {} };
   }
 
-  // TODO: ADD RoleGuard
-  // NOTE : This can be made a admin only endpoint. For normal users they can use PATCH /me
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN, ROLE.CONTENT_ADMIN)
+  @ApiBearerAuth()
   @Patch(":id")
   @ApiOperation({
     summary: "Update user API",
@@ -168,15 +196,59 @@ export class UserController {
   async updateUser(
     @ReqContext() ctx: RequestContext,
     @Param("id") userId: number | string,
-    @Body() input: UpdateUserInput
+    @Body() input: UpdateUserInput,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.updateUser.name} was called`);
 
     const user = await this.userService.updateUser(
       ctx,
       userId as string,
-      input
+      input,
     );
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @Patch(":id/promote")
+  @ApiOperation({
+    summary: "Promote user to Admin or Content Admin role",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  async promoteUser(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() input: PromoteUserInput,
+  ): Promise<BaseApiResponse<UserOutput>> {
+    this.logger.log(ctx, `${this.promoteUser.name} was called`);
+
+    const user = await this.userService.promoteUser(ctx, id, input.userType);
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @Patch(":id/verify")
+  @ApiOperation({
+    summary: "Verify individual user",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  async verifyUser(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() input: VerifyUserInput,
+  ): Promise<BaseApiResponse<UserOutput>> {
+    this.logger.log(ctx, `${this.verifyUser.name} was called`);
+
+    const user = await this.userService.verifyUser(ctx, id, input.isVerified);
     return { data: user, meta: {} };
   }
 }

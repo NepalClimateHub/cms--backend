@@ -12,6 +12,7 @@ import {
 } from "../dto/blog.dto";
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { ContentStatus, UserType } from "@prisma/client";
 
 @Injectable()
 export class BlogService {
@@ -41,20 +42,22 @@ export class BlogService {
 
   async createBlog(
     createBlogDto: CreateBlogDto,
-    ctx: RequestContext
+    ctx: RequestContext,
   ): Promise<BlogResponseDto> {
     const { tagIds, ...blogData } = createBlogDto;
 
-    // If user is super admin, auto-approve the blog
-    const approvedByAdmin = ctx.user?.isSuperAdmin === true;
+    // Super admin and content admin publish directly unless saving as draft
+    const canAutoPublish =
+      ctx.user?.userType === UserType.SUPER_ADMIN ||
+      ctx.user?.userType === UserType.CONTENT_ADMIN;
+    const approvedByAdmin = canAutoPublish;
 
-    // Determine status based on draft status and user role
-    let status: "DRAFT" | "UNDER_REVIEW" | "PUBLISHED" = "DRAFT";
+    let status: ContentStatus = ContentStatus.DRAFT;
     if (!blogData.isDraft) {
-      if (approvedByAdmin) {
-        status = "PUBLISHED";
+      if (canAutoPublish) {
+        status = ContentStatus.PUBLISHED;
       } else {
-        status = "UNDER_REVIEW";
+        status = ContentStatus.UNDER_REVIEW;
       }
     }
 
@@ -73,7 +76,7 @@ export class BlogService {
               connect: tagIds.map((id) => ({ id })),
             }
           : undefined,
-      } as any,
+      },
       include: {
         tags: true,
         authorUser: true,
@@ -88,7 +91,7 @@ export class BlogService {
 
   async findAllBlogs(
     searchInput: BlogSearchInput,
-    ctx?: RequestContext
+    ctx?: RequestContext,
   ): Promise<{ blogs: BlogResponseDto[]; total: number }> {
     const { offset = 1, limit = 10, ...searchParams } = searchInput;
 
@@ -97,7 +100,7 @@ export class BlogService {
     };
 
     // If user is authenticated and not a super admin, show only their blogs
-    if (ctx?.user && !ctx.user.isSuperAdmin) {
+    if (ctx?.user && ctx.user.userType !== UserType.SUPER_ADMIN) {
       where.authorId = ctx.user.id;
     }
 
@@ -193,7 +196,7 @@ export class BlogService {
 
   async updateBlog(
     id: string,
-    updateBlogDto: UpdateBlogDto
+    updateBlogDto: UpdateBlogDto,
   ): Promise<BlogResponseDto> {
     const { tagIds, ...blogData } = updateBlogDto;
 
@@ -258,7 +261,7 @@ export class BlogService {
 
   async blogAction(
     id: string,
-    action: "approve" | "reject"
+    action: "approve" | "reject",
   ): Promise<BlogResponseDto> {
     const existingBlog = await this.prisma.blog.findFirst({
       where: {
@@ -273,7 +276,7 @@ export class BlogService {
 
     if (action !== "approve" && action !== "reject") {
       throw new BadRequestException(
-        `Invalid action. Action must be either "approve" or "reject"`
+        `Invalid action. Action must be either "approve" or "reject"`,
       );
     }
 
@@ -281,8 +284,11 @@ export class BlogService {
       where: { id },
       data: {
         approvedByAdmin: action === "approve",
-        status: action === "approve" ? "PUBLISHED" : "REJECTED",
-      } as any,
+        status:
+          action === "approve"
+            ? ContentStatus.PUBLISHED
+            : ContentStatus.REJECTED,
+      },
       include: {
         tags: true,
         authorUser: true,

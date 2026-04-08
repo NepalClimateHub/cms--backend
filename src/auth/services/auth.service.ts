@@ -8,6 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
 import * as bcrypt from "bcrypt";
+import { UserType } from "@prisma/client";
 
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -191,12 +192,9 @@ export class AuthService {
       throw new UnauthorizedException("Invalid current password");
     }
 
-    // Hash the new password
-    const hashedNewPassword = await bcrypt.hash(input.newPassword, 10);
-
-    // Update the password
+    // updateUser hashes the password
     await this.userService.updateUser(ctx, user.id, {
-      password: hashedNewPassword,
+      password: input.newPassword,
     });
 
     return {
@@ -225,7 +223,9 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
-      role: user.isSuperAdmin ? ROLE.ADMIN : ROLE.USER,
+      role: user.userType === UserType.SUPER_ADMIN ? ROLE.SUPER_ADMIN : 
+            user.userType === UserType.ADMIN ? ROLE.ADMIN :
+            user.userType === UserType.CONTENT_ADMIN ? ROLE.CONTENT_ADMIN : ROLE.USER,
       fullName: user.fullName,
     };
 

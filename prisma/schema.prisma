@@ -14,7 +14,6 @@ model User {
   email                           String    @unique @db.VarChar(254)
   password                        String
   isAccountVerified               Boolean   @default(false)
-  isSuperAdmin                    Boolean   @default(false)
   profession                      String?
   expertise                       String?
   bio                             String?
@@ -38,10 +37,13 @@ model User {
   profilePhotoUrl                 String?
   currentRole                     String?
   linkedin                        String?
+  isVerifiedByAdmin               Boolean   @default(false)
+  organizationId                String?   @unique
   blogs                           Blog[]
   address                         Address?  @relation(fields: [addressId], references: [id])
   gallery                         Gallery[] @relation("GalleryToUser")
   tags                            Tags[]    @relation("TagsToUser")
+  organization                    Organizations? @relation("UserOrganizationLink", fields: [organizationId], references: [id], onDelete: SetNull)
 
   @@index([email])
 }
@@ -50,9 +52,6 @@ model Organizations {
   id                  String    @id @default(cuid())
   name                String
   description         String
-  email               String
-  phoneCountryCode    String?
-  phoneNumber         String?
   addressId           String?
   socialsId           String?
   bannerImageId       String?
@@ -63,10 +62,16 @@ model Organizations {
   updatedAt           DateTime  @updatedAt
   deletedAt           DateTime?
   isDraft             Boolean   @default(true)
+  isVerifiedByAdmin   Boolean   @default(false)
   socials             Json?
+  verificationDocumentUrl    String?
+  verificationDocumentId     String?
+  verificationRequestRemarks String?
+  verificationRequestedAt    DateTime? @db.Timestamptz(6)
   address             Address?  @relation(fields: [addressId], references: [id])
   organizationGallery Gallery[] @relation("GalleryToOrganizations")
   tags                Tags[]    @relation("OrganizationsToTags")
+  linkedAccountUser   User?   @relation("UserOrganizationLink")
 }
 
 model Events {
@@ -80,7 +85,6 @@ model Events {
   registrationDeadline DateTime?
   registrationLink     String?
   contactEmail         String?
-  status               String?
   cost                 String?
   addressId            String?
   socialsId            String?
@@ -93,6 +97,8 @@ model Events {
   locationType         String
   organizer            String    @map("organizer")
   isDraft              Boolean   @default(true)
+  status               ContentStatus @default(DRAFT)
+  reviewFeedback       String?
   website              String?
   socials              Json?
   address              Address?  @relation(fields: [addressId], references: [id])
@@ -110,7 +116,6 @@ model Opportunity {
   applicationDeadline DateTime?
   duration            String?
   contactEmail        String?
-  status              String?
   cost                String?
   addressId           String?
   bannerImageId       String?
@@ -122,6 +127,8 @@ model Opportunity {
   locationType        String
   organizer           String    @map("organizer")
   isDraft             Boolean   @default(true)
+  status              ContentStatus @default(DRAFT)
+  reviewFeedback      String?
   websiteUrl          String?
   socials             Json?
   address             Address?  @relation(fields: [addressId], references: [id])
@@ -141,6 +148,8 @@ model News {
   deletedAt     DateTime?
   mode          String
   isDraft       Boolean   @default(true)
+  status        ContentStatus @default(DRAFT)
+  reviewFeedback String?
   tags          Tags[]    @relation("NewsToTags")
 }
 
@@ -162,7 +171,7 @@ model Blog {
   deletedAt       DateTime?
   approvedByAdmin Boolean    @default(false)
   authorId        String?
-  status          BlogStatus @default(DRAFT)
+  status          ContentStatus @default(DRAFT)
   isTopRead       Boolean    @default(false)
   categoryId      String?
   authorUser      User?      @relation(fields: [authorId], references: [id])
@@ -225,6 +234,8 @@ model Resource {
   bannerImageUrl  String?
   bannerImageId   String?
   isDraft         Boolean        @default(true)
+  status          ContentStatus @default(DRAFT)
+  reviewFeedback  String?
   createdAt       DateTime       @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
@@ -424,16 +435,19 @@ enum ResourceLevel {
 }
 
 enum UserType {
+  SUPER_ADMIN
   ADMIN
+  CONTENT_ADMIN
   ORGANIZATION
   INDIVIDUAL
 }
 
-enum BlogStatus {
+enum ContentStatus {
   DRAFT
   UNDER_REVIEW
   PUBLISHED
   REJECTED
+  IMPROVEMENT_REQUIRED
 }
 
 enum ProjectStatus {

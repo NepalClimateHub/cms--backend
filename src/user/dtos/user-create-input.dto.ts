@@ -51,5 +51,27 @@ export class CreateUserInput {
   isAccountDisabled: boolean;
 
   @ApiProperty({ enum: USER_TYPE, default: USER_TYPE.INDIVIDUAL })
+  @IsEnum(USER_TYPE)
+  @IsOptional()
   userType: USER_TYPE = USER_TYPE.INDIVIDUAL;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  orgName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  orgType?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  province?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  district?: string;
 }

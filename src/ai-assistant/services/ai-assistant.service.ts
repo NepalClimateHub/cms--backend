@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { UserType } from "@prisma/client";
 
 const DAILY_PROMPT_LIMIT = 3;
 
@@ -350,7 +351,7 @@ export class AiAssistantService {
     this.logger.log(ctx, `Chat request from user ${userId}: "${query.substring(0, 50)}..."`);
 
     // Rate-limit check: 3 prompts per day (admins exempt)
-    const isAdmin = ctx.user?.isSuperAdmin === true;
+    const isAdmin = ctx.user?.userType === UserType.SUPER_ADMIN;
     if (!isAdmin) {
       const usage = await this.getDailyUsage(ctx);
       if (usage.remaining <= 0) {

@@ -20,6 +20,10 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { Roles } from "../../auth/decorators/role.decorator";
+import { ROLE } from "../../auth/constants/role.constant";
+import { ContentModerationDto } from "../../shared/dtos/moderation.dto";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -165,6 +169,29 @@ export class NewsController {
     this.logger.log(ctx, `${this.updateNews.name} was called`);
 
     const news = await this.newsService.updateNews(ctx, id, payload);
+    return { data: news, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.CONTENT_ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch("/:id/moderate")
+  @ApiOperation({
+    summary: "Moderate news item API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(NewsResponseDto),
+  })
+  async moderateNews(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() payload: ContentModerationDto
+  ): Promise<BaseApiResponse<NewsResponseDto>> {
+    this.logger.log(ctx, `${this.moderateNews.name} was called`);
+
+    const news = await this.newsService.moderateNews(ctx, id, payload);
     return { data: news, meta: {} };
   }
 }

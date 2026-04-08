@@ -1,12 +1,13 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsBoolean,
-  IsNotEmpty,
+  IsEnum,
   IsOptional,
   IsString,
   Length,
   MaxLength,
 } from "class-validator";
+import { USER_TYPE } from "../../auth/constants/role.constant";
 
 export class UpdateUserInput {
   @ApiPropertyOptional()
@@ -60,4 +61,19 @@ export class UpdateUserInput {
   @IsOptional()
   @IsString()
   currentRole?: string;
+
+  @ApiPropertyOptional({
+    description: "Phone number (omit or null to clear)",
+    maxLength: 40,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  phoneNumber?: string | null;
+
+  @ApiPropertyOptional({ enum: USER_TYPE })
+  @IsOptional()
+  @IsEnum(USER_TYPE)
+  userType?: USER_TYPE;
+
 }

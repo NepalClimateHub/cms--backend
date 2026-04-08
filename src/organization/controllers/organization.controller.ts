@@ -20,6 +20,10 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { Roles } from "../../auth/decorators/role.decorator";
+import { ROLE } from "../../auth/constants/role.constant";
+import { VerifyUserInput } from "../../user/dtos/promote-user.dto";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -179,6 +183,33 @@ export class OrganizationController {
       ctx,
       id,
       payload
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch("/:id/verify")
+  @ApiOperation({
+    summary: "Verify organization API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  async verifyOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+    @Body() payload: VerifyUserInput
+  ): Promise<BaseApiResponse<OrganizationResponseDto>> {
+    this.logger.log(ctx, `${this.verifyOrganization.name} was called`);
+
+    const organization = await this.organizationService.verifyOrganization(
+      ctx,
+      id,
+      payload.isVerified
     );
     return { data: organization, meta: {} };
   }

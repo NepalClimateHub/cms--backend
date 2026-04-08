@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { plainToClass, plainToInstance } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -14,6 +14,14 @@ import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
 
+const linkedUserSelect = {
+  select: {
+    email: true,
+    phoneCountryCode: true,
+    phoneNumber: true,
+  },
+} as const;
+
 @Injectable()
 export class OrganizationService {
   constructor(
@@ -21,6 +29,28 @@ export class OrganizationService {
     private readonly prismaService: PrismaService
   ) {
     this.logger.setContext(OrganizationService.name);
+  }
+
+  private toOrganizationResponseDto(org: Record<string, unknown>): OrganizationResponseDto {
+    const u = org.linkedAccountUser as
+      | {
+          email: string | null;
+          phoneCountryCode: string | null;
+          phoneNumber: string | null;
+        }
+      | null
+      | undefined;
+    const { linkedAccountUser: _lu, ...rest } = org;
+    return plainToInstance(
+      OrganizationResponseDto,
+      {
+        ...rest,
+        email: u?.email ?? null,
+        phoneCountryCode: u?.phoneCountryCode ?? null,
+        phoneNumber: u?.phoneNumber ?? null,
+      },
+      { excludeExtraneousValues: true }
+    );
   }
 
   async getOrganizations(
@@ -78,6 +108,7 @@ export class OrganizationService {
       include: {
         address: true,
         tags: true,
+        linkedAccountUser: linkedUserSelect,
       },
       take: limit,
       skip: offset,
@@ -93,9 +124,9 @@ export class OrganizationService {
     });
 
     return {
-      organizations: plainToInstance(OrganizationResponseDto, organizations, {
-        excludeExtraneousValues: true,
-      }),
+      organizations: organizations.map((o) =>
+        this.toOrganizationResponseDto(o as unknown as Record<string, unknown>)
+      ),
       count: organizationCount,
     };
   }
@@ -114,6 +145,7 @@ export class OrganizationService {
         address: true,
         tags: true,
         organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
       },
     });
 
@@ -121,9 +153,9 @@ export class OrganizationService {
       throw new NotFoundException("Organization not found");
     }
 
-    return plainToInstance(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
-    });
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record<string, unknown>
+    );
   }
 
   async addOrganization(
@@ -140,7 +172,7 @@ export class OrganizationService {
       ...restPayload
     } = payload;
 
-    const organization = await this.prismaService.organizations.create({
+    const created = await this.prismaService.organizations.create({
       data: {
         ...restPayload,
         bannerImageUrl: bannerImageUrl ?? "",
@@ -175,9 +207,23 @@ export class OrganizationService {
       },
     });
 
-    return plainToClass(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
+    const organization = await this.prismaService.organizations.findUnique({
+      where: { id: created.id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
+
+    if (!organization) {
+      throw new NotFoundException("Organization not found after create");
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record<string, unknown>
+    );
   }
 
   async deleteOrganization(
@@ -190,11 +236,21 @@ export class OrganizationService {
       where: {
         id,
       },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
 
     if (!organization) {
       throw new NotFoundException("Organization not found");
     }
+
+    const dto = this.toOrganizationResponseDto(
+      organization as unknown as Record<string, unknown>
+    );
 
     await this.prismaService.organizations.delete({
       where: {
@@ -202,9 +258,7 @@ export class OrganizationService {
       },
     });
 
-    return plainToInstance(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
-    });
+    return dto;
   }
 
   async updateOrganization(
@@ -224,7 +278,7 @@ export class OrganizationService {
 
     const { address, tagIds, gallery, socials, ...restPayload } = payload;
 
-    const organization = await this.prismaService.organizations.update({
+    await this.prismaService.organizations.update({
       where: {
         id: org.id,
       },
@@ -255,11 +309,9 @@ export class OrganizationService {
         }),
         ...(tagIds && {
           tags: {
-            //set empty then create new records
-            // do not use deletemany here since it maybe used elsewhere
             set: [],
-            connect: tagIds?.map((id) => ({
-              id,
+            connect: tagIds?.map((tid) => ({
+              id: tid,
               isOrganizationTag: true,
             })),
           },
@@ -273,8 +325,60 @@ export class OrganizationService {
       },
     });
 
-    return plainToClass(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
+    const organization = await this.prismaService.organizations.findUnique({
+      where: { id: org.id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
+
+    if (!organization) {
+      throw new NotFoundException("Organization not found");
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record<string, unknown>
+    );
+  }
+
+  async verifyOrganization(
+    ctx: RequestContext,
+    id: string,
+    isVerified: boolean
+  ): Promise<OrganizationResponseDto> {
+    this.logger.log(ctx, `${this.verifyOrganization.name} was called`);
+
+    const org = await this.prismaService.organizations.findUnique({
+      where: { id },
+    });
+    if (!org) {
+      throw new NotFoundException("Organization not found!");
+    }
+
+    await this.prismaService.organizations.update({
+      where: { id },
+      data: { isVerifiedByAdmin: isVerified },
+    });
+
+    const organization = await this.prismaService.organizations.findUnique({
+      where: { id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
+    });
+
+    if (!organization) {
+      throw new NotFoundException("Organization not found");
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record<string, unknown>
+    );
   }
 }

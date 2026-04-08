@@ -1,5 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
+import { UserType } from "@prisma/client";
 
 export class AuthTokenOutput {
   @Expose()
@@ -21,8 +22,6 @@ export class UserAccessTokenClaims {
   @Expose()
   fullName: string;
 
-  @Expose()
-  isSuperAdmin: boolean;
 
   @Expose()
   isAccountVerified: boolean;
@@ -35,6 +34,10 @@ export class UserAccessTokenClaims {
 
   @Expose()
   phoneNumber: string | null;
+
+  @ApiPropertyOptional({ enum: UserType })
+  @Expose()
+  userType?: UserType;
 }
 
 export class UserRefreshTokenClaims {

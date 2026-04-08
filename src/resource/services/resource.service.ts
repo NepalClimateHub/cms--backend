@@ -2,6 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma-module/prisma.service';
 import { CreateResourceDto, UpdateResourceDto, ResourceSearchInput, ResourceResponseDto, ResourceType, ResourceLevel } from '../dto/resource.dto';
 import { plainToInstance } from 'class-transformer';
+import { BadRequestException } from '@nestjs/common';
+import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { ContentStatus } from '@prisma/client';
+import { ContentModerationDto, ModerationAction } from '../../shared/dtos/moderation.dto';
 
 @Injectable()
 export class ResourceService {
@@ -95,5 +99,40 @@ export class ResourceService {
           where: { id },
           data: { deletedAt: new Date() }
       });
+  }
+
+  async moderateResource(
+    ctx: RequestContext,
+    id: string,
+    payload: ContentModerationDto
+  ): Promise<ResourceResponseDto> {
+    if (
+      payload.action === ModerationAction.REQUEST_IMPROVEMENTS &&
+      !payload.feedback
+    ) {
+      throw new BadRequestException(
+        "Feedback is mandatory when requesting improvements"
+      );
+    }
+
+    const statusMap = {
+      [ModerationAction.APPROVE]: ContentStatus.PUBLISHED,
+      [ModerationAction.REQUEST_IMPROVEMENTS]:
+        ContentStatus.IMPROVEMENT_REQUIRED,
+      [ModerationAction.REJECT]: ContentStatus.REJECTED,
+    };
+
+    const resource = await (this.prisma as any).resource.update({
+      where: { id },
+      data: {
+        status: statusMap[payload.action],
+        reviewFeedback: payload.feedback || null,
+        isDraft: payload.action !== ModerationAction.APPROVE,
+      },
+    });
+
+    return plainToInstance(ResourceResponseDto, resource, {
+      excludeExtraneousValues: true,
+    });
   }
 }

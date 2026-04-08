@@ -11,8 +11,13 @@ import {
   UpdateNewsDto,
 } from "../dto/news.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
-import { Prisma } from "@prisma/client";
+import { ContentStatus, Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
+import {
+  ContentModerationDto,
+  ModerationAction,
+} from "../../shared/dtos/moderation.dto";
+import { BadRequestException } from "@nestjs/common";
 
 @Injectable()
 export class NewsService {
@@ -212,6 +217,43 @@ export class NewsService {
     });
 
     return plainToClass(NewsResponseDto, updatedNews, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async moderateNews(
+    ctx: RequestContext,
+    id: string,
+    payload: ContentModerationDto
+  ): Promise<NewsResponseDto> {
+    this.logger.log(ctx, `${this.moderateNews.name} was called`);
+
+    if (
+      payload.action === ModerationAction.REQUEST_IMPROVEMENTS &&
+      !payload.feedback
+    ) {
+      throw new BadRequestException(
+        "Feedback is mandatory when requesting improvements"
+      );
+    }
+
+    const statusMap = {
+      [ModerationAction.APPROVE]: ContentStatus.PUBLISHED,
+      [ModerationAction.REQUEST_IMPROVEMENTS]:
+        ContentStatus.IMPROVEMENT_REQUIRED,
+      [ModerationAction.REJECT]: ContentStatus.REJECTED,
+    };
+
+    const news = await this.prismaService.news.update({
+      where: { id },
+      data: {
+        status: statusMap[payload.action],
+        reviewFeedback: payload.feedback || null,
+        isDraft: payload.action !== ModerationAction.APPROVE,
+      },
+    });
+
+    return plainToClass(NewsResponseDto, news, {
       excludeExtraneousValues: true,
     });
   }

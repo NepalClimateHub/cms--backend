@@ -11,8 +11,13 @@ import {
   UpdateOpportunityDto,
 } from "../dto/opportunities.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
-import { Prisma } from "@prisma/client";
+import { ContentStatus, Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
+import {
+  ContentModerationDto,
+  ModerationAction,
+} from "../../shared/dtos/moderation.dto";
+import { BadRequestException } from "@nestjs/common";
 
 @Injectable()
 export class OpportunityService {
@@ -71,7 +76,7 @@ export class OpportunityService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: String(filter),
+                status: filter as ContentStatus,
               },
             };
           },
@@ -256,6 +261,43 @@ export class OpportunityService {
     });
 
     return plainToClass(OpportunityResponseDto, updatedItem, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async moderateOpportunity(
+    ctx: RequestContext,
+    id: string,
+    payload: ContentModerationDto
+  ): Promise<OpportunityResponseDto> {
+    this.logger.log(ctx, `${this.moderateOpportunity.name} was called`);
+
+    if (
+      payload.action === ModerationAction.REQUEST_IMPROVEMENTS &&
+      !payload.feedback
+    ) {
+      throw new BadRequestException(
+        "Feedback is mandatory when requesting improvements"
+      );
+    }
+
+    const statusMap = {
+      [ModerationAction.APPROVE]: ContentStatus.PUBLISHED,
+      [ModerationAction.REQUEST_IMPROVEMENTS]:
+        ContentStatus.IMPROVEMENT_REQUIRED,
+      [ModerationAction.REJECT]: ContentStatus.REJECTED,
+    };
+
+    const item = await this.prismaService.opportunity.update({
+      where: { id },
+      data: {
+        status: statusMap[payload.action],
+        reviewFeedback: payload.feedback || null,
+        isDraft: payload.action !== ModerationAction.APPROVE,
+      },
+    });
+
+    return plainToClass(OpportunityResponseDto, item, {
       excludeExtraneousValues: true,
     });
   }

@@ -1,11 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsArray,
-  IsEmail,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
 import { Expose, Type } from "class-transformer";
@@ -38,31 +32,6 @@ export class CreateOrganizationDto {
   })
   @IsString()
   description: string;
-
-  @ApiProperty({
-    description: "Organization email",
-    example: "contact@techinnovations.com",
-  })
-  @IsEmail()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: "Phone country code",
-    required: false,
-    example: "+1",
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: "Phone number",
-    required: false,
-    example: "5551234567",
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
 
   @ApiPropertyOptional({
     description: "Address",
@@ -138,32 +107,6 @@ export class UpdateOrganizationDto {
   @IsString()
   @IsOptional()
   description: string;
-
-  @ApiProperty({
-    description: "Organization email",
-    example: "contact@techinnovations.com",
-  })
-  @IsEmail()
-  @IsOptional()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: "Phone country code",
-    required: false,
-    example: "+1",
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: "Phone number",
-    required: false,
-    example: "5551234567",
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
 
   @ApiPropertyOptional({
     description: "Address",
@@ -242,29 +185,30 @@ export class OrganizationResponseDto {
   @Expose()
   description: string;
 
-  @ApiProperty({
-    description: "Organization email",
+  @ApiPropertyOptional({
+    description:
+      "Contact email from the linked user account (User.organizationId), if any",
     example: "contact@techinnovations.com",
   })
   @Expose()
-  email: string;
+  email?: string | null;
 
   @ApiPropertyOptional({
-    description: "Phone country code",
+    description: "Phone country code from the linked user account",
     required: false,
     example: "+1",
   })
   @Expose()
-  phoneCountryCode?: string;
+  phoneCountryCode?: string | null;
 
   @ApiPropertyOptional({
-    description: "Phone number",
+    description: "Phone number from the linked user account",
     required: false,
     example: "5551234567",
   })
   @IsOptional()
   @IsString()
-  phoneNumber?: string;
+  phoneNumber?: string | null;
 
   @ApiPropertyOptional({
     description: "Address",

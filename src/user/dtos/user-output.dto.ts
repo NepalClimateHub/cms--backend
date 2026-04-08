@@ -1,6 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Expose } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Expose, Type } from "class-transformer";
 import { USER_TYPE } from "../../auth/constants/role.constant";
+import { OrganizationProfileOutputDto } from "./organization-profile-output.dto";
 
 export class UserOutput {
   @Expose()
@@ -15,9 +16,6 @@ export class UserOutput {
   @ApiProperty()
   fullName: string;
 
-  @Expose()
-  @ApiProperty()
-  isSuperAdmin: boolean;
 
   @Expose()
   @ApiProperty()
@@ -66,4 +64,9 @@ export class UserOutput {
   @ApiProperty()
   @Expose()
   updatedAt: string;
+
+  @ApiPropertyOptional({ type: OrganizationProfileOutputDto, nullable: true })
+  @Expose()
+  @Type(() => OrganizationProfileOutputDto)
+  organization?: OrganizationProfileOutputDto | null;
 }

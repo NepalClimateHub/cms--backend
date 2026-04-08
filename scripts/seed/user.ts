@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, UserType } from "@prisma/client";
 import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -13,9 +13,7 @@ export const seedSuperAdmin = async () => {
       email: "nchadmin@mailinator.com",
       password: hasedPW,
       isAccountVerified: true,
-      isSuperAdmin: true,
-      gender: "Male",
-      userType: "ADMIN",
+      userType: UserType.SUPER_ADMIN,
     },
   ];
 
