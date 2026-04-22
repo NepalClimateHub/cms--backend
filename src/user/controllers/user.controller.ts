@@ -34,7 +34,7 @@ import { RequestContext } from "../../shared/request-context/request-context.dto
 import { UserOutput } from "../dtos/user-output.dto";
 import { UpdateMyOrganizationInput } from "../dtos/update-my-organization.dto";
 import { UpdateUserInput } from "../dtos/user-update-input.dto";
-import { PromoteUserInput, VerifyUserInput } from "../dtos/promote-user.dto";
+import { PromoteUserInput } from "../dtos/promote-user.dto";
 import { UserService } from "../services/user.service";
 
 @ApiTags("users")
@@ -135,7 +135,13 @@ export class UserController {
     type: BaseApiErrorResponse,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.USER)
+  @Roles(
+    ROLE.SUPER_ADMIN,
+    ROLE.ADMIN,
+    ROLE.CONTENT_ADMIN,
+    ROLE.ORGANIZATION,
+    ROLE.INDIVIDUAL,
+  )
   @ApiBearerAuth()
   async getUsers(
     @ReqContext() ctx: RequestContext,
@@ -226,29 +232,7 @@ export class UserController {
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.promoteUser.name} was called`);
 
-    const user = await this.userService.promoteUser(ctx, id, input.userType);
-    return { data: user, meta: {} };
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
-  @ApiBearerAuth()
-  @Patch(":id/verify")
-  @ApiOperation({
-    summary: "Verify individual user",
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: SwaggerBaseApiResponse(UserOutput),
-  })
-  async verifyUser(
-    @ReqContext() ctx: RequestContext,
-    @Param("id") id: string,
-    @Body() input: VerifyUserInput,
-  ): Promise<BaseApiResponse<UserOutput>> {
-    this.logger.log(ctx, `${this.verifyUser.name} was called`);
-
-    const user = await this.userService.verifyUser(ctx, id, input.isVerified);
+    const user = await this.userService.promoteUser(ctx, id, input.role);
     return { data: user, meta: {} };
   }
 }

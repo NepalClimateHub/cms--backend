@@ -10,7 +10,6 @@ import {
 } from 'class-validator';
 
 import { ROLE } from '../constants/role.constant';
-import { USER_TYPE } from '../constants/role.constant';
 
 export class RegisterInput {
   @ApiProperty()
@@ -36,10 +35,10 @@ export class RegisterInput {
   @MaxLength(100)
   email: string;
 
-  @ApiProperty({ enum: USER_TYPE, default: USER_TYPE.INDIVIDUAL })
-  @IsEnum(USER_TYPE)
+  @ApiProperty({ enum: ROLE, default: ROLE.INDIVIDUAL })
+  @IsEnum(ROLE)
   @IsOptional()
-  userType: USER_TYPE = USER_TYPE.INDIVIDUAL;
+  role: ROLE = ROLE.INDIVIDUAL;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -62,6 +61,6 @@ export class RegisterInput {
   district?: string;
 
   // These keys can only be set by ADMIN user.
-  roles: ROLE[] = [ROLE.USER];
+  roles: ROLE[] = [ROLE.INDIVIDUAL];
   isAccountDisabled: boolean;
 }

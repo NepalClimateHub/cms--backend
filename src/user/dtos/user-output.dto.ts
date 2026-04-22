@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Expose, Type } from "class-transformer";
-import { USER_TYPE } from "../../auth/constants/role.constant";
+import { ROLE } from "../../auth/constants/role.constant";
 import { OrganizationProfileOutputDto } from "./organization-profile-output.dto";
 
 export class UserOutput {
@@ -18,44 +18,71 @@ export class UserOutput {
 
 
   @Expose()
-  @ApiProperty()
-  isAccountVerified: boolean;
+  @ApiProperty({ description: "True when the user has confirmed their email address" })
+  isEmailVerified: boolean;
 
   @Expose()
-  @ApiProperty({ enum: USER_TYPE })
-  userType: USER_TYPE;
+  @ApiProperty({
+    description:
+      "Set when a platform admin has verified this account (e.g. organization profile)",
+  })
+  isVerifiedByAdmin: boolean;
 
+  @Expose()
   @ApiProperty()
+  isSuperAdmin: boolean;
+
+  @Expose()
+  @ApiProperty({ enum: ROLE })
+  role: ROLE;
+
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   gender: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   phoneCountryCode: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   phoneNumber: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   profilePhotoUrl: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   profilePhotoId: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   bio: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   linkedin: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   currentRole: string | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @Expose()
+  bannerImageId: string | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @Expose()
+  bannerImageUrl: string | null;
+
+  @ApiPropertyOptional({
+    type: "object",
+    nullable: true,
+    additionalProperties: true,
+  })
+  @Expose()
+  socials: any | null;
 
   @ApiProperty()
   @Expose()

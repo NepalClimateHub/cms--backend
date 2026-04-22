@@ -19,6 +19,7 @@ import { ResourceModule } from "./resource/resource.module";
 import { CategoryModule } from "./category/category.module";
 import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
 import { DatabaseModule } from "./database/database.module";
+import { NotificationModule } from "./notification/notification.module";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DatabaseModule } from "./database/database.module";
     CategoryModule,
     AiAssistantModule,
     DatabaseModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

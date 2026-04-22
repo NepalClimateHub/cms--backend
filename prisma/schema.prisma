@@ -13,7 +13,7 @@ model User {
   fullName                        String
   email                           String    @unique @db.VarChar(254)
   password                        String
-  isAccountVerified               Boolean   @default(false)
+  isEmailVerified                 Boolean   @default(false)
   profession                      String?
   expertise                       String?
   bio                             String?
@@ -23,7 +23,6 @@ model User {
   phoneCountryCode                String?
   phoneNumber                     String?
   addressId                       String?
-  socialsId                       String?
   resetPasswordToken              String?
   resetPasswordExpires            DateTime?
   accountVerificationToken        String?
@@ -37,6 +36,9 @@ model User {
   profilePhotoUrl                 String?
   currentRole                     String?
   linkedin                        String?
+  bannerImageId                   String?
+  bannerImageUrl                  String?
+  /// Platform admin has verified this account (organization-linked users)
   isVerifiedByAdmin               Boolean   @default(false)
   organizationId                String?   @unique
   blogs                           Blog[]
@@ -44,26 +46,43 @@ model User {
   gallery                         Gallery[] @relation("GalleryToUser")
   tags                            Tags[]    @relation("TagsToUser")
   organization                    Organizations? @relation("UserOrganizationLink", fields: [organizationId], references: [id], onDelete: SetNull)
+  notifications                   Notification[]
 
   @@index([email])
+}
+
+enum NotificationType {
+  BLOG_APPROVED
+  BLOG_REJECTED
+  ORGANIZATION_VERIFIED
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType
+  title      String
+  body       String?
+  read       Boolean          @default(false)
+  entityType String?
+  entityId   String?
+  createdAt  DateTime         @default(now()) @db.Timestamptz(6)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 model Organizations {
   id                  String    @id @default(cuid())
   name                String
   description         String
+  /// e.g. NGO, network, private sector — public-facing category label
+  organizationType    String?
   addressId           String?
-  socialsId           String?
-  bannerImageId       String?
-  bannerImageUrl      String?
-  logoImageUrl        String
-  logoImageId         String?
   createdAt           DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt           DateTime  @updatedAt
   deletedAt           DateTime?
-  isDraft             Boolean   @default(true)
-  isVerifiedByAdmin   Boolean   @default(false)
-  socials             Json?
   verificationDocumentUrl    String?
   verificationDocumentId     String?
   verificationRequestRemarks String?

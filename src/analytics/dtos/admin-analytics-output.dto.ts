@@ -33,4 +33,11 @@ export class AdminAnalyticsOutput {
   @Expose()
   @ApiProperty()
   individualCount: number;
+
+  @Expose()
+  @ApiProperty({
+    description:
+      "Organizations with a verification request submitted, awaiting admin review",
+  })
+  pendingOrganizationVerificationCount: number;
 }

@@ -10,6 +10,7 @@ export enum EmailType {
   EMAIL_VERIFIED = "EMAIL_VERIFIED",
   PASSWORD_RESET = "PASSWORD_RESET",
   PASSWORD_RESET_SUCCESS = "PASSWORD_RESET_SUCCESS",
+  ORGANIZATION_VERIFIED = "ORGANIZATION_VERIFIED",
 }
 
 export interface EmailMetadata {
@@ -102,6 +103,8 @@ class EmailService {
       [EmailType.PASSWORD_RESET]: "Reset Your Password - Nepal Climate Hub",
       [EmailType.PASSWORD_RESET_SUCCESS]:
         "Password Reset Successful - Nepal Climate Hub",
+      [EmailType.ORGANIZATION_VERIFIED]:
+        "Your organization is verified - Nepal Climate Hub",
     };
 
     return metadata.subject || subjects[emailType] || "Nepal Climate Hub";
@@ -114,6 +117,7 @@ class EmailService {
       [EmailType.EMAIL_VERIFIED]: "email-verified",
       [EmailType.PASSWORD_RESET]: "password-reset",
       [EmailType.PASSWORD_RESET_SUCCESS]: "password-reset-success",
+      [EmailType.ORGANIZATION_VERIFIED]: "organization-verified",
     };
 
     return templates[emailType];
@@ -163,6 +167,13 @@ class EmailService {
         return {
           ...baseData,
           loginLink: `${baseData.frontendBaseUrl}/login`,
+        };
+
+      case EmailType.ORGANIZATION_VERIFIED:
+        return {
+          ...baseData,
+          dashboardLink: `${baseData.frontendBaseUrl}/dashboard`,
+          profileLink: `${baseData.frontendBaseUrl}/dashboard/profile`,
         };
 
       default:

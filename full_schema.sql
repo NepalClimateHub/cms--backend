@@ -22,7 +22,7 @@ CREATE TABLE "User" (
     "fullName" TEXT NOT NULL,
     "email" VARCHAR(254) NOT NULL,
     "password" TEXT NOT NULL,
-    "isAccountVerified" BOOLEAN NOT NULL DEFAULT false,
+    "isEmailVerified" BOOLEAN NOT NULL DEFAULT false,
     "isSuperAdmin" BOOLEAN NOT NULL DEFAULT false,
     "profession" TEXT,
     "expertise" TEXT,

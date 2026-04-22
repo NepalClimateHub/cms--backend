@@ -9,7 +9,6 @@ import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
 import * as bcrypt from "bcrypt";
 import { UserType } from "@prisma/client";
-
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { UserOutput } from "../../user/dtos/user-output.dto";
@@ -30,7 +29,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(AuthService.name);
   }
@@ -38,7 +37,7 @@ export class AuthService {
   async validateUser(
     ctx: RequestContext,
     email: string,
-    pass: string
+    pass: string,
   ): Promise<UserAccessTokenClaims> {
     this.logger.log(ctx, `${this.validateUser.name} was called`);
 
@@ -46,11 +45,11 @@ export class AuthService {
     const user = await this.userService.validateUsernamePassword(
       ctx,
       email,
-      pass
+      pass,
     );
 
     // Prevent disabled users from logging in.
-    if (!user.isAccountVerified) {
+    if (!user.isEmailVerified) {
       // send email to user to verify account
       await sendEmail(EmailType.EMAIL_VERIFICATION, {
         to: user.email,
@@ -61,8 +60,11 @@ export class AuthService {
       throw new UnauthorizedException("This account is not verified!");
     }
 
-    // Ensure userType is present in returned claims
-    return user;
+    const out = user as UserOutput;
+    return {
+      ...out,
+      userType: out.role,
+    } as UserAccessTokenClaims;
   }
 
   login(ctx: RequestContext): AuthTokenOutput {
@@ -72,12 +74,12 @@ export class AuthService {
 
   async register(
     ctx: RequestContext,
-    input: RegisterInput
+    input: RegisterInput,
   ): Promise<RegisterOutput> {
     this.logger.log(ctx, `${this.register.name} was called`);
 
     // Set default role and account status
-    input.roles = [ROLE.USER];
+    input.roles = [ROLE.INDIVIDUAL];
     input.isAccountDisabled = false;
 
     // Pass userType from input
@@ -89,7 +91,7 @@ export class AuthService {
 
   async resendVerification(
     ctx: RequestContext,
-    email: string
+    email: string,
   ): Promise<{ message: string }> {
     this.logger.log(ctx, `${this.resendVerification.name} was called`);
 
@@ -101,7 +103,7 @@ export class AuthService {
     }
 
     // Check if user is already verified
-    if (user.isAccountVerified) {
+    if (user.isEmailVerified) {
       throw new BadRequestException("Account is already verified");
     }
 
@@ -123,7 +125,7 @@ export class AuthService {
 
   async verifyEmail(
     ctx: RequestContext,
-    token: string
+    token: string,
   ): Promise<{ email: string }> {
     this.logger.log(ctx, `${this.verifyEmail.name} was called`);
 
@@ -145,13 +147,13 @@ export class AuthService {
         throw new NotFoundException("User not found with this email address");
       }
 
-      if (user.isAccountVerified) {
+      if (user.isEmailVerified) {
         throw new BadRequestException("Account is already verified");
       }
 
       // Update user verification status
       await this.userService.updateUser(ctx, user.id, {
-        isAccountVerified: true,
+        isEmailVerified: true,
       });
 
       return {
@@ -172,7 +174,7 @@ export class AuthService {
 
   async changePassword(
     ctx: RequestContext,
-    input: { currentPassword: string; newPassword: string }
+    input: { currentPassword: string; newPassword: string },
   ): Promise<{ message: string }> {
     this.logger.log(ctx, `${this.changePassword.name} was called`);
 
@@ -186,7 +188,7 @@ export class AuthService {
     // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(
       input.currentPassword,
-      user.password
+      user.password,
     );
     if (!isCurrentPasswordValid) {
       throw new UnauthorizedException("Invalid current password");
@@ -215,17 +217,19 @@ export class AuthService {
 
   getAuthToken(
     ctx: RequestContext,
-    user: UserAccessTokenClaims | UserOutput
+    user: UserAccessTokenClaims | UserOutput,
   ): AuthTokenOutput {
     this.logger.log(ctx, `${this.getAuthToken.name} was called`);
 
     const subject = { sub: user.id };
+    const roleForToken =
+      "role" in user && (user as UserOutput).role != null
+        ? (user as UserOutput).role
+        : (user as unknown as { userType: UserType }).userType;
     const payload = {
       id: user.id,
       email: user.email,
-      role: user.userType === UserType.SUPER_ADMIN ? ROLE.SUPER_ADMIN : 
-            user.userType === UserType.ADMIN ? ROLE.ADMIN :
-            user.userType === UserType.CONTENT_ADMIN ? ROLE.CONTENT_ADMIN : ROLE.USER,
+      role: roleForToken,
       fullName: user.fullName,
     };
 
@@ -235,7 +239,7 @@ export class AuthService {
       }),
       accessToken: this.jwtService.sign(
         { ...payload, ...subject },
-        { expiresIn: this.configService.get("jwt.accessTokenExpiresInSec") }
+        { expiresIn: this.configService.get("jwt.accessTokenExpiresInSec") },
       ),
     };
     return plainToClass(AuthTokenOutput, authToken, {

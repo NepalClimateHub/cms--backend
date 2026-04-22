@@ -23,7 +23,6 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../../auth/guards/roles.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
-import { VerifyUserInput } from "../../user/dtos/promote-user.dto";
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -39,6 +38,7 @@ import {
   OrganizationResponseDto,
   OrganizationSearchInput,
   UpdateOrganizationDto,
+  VerifyOrganizationInput,
 } from "../dto/organization.dto";
 
 @ApiTags("organizations")
@@ -46,7 +46,7 @@ import {
 export class OrganizationController {
   constructor(
     private readonly organizationService: OrganizationService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(OrganizationController.name);
   }
@@ -66,7 +66,7 @@ export class OrganizationController {
   })
   async getOrgs(
     @ReqContext() ctx: RequestContext,
-    @Query() query: OrganizationSearchInput
+    @Query() query: OrganizationSearchInput,
   ): Promise<BaseApiResponse<OrganizationResponseDto[]>> {
     this.logger.log(ctx, `${this.getOrgs.name} was called`);
 
@@ -92,13 +92,13 @@ export class OrganizationController {
   })
   async addOrg(
     @ReqContext() ctx: RequestContext,
-    @Body() payload: CreateOrganizationDto
+    @Body() payload: CreateOrganizationDto,
   ): Promise<BaseApiResponse<OrganizationResponseDto>> {
     this.logger.log(ctx, `${this.addOrg.name} was called`);
 
     const organization = await this.organizationService.addOrganization(
       ctx,
-      payload
+      payload,
     );
     return { data: organization, meta: {} };
   }
@@ -118,13 +118,13 @@ export class OrganizationController {
   })
   async getOneOrganization(
     @ReqContext() ctx: RequestContext,
-    @Param("id") id: string
+    @Param("id") id: string,
   ): Promise<BaseApiResponse<OrganizationResponseDto>> {
     this.logger.log(ctx, `${this.getOrgs.name} was called`);
 
     const organization = await this.organizationService.getOneOrganization(
       ctx,
-      id
+      id,
     );
     return { data: organization, meta: {} };
   }
@@ -146,13 +146,13 @@ export class OrganizationController {
   })
   async deleteOrganization(
     @ReqContext() ctx: RequestContext,
-    @Param("id") id: string
+    @Param("id") id: string,
   ): Promise<BaseApiResponse<OrganizationResponseDto>> {
     this.logger.log(ctx, `${this.getOrgs.name} was called`);
 
     const organization = await this.organizationService.deleteOrganization(
       ctx,
-      id
+      id,
     );
     return { data: organization, meta: {} };
   }
@@ -175,14 +175,14 @@ export class OrganizationController {
   async updateOrganization(
     @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
-    @Body() payload: UpdateOrganizationDto
+    @Body() payload: UpdateOrganizationDto,
   ): Promise<BaseApiResponse<OrganizationResponseDto>> {
     this.logger.log(ctx, `${this.getOrgs.name} was called`);
 
     const organization = await this.organizationService.updateOrganization(
       ctx,
       id,
-      payload
+      payload,
     );
     return { data: organization, meta: {} };
   }
@@ -202,14 +202,14 @@ export class OrganizationController {
   async verifyOrganization(
     @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
-    @Body() payload: VerifyUserInput
+    @Body() payload: VerifyOrganizationInput,
   ): Promise<BaseApiResponse<OrganizationResponseDto>> {
     this.logger.log(ctx, `${this.verifyOrganization.name} was called`);
 
     const organization = await this.organizationService.verifyOrganization(
       ctx,
       id,
-      payload.isVerified
+      payload.isVerified,
     );
     return { data: organization, meta: {} };
   }

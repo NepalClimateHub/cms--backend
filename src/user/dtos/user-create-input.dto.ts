@@ -13,7 +13,7 @@ import {
   MaxLength,
 } from "class-validator";
 
-import { ROLE, USER_TYPE } from "../../auth/constants/role.constant";
+import { ROLE } from "../../auth/constants/role.constant";
 
 export class CreateUserInput {
   @ApiPropertyOptional()
@@ -50,10 +50,10 @@ export class CreateUserInput {
   @IsBoolean()
   isAccountDisabled: boolean;
 
-  @ApiProperty({ enum: USER_TYPE, default: USER_TYPE.INDIVIDUAL })
-  @IsEnum(USER_TYPE)
+  @ApiProperty({ enum: ROLE, default: ROLE.INDIVIDUAL })
+  @IsEnum(ROLE)
   @IsOptional()
-  userType: USER_TYPE = USER_TYPE.INDIVIDUAL;
+  role: ROLE = ROLE.INDIVIDUAL;
 
   @ApiPropertyOptional()
   @IsOptional()

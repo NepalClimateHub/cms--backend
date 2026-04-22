@@ -57,7 +57,6 @@ export class AnalyticsService {
       }),
     ]);
 
-    console.log("res", await res);
     return plainToClass(
       AdminAnalyticsOutput,
       {
@@ -74,6 +73,20 @@ export class AnalyticsService {
         }),
         individualCount: await this.prismaService.user.count({
           where: { deletedAt: null, userType: "INDIVIDUAL" },
+        }),
+        pendingOrganizationVerificationCount: await this.prismaService.user.count({
+          where: {
+            deletedAt: null,
+            userType: "ORGANIZATION",
+            isVerifiedByAdmin: false,
+            organization: {
+              deletedAt: null,
+              OR: [
+                { verificationRequestedAt: { not: null } },
+                { verificationDocumentUrl: { not: null } },
+              ],
+            },
+          },
         }),
       },
 

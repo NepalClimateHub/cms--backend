@@ -13,12 +13,20 @@ import {
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { Prisma } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
+import { NotificationService } from "../../notification/notification.service";
+import { EmailType, sendEmail } from "../../utils/email.util";
 
 const linkedUserSelect = {
   select: {
     email: true,
     phoneCountryCode: true,
     phoneNumber: true,
+    profilePhotoUrl: true,
+    profilePhotoId: true,
+    bannerImageUrl: true,
+    bannerImageId: true,
+    socials: true,
+    isVerifiedByAdmin: true,
   },
 } as const;
 
@@ -26,17 +34,26 @@ const linkedUserSelect = {
 export class OrganizationService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
   ) {
     this.logger.setContext(OrganizationService.name);
   }
 
-  private toOrganizationResponseDto(org: Record<string, unknown>): OrganizationResponseDto {
+  private toOrganizationResponseDto(
+    org: Record<string, unknown>,
+  ): OrganizationResponseDto {
     const u = org.linkedAccountUser as
       | {
           email: string | null;
           phoneCountryCode: string | null;
           phoneNumber: string | null;
+          profilePhotoUrl: string | null;
+          profilePhotoId: string | null;
+          bannerImageUrl: string | null;
+          bannerImageId: string | null;
+          socials: any | null;
+          isVerifiedByAdmin: boolean;
         }
       | null
       | undefined;
@@ -45,17 +62,23 @@ export class OrganizationService {
       OrganizationResponseDto,
       {
         ...rest,
+        isVerifiedByAdmin: u?.isVerifiedByAdmin ?? false,
         email: u?.email ?? null,
         phoneCountryCode: u?.phoneCountryCode ?? null,
         phoneNumber: u?.phoneNumber ?? null,
+        logoImageUrl: u?.profilePhotoUrl ?? null,
+        logoImageId: u?.profilePhotoId ?? null,
+        bannerImageUrl: u?.bannerImageUrl ?? null,
+        bannerImageId: u?.bannerImageId ?? null,
+        socials: u?.socials ?? null,
       },
-      { excludeExtraneousValues: true }
+      { excludeExtraneousValues: true },
     );
   }
 
   async getOrganizations(
     ctx: RequestContext,
-    query: OrganizationSearchInput
+    query: OrganizationSearchInput,
   ): Promise<{ organizations: OrganizationResponseDto[]; count: number }> {
     this.logger.log(ctx, `${this.getOrganizations.name} was called`);
     const { limit, offset, ...restQuery } = query;
@@ -125,7 +148,7 @@ export class OrganizationService {
 
     return {
       organizations: organizations.map((o) =>
-        this.toOrganizationResponseDto(o as unknown as Record<string, unknown>)
+        this.toOrganizationResponseDto(o as unknown as Record<string, unknown>),
       ),
       count: organizationCount,
     };
@@ -133,7 +156,7 @@ export class OrganizationService {
 
   async getOneOrganization(
     ctx: RequestContext,
-    id: string
+    id: string,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.getOneOrganization.name} was called`);
 
@@ -154,13 +177,13 @@ export class OrganizationService {
     }
 
     return this.toOrganizationResponseDto(
-      organization as unknown as Record<string, unknown>
+      organization as unknown as Record<string, unknown>,
     );
   }
 
   async addOrganization(
     ctx: RequestContext,
-    payload: CreateOrganizationDto
+    payload: CreateOrganizationDto,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.addOrganization.name} was called`);
     const {
@@ -169,13 +192,15 @@ export class OrganizationService {
       gallery,
       socials,
       bannerImageUrl,
+      bannerImageId,
+      logoImageUrl,
+      logoImageId,
       ...restPayload
     } = payload;
 
     const created = await this.prismaService.organizations.create({
       data: {
         ...restPayload,
-        bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
             create: {
@@ -222,13 +247,13 @@ export class OrganizationService {
     }
 
     return this.toOrganizationResponseDto(
-      organization as unknown as Record<string, unknown>
+      organization as unknown as Record<string, unknown>,
     );
   }
 
   async deleteOrganization(
     ctx: RequestContext,
-    id: string
+    id: string,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.deleteOrganization.name} was called`);
 
@@ -249,7 +274,7 @@ export class OrganizationService {
     }
 
     const dto = this.toOrganizationResponseDto(
-      organization as unknown as Record<string, unknown>
+      organization as unknown as Record<string, unknown>,
     );
 
     await this.prismaService.organizations.delete({
@@ -264,7 +289,7 @@ export class OrganizationService {
   async updateOrganization(
     ctx: RequestContext,
     id: string,
-    payload: UpdateOrganizationDto
+    payload: UpdateOrganizationDto,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.addOrganization.name} was called`);
     const org = await this.prismaService.organizations.findUnique({
@@ -276,7 +301,17 @@ export class OrganizationService {
       throw new NotFoundException("Organization not found!");
     }
 
-    const { address, tagIds, gallery, socials, ...restPayload } = payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      bannerImageId,
+      logoImageUrl,
+      logoImageId,
+      ...restPayload
+    } = payload;
 
     await this.prismaService.organizations.update({
       where: {
@@ -340,14 +375,14 @@ export class OrganizationService {
     }
 
     return this.toOrganizationResponseDto(
-      organization as unknown as Record<string, unknown>
+      organization as unknown as Record<string, unknown>,
     );
   }
 
   async verifyOrganization(
     ctx: RequestContext,
     id: string,
-    isVerified: boolean
+    isVerified: boolean,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.verifyOrganization.name} was called`);
 
@@ -358,10 +393,45 @@ export class OrganizationService {
       throw new NotFoundException("Organization not found!");
     }
 
-    await this.prismaService.organizations.update({
-      where: { id },
+    let usersToNotifyOnVerify: {
+      id: string;
+      email: string;
+      fullName: string;
+    }[] = [];
+    if (isVerified) {
+      usersToNotifyOnVerify = await this.prismaService.user.findMany({
+        where: {
+          organizationId: id,
+          deletedAt: null,
+          isVerifiedByAdmin: false,
+        },
+        select: { id: true, email: true, fullName: true },
+      });
+    }
+
+    await this.prismaService.user.updateMany({
+      where: { organizationId: id, deletedAt: null },
       data: { isVerifiedByAdmin: isVerified },
     });
+
+    for (const u of usersToNotifyOnVerify) {
+      await this.notificationService.notifyOrganizationVerified(
+        u.id,
+        id,
+        org.name,
+      );
+      const mailResult = await sendEmail(EmailType.ORGANIZATION_VERIFIED, {
+        to: u.email,
+        userName: u.fullName,
+        organizationName: org.name,
+      });
+      if (!mailResult?.success) {
+        this.logger.log(
+          ctx,
+          `${this.verifyOrganization.name}: verification email not sent for ${u.email}`,
+        );
+      }
+    }
 
     const organization = await this.prismaService.organizations.findUnique({
       where: { id },
@@ -378,7 +448,7 @@ export class OrganizationService {
     }
 
     return this.toOrganizationResponseDto(
-      organization as unknown as Record<string, unknown>
+      organization as unknown as Record<string, unknown>,
     );
   }
 }

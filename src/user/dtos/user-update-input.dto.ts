@@ -7,7 +7,7 @@ import {
   Length,
   MaxLength,
 } from "class-validator";
-import { USER_TYPE } from "../../auth/constants/role.constant";
+import { ROLE } from "../../auth/constants/role.constant";
 
 export class UpdateUserInput {
   @ApiPropertyOptional()
@@ -25,7 +25,14 @@ export class UpdateUserInput {
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
-  isAccountVerified?: boolean;
+  isEmailVerified?: boolean;
+
+  @ApiPropertyOptional({
+    description: "Admin verification (super-admin only in practice)",
+  })
+  @IsOptional()
+  @IsBoolean()
+  isVerifiedByAdmin?: boolean;
 
   @ApiPropertyOptional({
     description: "Profile photo URL",
@@ -71,9 +78,22 @@ export class UpdateUserInput {
   @MaxLength(40)
   phoneNumber?: string | null;
 
-  @ApiPropertyOptional({ enum: USER_TYPE })
+  @ApiPropertyOptional({ enum: ROLE })
   @IsOptional()
-  @IsEnum(USER_TYPE)
-  userType?: USER_TYPE;
+  @IsEnum(ROLE)
+  role?: ROLE;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  bannerImageUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  bannerImageId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  socials?: any;
 }

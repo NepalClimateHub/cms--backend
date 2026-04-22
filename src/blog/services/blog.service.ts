@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import {
@@ -12,11 +13,45 @@ import {
 } from "../dto/blog.dto";
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { NotificationService } from "../../notification/notification.service";
 import { ContentStatus, UserType } from "@prisma/client";
 
 @Injectable()
 export class BlogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  /** Staff roles that may edit/delete any blog. */
+  private canManageAnyBlog(userType: UserType): boolean {
+    return (
+      userType === UserType.SUPER_ADMIN ||
+      userType === UserType.ADMIN ||
+      userType === UserType.CONTENT_ADMIN
+    );
+  }
+
+  private assertCanModifyBlog(
+    ctx: RequestContext,
+    existingBlog: { authorId: string | null },
+  ): void {
+    if (!ctx.user?.id) {
+      throw new ForbiddenException("Missing user context");
+    }
+    if (this.canManageAnyBlog(ctx.user.userType)) {
+      return;
+    }
+    if (
+      existingBlog.authorId != null &&
+      existingBlog.authorId === ctx.user.id
+    ) {
+      return;
+    }
+    throw new ForbiddenException(
+      "You can only edit or delete your own blog posts.",
+    );
+  }
 
   /**
    * Calculate reading time based on content length
@@ -99,8 +134,13 @@ export class BlogService {
       deletedAt: null,
     };
 
-    // If user is authenticated and not a super admin, show only their blogs
-    if (ctx?.user && ctx.user.userType !== UserType.SUPER_ADMIN) {
+    // INDIVIDUAL / ORGANIZATION: only their posts. Staff see all.
+    const staffSeesAll =
+      ctx?.user &&
+      (ctx.user.userType === UserType.SUPER_ADMIN ||
+        ctx.user.userType === UserType.ADMIN ||
+        ctx.user.userType === UserType.CONTENT_ADMIN);
+    if (ctx?.user && !staffSeesAll) {
       where.authorId = ctx.user.id;
     }
 
@@ -197,6 +237,7 @@ export class BlogService {
   async updateBlog(
     id: string,
     updateBlogDto: UpdateBlogDto,
+    ctx: RequestContext,
   ): Promise<BlogResponseDto> {
     const { tagIds, ...blogData } = updateBlogDto;
 
@@ -211,8 +252,14 @@ export class BlogService {
       throw new NotFoundException(`Blog with ID ${id} not found`);
     }
 
+    this.assertCanModifyBlog(ctx, existingBlog);
+
     // Auto-calculate reading time if content is being updated
     const updatedData: any = { ...blogData };
+    if (!this.canManageAnyBlog(ctx.user!.userType)) {
+      delete updatedData.isFeatured;
+      delete updatedData.isTopRead;
+    }
     if (blogData.content) {
       updatedData.readingTime = this.calculateReadingTime(blogData.content);
     }
@@ -239,7 +286,7 @@ export class BlogService {
     });
   }
 
-  async deleteBlog(id: string): Promise<void> {
+  async deleteBlog(id: string, ctx: RequestContext): Promise<void> {
     const existingBlog = await this.prisma.blog.findFirst({
       where: {
         id,
@@ -250,6 +297,8 @@ export class BlogService {
     if (!existingBlog) {
       throw new NotFoundException(`Blog with ID ${id} not found`);
     }
+
+    this.assertCanModifyBlog(ctx, existingBlog);
 
     await this.prisma.blog.update({
       where: { id },
@@ -295,6 +344,13 @@ export class BlogService {
         categoryData: true,
       },
     });
+
+    await this.notificationService.notifyBlogReview(
+      existingBlog.authorId,
+      blog.id,
+      blog.title,
+      action,
+    );
 
     return plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,

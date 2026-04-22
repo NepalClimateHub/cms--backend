@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
 import { Expose, Type } from "class-transformer";
@@ -163,6 +169,14 @@ export class UpdateOrganizationDto {
   tagIds?: string[];
 }
 
+export class VerifyOrganizationInput {
+  @ApiProperty({
+    description: "Whether the organization is verified by an admin",
+  })
+  @IsBoolean()
+  isVerified: boolean;
+}
+
 export class OrganizationResponseDto {
   @ApiProperty({
     description: "Organization id",
@@ -223,7 +237,7 @@ export class OrganizationResponseDto {
   socials?: any;
 
   @ApiPropertyOptional({
-    description: "Banner image URL",
+    description: "Banner image URL from the linked user account",
     example: "https://example.com/org-banner.jpg",
     required: false,
   })
@@ -231,21 +245,35 @@ export class OrganizationResponseDto {
   @Expose()
   bannerImageUrl?: string;
 
-  @ApiPropertyOptional({ description: "Banner image ID", required: false })
+  @ApiPropertyOptional({
+    description: "Banner image ID from the linked user account",
+    required: false,
+  })
   @IsOptional()
   @Expose()
   bannerImageId?: string;
 
   @ApiProperty({
-    description: "Logo image URL",
+    description:
+      "Logo image URL from the linked user account (profilePhotoUrl)",
     example: "https://example.com/org-logo.jpg",
   })
   @Expose()
   logoImageUrl: string;
 
-  @ApiProperty({ description: "Logo image ID", required: false })
+  @ApiPropertyOptional({
+    description: "Logo image ID from the linked user account (profilePhotoId)",
+    required: false,
+  })
   @Expose()
   logoImageId?: string;
+
+  @ApiProperty({
+    description:
+      "True when a platform admin has verified the linked organization account (User.isVerifiedByAdmin)",
+  })
+  @Expose()
+  isVerifiedByAdmin: boolean;
 
   @ApiProperty({ description: "Tags IDs", type: [String], required: false })
   @Expose()

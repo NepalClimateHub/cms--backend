@@ -33,7 +33,7 @@ import {
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { OptionalJwtAuthGuard } from "../../auth/guards/optional-jwt-auth.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
-import { ROLE } from "../../auth/constants/role.constant";
+import { ALL_ROLES, ROLE } from "../../auth/constants/role.constant";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RolesGuard } from "../../auth/guards/roles.guard";
@@ -45,7 +45,13 @@ export class BlogController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.USER)
+  @Roles(
+    ROLE.SUPER_ADMIN,
+    ROLE.ADMIN,
+    ROLE.CONTENT_ADMIN,
+    ROLE.ORGANIZATION,
+    ROLE.INDIVIDUAL,
+  )
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Create a new blog post" })
@@ -59,7 +65,7 @@ export class BlogController {
   })
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,
-    @ReqContext() ctx: RequestContext
+    @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<BlogResponseDto>> {
     const blog = await this.blogService.createBlog(createBlogDto, ctx);
     return { data: blog, meta: {} };
@@ -79,7 +85,7 @@ export class BlogController {
   })
   async findAllBlogs(
     @Query() searchInput: BlogSearchInput,
-    @ReqContext() ctx: RequestContext
+    @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<BlogResponseDto[]>> {
     const result = await this.blogService.findAllBlogs(searchInput, ctx);
     return { data: result.blogs, meta: { count: result.total } };
@@ -129,7 +135,7 @@ export class BlogController {
     type: BaseApiErrorResponse,
   })
   async findBlogById(
-    @Param("id") id: string
+    @Param("id") id: string,
   ): Promise<BaseApiResponse<BlogResponseDto>> {
     const blog = await this.blogService.findBlogById(id);
     return { data: blog, meta: {} };
@@ -137,7 +143,7 @@ export class BlogController {
 
   @Patch(":id")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN)
+  @Roles(...ALL_ROLES)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Update a blog" })
@@ -151,15 +157,16 @@ export class BlogController {
   })
   async updateBlog(
     @Param("id") id: string,
-    @Body() updateBlogDto: UpdateBlogDto
+    @Body() updateBlogDto: UpdateBlogDto,
+    @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<BlogResponseDto>> {
-    const blog = await this.blogService.updateBlog(id, updateBlogDto);
+    const blog = await this.blogService.updateBlog(id, updateBlogDto, ctx);
     return { data: blog, meta: {} };
   }
 
   @Delete(":id")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN)
+  @Roles(...ALL_ROLES)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Delete a blog" })
@@ -171,14 +178,17 @@ export class BlogController {
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
   })
-  async deleteBlog(@Param("id") id: string): Promise<BaseApiResponse<void>> {
-    await this.blogService.deleteBlog(id);
+  async deleteBlog(
+    @Param("id") id: string,
+    @ReqContext() ctx: RequestContext,
+  ): Promise<BaseApiResponse<void>> {
+    await this.blogService.deleteBlog(id, ctx);
     return { data: undefined, meta: {} };
   }
 
   @Patch(":id/action")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN)
+  @Roles(ROLE.ADMIN, ROLE.CONTENT_ADMIN)
   @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Approve or reject a blog" })
@@ -196,7 +206,7 @@ export class BlogController {
   })
   async blogAction(
     @Param("id") id: string,
-    @Body() body: { action: "approve" | "reject" }
+    @Body() body: { action: "approve" | "reject" },
   ): Promise<BaseApiResponse<BlogResponseDto>> {
     const blog = await this.blogService.blogAction(id, body.action);
     return { data: blog, meta: {} };

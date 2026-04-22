@@ -12,7 +12,7 @@ export const seedSuperAdmin = async () => {
       fullName: "NCH Admin",
       email: "nchadmin@mailinator.com",
       password: hasedPW,
-      isAccountVerified: true,
+      isEmailVerified: true,
       userType: UserType.SUPER_ADMIN,
     },
   ];

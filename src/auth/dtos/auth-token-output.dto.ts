@@ -24,7 +24,7 @@ export class UserAccessTokenClaims {
 
 
   @Expose()
-  isAccountVerified: boolean;
+  isEmailVerified: boolean;
 
   @Expose()
   gender: string | null;
@@ -35,9 +35,10 @@ export class UserAccessTokenClaims {
   @Expose()
   phoneNumber: string | null;
 
-  @ApiPropertyOptional({ enum: UserType })
+  /** Prisma `User.userType` — same enum as application `ROLE`. */
+  @ApiProperty({ enum: UserType })
   @Expose()
-  userType?: UserType;
+  userType: UserType;
 }
 
 export class UserRefreshTokenClaims {
