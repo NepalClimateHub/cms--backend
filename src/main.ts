@@ -1,3 +1,4 @@
+import { json, urlencoded } from "express";
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
@@ -11,7 +12,7 @@ import { apiReference } from "@scalar/nestjs-api-reference";
 function updateReferences(
   obj: Record<string, any>,
   oldRef: string,
-  newRef: string
+  newRef: string,
 ): void {
   if (!obj || typeof obj !== "object") return;
 
@@ -33,6 +34,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(VALIDATION_PIPE_OPTIONS));
   app.use(RequestIdMiddleware);
   app.enableCors();
+
+  app.use(json({ limit: "50mb" }));
+  app.use(urlencoded({ extended: true, limit: "50mb" }));
 
   /** Swagger configuration */
   const options = new DocumentBuilder()
