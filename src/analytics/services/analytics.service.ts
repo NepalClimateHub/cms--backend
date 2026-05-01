@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
+import { UserType } from "@prisma/client";
 
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -192,6 +193,11 @@ export class AnalyticsService {
         email: true,
         createdAt: true,
         userType: true,
+        organization: {
+          select: {
+            name: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -201,7 +207,10 @@ export class AnalyticsService {
 
     return newestUsers.map((user) => ({
       userId: user.id,
-      name: user.fullName?.trim() || "Unknown",
+      name:
+        user.userType === UserType.ORGANIZATION && user.organization?.name
+          ? user.organization.name
+          : user.fullName?.trim() || "Unknown",
       email: user.email,
       joinedAt: user.createdAt,
       role: user.userType,
