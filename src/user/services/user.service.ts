@@ -69,7 +69,7 @@ export class UserService {
       const organization = await this.prismaService.organizations.create({
         data: {
           name: input.orgName || input.name,
-          description: "Member of Nepal Climate Hub",
+          description: "",
           addressId: registrationAddressId,
           organizationType,
         },
@@ -505,7 +505,9 @@ export class UserService {
       });
       if (actor?.userType !== UserType.SUPER_ADMIN) {
         if (roleFieldsTouched) {
-          throw new ForbiddenException("Only a super admin can change user type");
+          throw new ForbiddenException(
+            "Only a super admin can change user type",
+          );
         }
         throw new ForbiddenException(
           "Only a super admin can change admin verification status",
