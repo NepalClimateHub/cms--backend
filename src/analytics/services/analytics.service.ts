@@ -172,7 +172,13 @@ export class AnalyticsService {
   }
 
   async getNewJoinedUsers(ctx: RequestContext): Promise<
-    Array<{ userId: string; name: string; email: string; joinedAt: Date; role: string }>
+    Array<{
+      userId: string;
+      name: string;
+      email: string;
+      joinedAt: Date;
+      role: string;
+    }>
   > {
     this.logger.log(ctx, `${this.getNewJoinedUsers.name} was called`);
 
@@ -185,7 +191,7 @@ export class AnalyticsService {
         fullName: true,
         email: true,
         createdAt: true,
-        role: true,
+        userType: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -198,7 +204,7 @@ export class AnalyticsService {
       name: user.fullName?.trim() || "Unknown",
       email: user.email,
       joinedAt: user.createdAt,
-      role: user.role,
+      role: user.userType,
     }));
   }
 
