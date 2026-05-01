@@ -1,4 +1,5 @@
-# of server.
+# docker-compose.yml
+# NOTE:
 
 services:
   api:
