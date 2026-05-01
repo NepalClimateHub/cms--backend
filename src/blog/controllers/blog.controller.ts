@@ -124,6 +124,7 @@ export class BlogController {
   }
 
   @Get(":id")
+  @UseGuards(OptionalJwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: "Get a blog by ID" })
   @ApiResponse({
@@ -136,8 +137,9 @@ export class BlogController {
   })
   async findBlogById(
     @Param("id") id: string,
+    @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<BlogResponseDto>> {
-    const blog = await this.blogService.findBlogById(id);
+    const blog = await this.blogService.findBlogById(id, ctx);
     return { data: blog, meta: {} };
   }
 

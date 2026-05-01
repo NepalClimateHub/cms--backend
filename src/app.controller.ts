@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get } from "@nestjs/common";
 
-import { AppService } from './app.service';
-import { AppLogger } from './shared/logger/logger.service';
-import { ReqContext } from './shared/request-context/req-context.decorator';
-import { RequestContext } from './shared/request-context/request-context.dto';
+import { AppService } from "./app.service";
+import { AppLogger } from "./shared/logger/logger.service";
+import { ReqContext } from "./shared/request-context/req-context.decorator";
+import { RequestContext } from "./shared/request-context/request-context.dto";
 
 @Controller()
 export class AppController {
@@ -16,8 +16,16 @@ export class AppController {
 
   @Get()
   getHello(@ReqContext() ctx: RequestContext): string {
-    this.logger.log(ctx, 'Hello world from App controller');
+    this.logger.log(ctx, "Hello world from App controller");
 
     return this.appService.getHello(ctx);
+  }
+
+  @Get("health")
+  getHealth(): { status: string; timestamp: string } {
+    return {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+    };
   }
 }

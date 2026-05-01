@@ -274,7 +274,6 @@ export class UserService {
       profilePhotoUrl: user.profilePhotoUrl,
       profilePhotoId: user.profilePhotoId,
       bio: user.bio,
-      linkedin: user.linkedin,
       currentRole: user.currentRole,
       bannerImageId: user.bannerImageId,
       bannerImageUrl: user.bannerImageUrl,

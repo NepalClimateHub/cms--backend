@@ -20,14 +20,10 @@ export class AuthorOutputDto {
   @Expose()
   id: string;
 
-  @ApiPropertyOptional({
-    description: "Author LinkedIn profile URL",
-    example: "https://www.linkedin.com/in/johndoe/",
-  })
-  @IsString()
+  @ApiPropertyOptional()
   @IsOptional()
   @Expose()
-  linkedin?: string;
+  socials?: any;
 
   @ApiPropertyOptional({
     description: "Author current role",
@@ -103,6 +99,12 @@ export class BlogSearchInput extends PaginationParamsDto {
   @IsBoolean()
   @IsOptional()
   isFeatured?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => value === "true" || value === true)
+  includeDrafts?: boolean;
 
   @ApiPropertyOptional({ description: "Category ID" })
   @IsString()

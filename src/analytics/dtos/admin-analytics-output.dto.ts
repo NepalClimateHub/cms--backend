@@ -24,6 +24,10 @@ export class AdminAnalyticsOutput {
 
   @Expose()
   @ApiProperty()
+  projectCount: number;
+
+  @Expose()
+  @ApiProperty()
   adminCount: number;
 
   @Expose()
@@ -40,4 +44,28 @@ export class AdminAnalyticsOutput {
       "Organizations with a verification request submitted, awaiting admin review",
   })
   pendingOrganizationVerificationCount: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatSessionsDaily: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatSessionsWeekly: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatSessionsMonthly: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesDaily: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesWeekly: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesMonthly: number;
 }

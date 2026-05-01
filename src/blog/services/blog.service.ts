@@ -134,14 +134,30 @@ export class BlogService {
       deletedAt: null,
     };
 
-    // INDIVIDUAL / ORGANIZATION: only their posts. Staff see all.
     const staffSeesAll =
       ctx?.user &&
       (ctx.user.userType === UserType.SUPER_ADMIN ||
         ctx.user.userType === UserType.ADMIN ||
         ctx.user.userType === UserType.CONTENT_ADMIN);
-    if (ctx?.user && !staffSeesAll) {
+
+    // Visibility logic
+    if (!ctx?.user) {
+      // Public API: only approved and published
+      where.approvedByAdmin = true;
+      where.status = ContentStatus.PUBLISHED;
+      where.isDraft = false;
+    } else if (!staffSeesAll) {
+      // Regular user (Individual/Organization): only their own blogs
       where.authorId = ctx.user.id;
+    }
+    // Staff: sees all (including drafts and unapproved posts)
+    // But we default to excluding drafts unless includeDrafts is true
+    if (
+      ctx?.user &&
+      searchParams.isDraft === undefined &&
+      !searchParams.includeDrafts
+    ) {
+      where.isDraft = false;
     }
 
     if (searchParams.title) {
@@ -212,7 +228,10 @@ export class BlogService {
     };
   }
 
-  async findBlogById(id: string): Promise<BlogResponseDto> {
+  async findBlogById(
+    id: string,
+    ctx?: RequestContext,
+  ): Promise<BlogResponseDto> {
     const blog = await this.prisma.blog.findFirst({
       where: {
         id,
@@ -227,6 +246,24 @@ export class BlogService {
 
     if (!blog) {
       throw new NotFoundException(`Blog with ID ${id} not found`);
+    }
+
+    // Visibility check
+    const isStaff =
+      ctx?.user &&
+      (ctx.user.userType === UserType.SUPER_ADMIN ||
+        ctx.user.userType === UserType.ADMIN ||
+        ctx.user.userType === UserType.CONTENT_ADMIN);
+    const isAuthor = ctx?.user && blog.authorId === ctx.user.id;
+    const isPubliclyVisible =
+      blog.approvedByAdmin &&
+      blog.status === ContentStatus.PUBLISHED &&
+      !blog.isDraft;
+
+    if (!isStaff && !isAuthor && !isPubliclyVisible) {
+      throw new ForbiddenException(
+        "You do not have permission to view this blog post.",
+      );
     }
 
     return plainToInstance(BlogResponseDto, blog, {
@@ -262,6 +299,10 @@ export class BlogService {
     }
     if (blogData.content) {
       updatedData.readingTime = this.calculateReadingTime(blogData.content);
+    }
+
+    if (blogData.isDraft === true) {
+      updatedData.status = ContentStatus.DRAFT;
     }
 
     const blog = await this.prisma.blog.update({
