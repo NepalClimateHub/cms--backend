@@ -16,9 +16,10 @@ export class UserOutput {
   @ApiProperty()
   fullName: string;
 
-
   @Expose()
-  @ApiProperty({ description: "True when the user has confirmed their email address" })
+  @ApiProperty({
+    description: "True when the user has confirmed their email address",
+  })
   isEmailVerified: boolean;
 
   @Expose()
@@ -59,10 +60,6 @@ export class UserOutput {
   @ApiProperty({ type: String, nullable: true })
   @Expose()
   bio: string | null;
-
-  @ApiProperty({ type: String, nullable: true })
-  @Expose()
-  linkedin: string | null;
 
   @ApiProperty({ type: String, nullable: true })
   @Expose()

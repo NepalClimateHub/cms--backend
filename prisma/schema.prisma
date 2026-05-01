@@ -35,7 +35,6 @@ model User {
   profilePhotoId                  String?
   profilePhotoUrl                 String?
   currentRole                     String?
-  linkedin                        String?
   bannerImageId                   String?
   bannerImageUrl                  String?
   /// Platform admin has verified this account (organization-linked users)

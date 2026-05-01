@@ -69,4 +69,22 @@ export class AnalyticsController {
     );
     return { data: res, meta: {} };
   }
+
+  @Get("/top-blog-authors")
+  @ApiOperation({ summary: "Get top 5 users by published blog count" })
+  async getTopBlogAuthors(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<Array<{ userId: string; name: string; email: string; blogCount: number }>>> {
+    const res = await this.analyticsService.getTopBlogAuthors(ctx);
+    return { data: res, meta: {} };
+  }
+
+  @Get("/new-joined-users")
+  @ApiOperation({ summary: "Get top 5 newly joined users" })
+  async getNewJoinedUsers(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<Array<{ userId: string; name: string; email: string; joinedAt: Date; role: string }>>> {
+    const res = await this.analyticsService.getNewJoinedUsers(ctx);
+    return { data: res, meta: {} };
+  }
 }

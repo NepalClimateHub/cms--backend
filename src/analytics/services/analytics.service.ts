@@ -19,13 +19,13 @@ import {
 export class AnalyticsService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.setContext(AnalyticsService.name);
   }
 
   async getAdminDashboardAnalytics(
-    ctx: RequestContext
+    ctx: RequestContext,
   ): Promise<AdminAnalyticsOutput> {
     this.logger.log(ctx, `${this.getAdminDashboardAnalytics.name} was called`);
 
@@ -65,6 +65,9 @@ export class AnalyticsService {
         eventCount: (await res)[2],
         opportunityCount: (await res)[3],
         blogCount: (await res)[4],
+        projectCount: await this.prismaService.project.count({
+          where: { deletedAt: null },
+        }),
         adminCount: await this.prismaService.user.count({
           where: { deletedAt: null, userType: "ADMIN" },
         }),
@@ -74,17 +77,52 @@ export class AnalyticsService {
         individualCount: await this.prismaService.user.count({
           where: { deletedAt: null, userType: "INDIVIDUAL" },
         }),
-        pendingOrganizationVerificationCount: await this.prismaService.user.count({
-          where: {
-            deletedAt: null,
-            userType: "ORGANIZATION",
-            isVerifiedByAdmin: false,
-            organization: {
+        pendingOrganizationVerificationCount:
+          await this.prismaService.user.count({
+            where: {
               deletedAt: null,
-              OR: [
-                { verificationRequestedAt: { not: null } },
-                { verificationDocumentUrl: { not: null } },
-              ],
+              userType: "ORGANIZATION",
+              isVerifiedByAdmin: false,
+              organization: {
+                deletedAt: null,
+                OR: [
+                  { verificationRequestedAt: { not: null } },
+                  { verificationDocumentUrl: { not: null } },
+                ],
+              },
+            },
+          }),
+        aiChatSessionsDaily: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
+        }),
+        aiChatSessionsWeekly: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          },
+        }),
+        aiChatSessionsMonthly: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            },
+          },
+        }),
+        aiChatMessagesDaily: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
+        }),
+        aiChatMessagesWeekly: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          },
+        }),
+        aiChatMessagesMonthly: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
             },
           },
         }),
@@ -92,13 +130,81 @@ export class AnalyticsService {
 
       {
         excludeExtraneousValues: true,
-      }
+      },
     );
+  }
+
+  async getTopBlogAuthors(
+    ctx: RequestContext,
+  ): Promise<
+    Array<{ userId: string; name: string; email: string; blogCount: number }>
+  > {
+    this.logger.log(ctx, `${this.getTopBlogAuthors.name} was called`);
+
+    const topAuthors = await this.prismaService.blog.groupBy({
+      by: ["authorId"],
+      where: {
+        deletedAt: null,
+        isDraft: false,
+        authorId: { not: null },
+      },
+      _count: { authorId: true },
+      orderBy: { _count: { authorId: "desc" } },
+      take: 5,
+    });
+
+    const results = await Promise.all(
+      topAuthors.map(async (entry) => {
+        const user = await this.prismaService.user.findUnique({
+          where: { id: entry.authorId! },
+          select: { id: true, fullName: true, email: true },
+        });
+        return {
+          userId: entry.authorId!,
+          name: user?.fullName?.trim() || "Unknown",
+          email: user?.email ?? "",
+          blogCount: entry._count.authorId,
+        };
+      }),
+    );
+
+    return results;
+  }
+
+  async getNewJoinedUsers(ctx: RequestContext): Promise<
+    Array<{ userId: string; name: string; email: string; joinedAt: Date; role: string }>
+  > {
+    this.logger.log(ctx, `${this.getNewJoinedUsers.name} was called`);
+
+    const newestUsers = await this.prismaService.user.findMany({
+      where: {
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        createdAt: true,
+        role: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5,
+    });
+
+    return newestUsers.map((user) => ({
+      userId: user.id,
+      name: user.fullName?.trim() || "Unknown",
+      email: user.email,
+      joinedAt: user.createdAt,
+      role: user.role,
+    }));
   }
 
   async getMonthlyUserStats(
     ctx: RequestContext,
-    year: number
+    year: number,
   ): Promise<MonthlyUserStatsResponseDto> {
     this.logger.log(ctx, `${this.getMonthlyUserStats.name} was called`);
 
@@ -151,7 +257,7 @@ export class AnalyticsService {
       (name, index) => ({
         month: name,
         count: monthlyCounts[index] || 0,
-      })
+      }),
     );
 
     return plainToClass(
@@ -162,7 +268,7 @@ export class AnalyticsService {
       },
       {
         excludeExtraneousValues: true,
-      }
+      },
     );
   }
 }
