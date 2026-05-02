@@ -160,7 +160,7 @@ export class AnalyticsService {
       },
       _count: { authorId: true },
       orderBy: { _count: { authorId: "desc" } },
-      take: 5,
+      take: 20,
     });
 
     const results = await Promise.all(

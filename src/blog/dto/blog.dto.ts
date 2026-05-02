@@ -442,6 +442,15 @@ export class BlogResponseDto {
   status: string;
 
   @ApiPropertyOptional({
+    description: "Administrative feedback/remarks",
+    example: "Please improve the conclusion section.",
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
+  reviewFeedback?: string;
+
+  @ApiPropertyOptional({
     description: "Banner image URL",
     example: "https://example.com/blog-banner.jpg",
   })

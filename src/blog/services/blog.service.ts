@@ -303,6 +303,14 @@ export class BlogService {
 
     if (blogData.isDraft === true) {
       updatedData.status = ContentStatus.DRAFT;
+    } else if (blogData.isDraft === false) {
+      // Transitioning from draft to non-draft
+      const canAutoPublish =
+        ctx.user?.userType === UserType.SUPER_ADMIN ||
+        ctx.user?.userType === UserType.CONTENT_ADMIN;
+      updatedData.status = canAutoPublish
+        ? ContentStatus.PUBLISHED
+        : ContentStatus.UNDER_REVIEW;
     }
 
     const blog = await this.prisma.blog.update({
@@ -352,6 +360,7 @@ export class BlogService {
   async blogAction(
     id: string,
     action: "approve" | "reject",
+    remarks?: string,
   ): Promise<BlogResponseDto> {
     const existingBlog = await this.prisma.blog.findFirst({
       where: {
@@ -378,6 +387,7 @@ export class BlogService {
           action === "approve"
             ? ContentStatus.PUBLISHED
             : ContentStatus.REJECTED,
+        reviewFeedback: remarks,
       },
       include: {
         tags: true,

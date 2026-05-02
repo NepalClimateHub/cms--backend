@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Delete,
   Query,
   UseGuards,
   UseInterceptors,
@@ -82,6 +83,39 @@ export class NotificationController {
     @ReqContext() ctx: RequestContext,
   ): Promise<BaseApiResponse<void>> {
     await this.notificationService.markRead(id, ctx.user!.id);
+    return { data: undefined, meta: {} };
+  }
+
+  @Patch("mark-all-read")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Mark all notifications as read" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+  })
+  async markAllRead(
+    @ReqContext() ctx: RequestContext,
+  ): Promise<BaseApiResponse<void>> {
+    await this.notificationService.markAllRead(ctx.user!.id);
+    return { data: undefined, meta: {} };
+  }
+
+  @Delete(":id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Delete a notification" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  async delete(
+    @Param("id") id: string,
+    @ReqContext() ctx: RequestContext,
+  ): Promise<BaseApiResponse<void>> {
+    await this.notificationService.deleteNotification(id, ctx.user!.id);
     return { data: undefined, meta: {} };
   }
 }

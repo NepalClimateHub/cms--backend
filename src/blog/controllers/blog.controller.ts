@@ -208,9 +208,13 @@ export class BlogController {
   })
   async blogAction(
     @Param("id") id: string,
-    @Body() body: { action: "approve" | "reject" },
+    @Body() body: { action: "approve" | "reject"; remarks?: string },
   ): Promise<BaseApiResponse<BlogResponseDto>> {
-    const blog = await this.blogService.blogAction(id, body.action);
+    const blog = await this.blogService.blogAction(
+      id,
+      body.action,
+      body.remarks,
+    );
     return { data: blog, meta: {} };
   }
 }
