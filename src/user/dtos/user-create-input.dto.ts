@@ -74,4 +74,9 @@ export class CreateUserInput {
   @IsOptional()
   @IsString()
   district?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  iAm?: string;
 }
