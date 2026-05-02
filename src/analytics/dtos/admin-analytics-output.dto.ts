@@ -47,25 +47,33 @@ export class AdminAnalyticsOutput {
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsDaily: number;
+  aiChatSessionsToday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsWeekly: number;
+  aiChatSessionsYesterday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsMonthly: number;
+  aiChatSessionsThisMonth: number;
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesDaily: number;
+  aiChatSessionsAllTime: number;
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesWeekly: number;
+  aiChatMessagesToday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesMonthly: number;
+  aiChatMessagesYesterday: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesThisMonth: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesAllTime: number;
 }

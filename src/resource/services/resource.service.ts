@@ -35,7 +35,11 @@ export class ResourceService {
         where.title = { contains: searchParams.title, mode: 'insensitive' };
     }
     if (searchParams.type) {
-        where.type = searchParams.type;
+        if (Array.isArray(searchParams.type)) {
+            where.type = { in: searchParams.type };
+        } else {
+            where.type = searchParams.type;
+        }
     }
     if (searchParams.level) {
         where.level = searchParams.level;

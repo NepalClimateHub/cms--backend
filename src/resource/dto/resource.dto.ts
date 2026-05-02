@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
-import { Expose, Type } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 
@@ -38,10 +38,13 @@ export class ResourceSearchInput extends PaginationParamsDto {
   @IsOptional()
   title?: string;
 
-  @ApiProperty({ required: false, enum: ResourceType })
-  @IsEnum(ResourceType)
+  @ApiProperty({ required: false, enum: ResourceType, isArray: true })
   @IsOptional()
-  type?: ResourceType;
+  @Transform(({ value }) => {
+    if (typeof value === "string") return value.split(",");
+    return value;
+  })
+  type?: ResourceType | ResourceType[];
 
   @ApiProperty({ required: false, enum: ResourceLevel })
   @IsEnum(ResourceLevel)
