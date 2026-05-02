@@ -100,7 +100,8 @@ export class UserController {
   @ApiBearerAuth()
   @Patch("me/organization")
   @ApiOperation({
-    summary: "Update linked organization (logo, verification request) — organization accounts only",
+    summary:
+      "Update linked organization (logo, verification request) — organization accounts only",
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -160,6 +161,8 @@ export class UserController {
 
   // TODO: ADD RoleGuard
   // NOTE : This can be made a admin only endpoint. For normal users they can use GET /me
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(":id")
   @ApiOperation({
@@ -175,7 +178,7 @@ export class UserController {
   })
   async getUser(
     @ReqContext() ctx: RequestContext,
-    @Param("id") id: number,
+    @Param("id") id: string,
   ): Promise<BaseApiResponse<UserOutput>> {
     this.logger.log(ctx, `${this.getUser.name} was called`);
 

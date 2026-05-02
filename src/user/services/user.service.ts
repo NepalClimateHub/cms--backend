@@ -459,16 +459,10 @@ export class UserService {
     return this.findById(ctx, userId);
   }
 
-  async getUserById(ctx: RequestContext, id: number): Promise<UserOutput> {
+  async getUserById(ctx: RequestContext, id: string): Promise<UserOutput> {
     this.logger.log(ctx, `${this.getUserById.name} was called`);
 
-    return plainToClass(
-      UserOutput,
-      {},
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    return this.findById(ctx, id);
   }
 
   async findByUsername(
