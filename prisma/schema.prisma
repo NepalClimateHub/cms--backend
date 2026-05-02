@@ -39,6 +39,7 @@ model User {
   bannerImageUrl                  String?
   /// Platform admin has verified this account (organization-linked users)
   isVerifiedByAdmin               Boolean   @default(false)
+  i_am                            String    @default("Student")
   organizationId                String?   @unique
   blogs                           Blog[]
   address                         Address?  @relation(fields: [addressId], references: [id])

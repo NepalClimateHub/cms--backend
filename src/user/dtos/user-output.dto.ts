@@ -67,6 +67,10 @@ export class UserOutput {
 
   @ApiPropertyOptional({ type: String, nullable: true })
   @Expose()
+  iAm: string | null;
+
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @Expose()
   bannerImageId: string | null;
 
   @ApiPropertyOptional({ type: String, nullable: true })

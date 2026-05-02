@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsEmail,
   IsEnum,
@@ -7,9 +7,9 @@ import {
   IsString,
   Length,
   MaxLength,
-} from 'class-validator';
+} from "class-validator";
 
-import { ROLE } from '../constants/role.constant';
+import { ROLE } from "../constants/role.constant";
 
 export class RegisterInput {
   @ApiProperty()
@@ -59,6 +59,11 @@ export class RegisterInput {
   @IsOptional()
   @IsString()
   district?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  iAm?: string;
 
   // These keys can only be set by ADMIN user.
   roles: ROLE[] = [ROLE.INDIVIDUAL];

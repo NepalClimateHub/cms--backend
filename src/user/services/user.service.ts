@@ -87,6 +87,7 @@ export class UserService {
         userType: input.role,
         organizationId,
         addressId: registrationAddressId,
+        i_am: input.iAm,
       },
     });
 
@@ -275,6 +276,7 @@ export class UserService {
       profilePhotoId: user.profilePhotoId,
       bio: user.bio,
       currentRole: user.currentRole,
+      iAm: user.i_am,
       bannerImageId: user.bannerImageId,
       bannerImageUrl: user.bannerImageUrl,
       socials: user.socials,
