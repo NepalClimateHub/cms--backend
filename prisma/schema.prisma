@@ -190,6 +190,7 @@ model Blog {
   approvedByAdmin Boolean    @default(false)
   authorId        String?
   status          ContentStatus @default(DRAFT)
+  reviewFeedback  String?
   isTopRead       Boolean    @default(false)
   categoryId      String?
   authorUser      User?      @relation(fields: [authorId], references: [id])

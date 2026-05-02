@@ -95,4 +95,26 @@ export class NotificationService {
       data: { read: true },
     });
   }
+
+  async markAllRead(userId: string): Promise<void> {
+    await this.prisma.notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
+  }
+
+  async deleteNotification(
+    notificationId: string,
+    userId: string,
+  ): Promise<void> {
+    const n = await this.prisma.notification.findFirst({
+      where: { id: notificationId, userId },
+    });
+    if (!n) {
+      throw new NotFoundException("Notification not found");
+    }
+    await this.prisma.notification.delete({
+      where: { id: notificationId },
+    });
+  }
 }
