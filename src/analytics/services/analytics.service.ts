@@ -110,6 +110,7 @@ export class AnalyticsService {
             },
           },
         }),
+        aiChatSessionsAllTime: await this.prismaService.chat_sessions.count(),
         aiChatMessagesDaily: await this.prismaService.chat_messages.count({
           where: {
             created_at: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
@@ -127,6 +128,7 @@ export class AnalyticsService {
             },
           },
         }),
+        aiChatMessagesAllTime: await this.prismaService.chat_messages.count(),
       },
 
       {
@@ -193,6 +195,7 @@ export class AnalyticsService {
         email: true,
         createdAt: true,
         userType: true,
+        profilePhotoUrl: true,
         organization: {
           select: {
             name: true,
@@ -214,6 +217,7 @@ export class AnalyticsService {
       email: user.email,
       joinedAt: user.createdAt,
       role: user.userType,
+      profilePhotoUrl: user.profilePhotoUrl,
     }));
   }
 

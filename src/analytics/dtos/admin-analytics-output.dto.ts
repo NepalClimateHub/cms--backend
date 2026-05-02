@@ -59,6 +59,10 @@ export class AdminAnalyticsOutput {
 
   @Expose()
   @ApiProperty()
+  aiChatSessionsAllTime: number;
+
+  @Expose()
+  @ApiProperty()
   aiChatMessagesDaily: number;
 
   @Expose()
@@ -68,4 +72,8 @@ export class AdminAnalyticsOutput {
   @Expose()
   @ApiProperty()
   aiChatMessagesMonthly: number;
+
+  @Expose()
+  @ApiProperty()
+  aiChatMessagesAllTime: number;
 }
