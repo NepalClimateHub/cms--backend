@@ -58,6 +58,17 @@ export class AnalyticsService {
       }),
     ]);
 
+    const now = new Date();
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const yesterdayEnd = todayStart;
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
     return plainToClass(
       AdminAnalyticsOutput,
       {
@@ -93,39 +104,35 @@ export class AnalyticsService {
               },
             },
           }),
-        aiChatSessionsDaily: await this.prismaService.chat_sessions.count({
+        aiChatSessionsToday: await this.prismaService.chat_sessions.count({
           where: {
-            created_at: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            created_at: { gte: todayStart },
           },
         }),
-        aiChatSessionsWeekly: await this.prismaService.chat_sessions.count({
+        aiChatSessionsYesterday: await this.prismaService.chat_sessions.count({
           where: {
-            created_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+            created_at: { gte: yesterdayStart, lt: yesterdayEnd },
           },
         }),
-        aiChatSessionsMonthly: await this.prismaService.chat_sessions.count({
+        aiChatSessionsThisMonth: await this.prismaService.chat_sessions.count({
           where: {
-            created_at: {
-              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-            },
+            created_at: { gte: thisMonthStart },
           },
         }),
         aiChatSessionsAllTime: await this.prismaService.chat_sessions.count(),
-        aiChatMessagesDaily: await this.prismaService.chat_messages.count({
+        aiChatMessagesToday: await this.prismaService.chat_messages.count({
           where: {
-            created_at: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            created_at: { gte: todayStart },
           },
         }),
-        aiChatMessagesWeekly: await this.prismaService.chat_messages.count({
+        aiChatMessagesYesterday: await this.prismaService.chat_messages.count({
           where: {
-            created_at: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+            created_at: { gte: yesterdayStart, lt: yesterdayEnd },
           },
         }),
-        aiChatMessagesMonthly: await this.prismaService.chat_messages.count({
+        aiChatMessagesThisMonth: await this.prismaService.chat_messages.count({
           where: {
-            created_at: {
-              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-            },
+            created_at: { gte: thisMonthStart },
           },
         }),
         aiChatMessagesAllTime: await this.prismaService.chat_messages.count(),

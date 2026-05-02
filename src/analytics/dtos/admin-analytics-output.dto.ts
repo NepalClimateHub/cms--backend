@@ -47,15 +47,15 @@ export class AdminAnalyticsOutput {
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsDaily: number;
+  aiChatSessionsToday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsWeekly: number;
+  aiChatSessionsYesterday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatSessionsMonthly: number;
+  aiChatSessionsThisMonth: number;
 
   @Expose()
   @ApiProperty()
@@ -63,15 +63,15 @@ export class AdminAnalyticsOutput {
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesDaily: number;
+  aiChatMessagesToday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesWeekly: number;
+  aiChatMessagesYesterday: number;
 
   @Expose()
   @ApiProperty()
-  aiChatMessagesMonthly: number;
+  aiChatMessagesThisMonth: number;
 
   @Expose()
   @ApiProperty()
