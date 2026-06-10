@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content miscellaneous-typealiases">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -221,7 +239,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code>Type&lt;&gt; | Function |  | string | number | boolean</code>
+                    <code>    <code>Type&lt;unknown&gt; | Function | unknown | string | number | boolean</code>
 </code>
                 </td>
             </tr>
@@ -319,7 +337,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code></code>
+                    <code>    <code>unknown</code>
 </code>
                 </td>
             </tr>
@@ -337,7 +355,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code></code>
+                    <code>    <code>unknown</code>
 </code>
                 </td>
             </tr>
@@ -371,7 +389,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code></code>
+                    <code>    <code>unknown</code>
 </code>
                 </td>
             </tr>
@@ -423,7 +441,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>    <code>&quot;USER&quot; | &quot;ORGANIZATION&quot; | &quot;EVENT&quot; | &quot;NEWS&quot; | &quot;OPPORTUNITY&quot;</code>
+                    <code>    <code>&quot;USER&quot; | &quot;ORGANIZATION&quot; | &quot;EVENT&quot; | &quot;NEWS&quot; | &quot;OPPORTUNITY&quot; | &quot;BLOG&quot; | &quot;PROJECT&quot; | &quot;RESOURCE&quot;</code>
 </code>
                 </td>
             </tr>

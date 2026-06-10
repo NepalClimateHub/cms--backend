@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -99,6 +113,10 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Miscellaneous</li>
   <li class="breadcrumb-item">Enumerations</li>
@@ -113,6 +131,21 @@
                     <ul class="index-list">
                         <li>
                             <a href="#Action" title="src/shared/acl/action.constant.ts" ><b>Action</b>&nbsp;&nbsp;&nbsp;(src/.../action.constant.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CategoryType" title="src/category/dto/category.dto.ts" ><b>CategoryType</b>&nbsp;&nbsp;&nbsp;(src/.../category.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EmailType" title="src/utils/email.util.ts" ><b>EmailType</b>&nbsp;&nbsp;&nbsp;(src/.../email.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ModerationAction" title="src/shared/dtos/moderation.dto.ts" ><b>ModerationAction</b>&nbsp;&nbsp;&nbsp;(src/.../moderation.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ResourceLevel" title="src/resource/dto/resource.dto.ts" ><b>ResourceLevel</b>&nbsp;&nbsp;&nbsp;(src/.../resource.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ResourceType" title="src/resource/dto/resource.dto.ts" ><b>ResourceType</b>&nbsp;&nbsp;&nbsp;(src/.../resource.dto.ts)</a>
                         </li>
                         <li>
                             <a href="#ROLE" title="src/auth/constants/role.constant.ts" ><b>ROLE</b>&nbsp;&nbsp;&nbsp;(src/.../role.constant.ts)</a>
@@ -203,6 +236,388 @@
             </tbody>
         </table>
 </section>
+    <h3>src/category/dto/category.dto.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="CategoryType"></a>
+                        <span class="name "><b>CategoryType</b><a href="#CategoryType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BLOG
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>BLOG</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;NEWS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>NEWS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;EVENTS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>EVENTS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;OPPORTUNITY
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>OPPORTUNITY</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PROJECT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PROJECT</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;RESOURCE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>RESOURCE</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ORGANIZATION
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>ORGANIZATION</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>src/utils/email.util.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="EmailType"></a>
+                        <span class="name "><b>EmailType</b><a href="#EmailType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;EMAIL_VERIFICATION
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>EMAIL_VERIFICATION</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WELCOME_EMAIL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>WELCOME_EMAIL</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;EMAIL_VERIFIED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>EMAIL_VERIFIED</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PASSWORD_RESET
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PASSWORD_RESET</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PASSWORD_RESET_SUCCESS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PASSWORD_RESET_SUCCESS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ORGANIZATION_VERIFIED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>ORGANIZATION_VERIFIED</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>src/shared/dtos/moderation.dto.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ModerationAction"></a>
+                        <span class="name "><b>ModerationAction</b><a href="#ModerationAction"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;APPROVE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>APPROVE</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REQUEST_IMPROVEMENTS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>REQUEST_IMPROVEMENTS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REJECT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>REJECT</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>src/resource/dto/resource.dto.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ResourceLevel"></a>
+                        <span class="name "><b>ResourceLevel</b><a href="#ResourceLevel"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;INTERNATIONAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>INTERNATIONAL</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REGIONAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>REGIONAL</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;NATIONAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>NATIONAL</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PROVINCIAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PROVINCIAL</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;LOCAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>LOCAL</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ResourceType"></a>
+                        <span class="name "><b>ResourceType</b><a href="#ResourceType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DOCUMENTARY
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>DOCUMENTARY</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PODCASTS_AND_TELEVISION
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PODCASTS_AND_TELEVISION</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;COURSES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>COURSES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PLANS_AND_POLICIES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PLANS_AND_POLICIES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DATA_RESOURCES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>DATA_RESOURCES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PLATFORMS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PLATFORMS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;RESEARCH_ARTICLES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>RESEARCH_ARTICLES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;THESES_AND_DISSERTATIONS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>THESES_AND_DISSERTATIONS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;CASE_STUDIES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>CASE_STUDIES</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REPORTS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>REPORTS</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;TOOLKITS_AND_GUIDES
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>TOOLKITS_AND_GUIDES</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
     <h3>src/auth/constants/role.constant.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
@@ -213,14 +628,21 @@
                         <span class="name "><b>ROLE</b><a href="#ROLE"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-description"><p>Single application role model (no separate &quot;user type&quot; enum).
+Values align with Prisma <code>User.userType</code> and the JWT <code>role</code> claim.</p>
+</div>
+                        </td>
+                    </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;USER
+                                &nbsp;SUPER_ADMIN
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>USER</code>
+                                <i>Value : </i><code>SUPER_ADMIN</code>
                             </td>
                         </tr>
                         <tr>
@@ -231,6 +653,36 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>ADMIN</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;CONTENT_ADMIN
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>CONTENT_ADMIN</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ORGANIZATION
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>ORGANIZATION</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;INDIVIDUAL
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>INDIVIDUAL</code>
                             </td>
                         </tr>
             </tbody>

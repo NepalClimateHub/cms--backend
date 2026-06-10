@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content injectable">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -153,6 +171,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#moderateNews" >moderateNews</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateNews" >updateNews</a>
                             </li>
                         </ul>
@@ -178,7 +200,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/news/services/news.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/news/services/news.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -255,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="123"
-                                    class="link-to-prism">src/news/services/news.service.ts:123</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/news/services/news.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -336,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="151"
-                                    class="link-to-prism">src/news/services/news.service.ts:151</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">src/news/services/news.service.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -417,8 +439,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/news/services/news.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/news/services/news.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +520,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">src/news/services/news.service.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">src/news/services/news.service.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -561,6 +583,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="moderateNews"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>moderateNews</b></span>
+                        <a href="#moderateNews"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moderateNews(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: <a href="../classes/ContentModerationDto.html" target="_self">ContentModerationDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">src/news/services/news.service.ts:224</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../classes/ContentModerationDto.html" target="_self" >ContentModerationDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/NewsResponseDto.html" target="_self" >Promise&lt;NewsResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateNews"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -579,8 +694,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">src/news/services/news.service.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">src/news/services/news.service.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -669,8 +784,13 @@ import {
   UpdateNewsDto,
 } from &quot;../dto/news.dto&quot;;
 import { applyFilters } from &quot;../../shared/filters/prisma-filter.filter&quot;;
-import { Prisma } from &quot;@prisma/client&quot;;
+import { ContentStatus, Prisma } from &quot;@prisma/client&quot;;
 import { createSearchKey } from &quot;../../shared/utils/createSearchKey&quot;;
+import {
+  ContentModerationDto,
+  ModerationAction,
+} from &quot;../../shared/dtos/moderation.dto&quot;;
+import { BadRequestException } from &quot;@nestjs/common&quot;;
 
 @Injectable()
 export class NewsService {
@@ -785,11 +905,12 @@ export class NewsService {
     this.logger.log(ctx, &#x60;${this.addNews.name} was called&#x60;);
     const { tagIds, ...restPayload } &#x3D; payload;
 
+    const publishedYear &#x3D; new Date(restPayload.publishedDate).getFullYear();
     const news &#x3D; await this.prismaService.news.create({
       data: {
         ...restPayload,
         contributedBy: ctx!.user!.id,
-        publishedYear: new Date(payload.publishedDate).getFullYear().toString(),
+        publishedYear: new Date(&#x60;${publishedYear}-01-01&#x60;).toISOString(),
         ...(tagIds &amp;&amp; {
           tags: {
             connect: tagIds?.map((id) &#x3D;&gt; ({
@@ -847,6 +968,7 @@ export class NewsService {
 
     const { tagIds, ...restPayload } &#x3D; payload;
 
+    console.log(&quot;payload&#x3D;&#x3D;&#x3D;&quot;, payload);
     const updatedNews &#x3D; await this.prismaService.news.update({
       where: {
         id: news.id,
@@ -868,6 +990,43 @@ export class NewsService {
     });
 
     return plainToClass(NewsResponseDto, updatedNews, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async moderateNews(
+    ctx: RequestContext,
+    id: string,
+    payload: ContentModerationDto
+  ): Promise&lt;NewsResponseDto&gt; {
+    this.logger.log(ctx, &#x60;${this.moderateNews.name} was called&#x60;);
+
+    if (
+      payload.action &#x3D;&#x3D;&#x3D; ModerationAction.REQUEST_IMPROVEMENTS &amp;&amp;
+      !payload.feedback
+    ) {
+      throw new BadRequestException(
+        &quot;Feedback is mandatory when requesting improvements&quot;
+      );
+    }
+
+    const statusMap &#x3D; {
+      [ModerationAction.APPROVE]: ContentStatus.PUBLISHED,
+      [ModerationAction.REQUEST_IMPROVEMENTS]:
+        ContentStatus.IMPROVEMENT_REQUIRED,
+      [ModerationAction.REJECT]: ContentStatus.REJECTED,
+    };
+
+    const news &#x3D; await this.prismaService.news.update({
+      where: { id },
+      data: {
+        status: statusMap[payload.action],
+        reviewFeedback: payload.feedback || null,
+        isDraft: payload.action !&#x3D;&#x3D; ModerationAction.APPROVE,
+      },
+    });
+
+    return plainToClass(NewsResponseDto, news, {
       excludeExtraneousValues: true,
     });
   }

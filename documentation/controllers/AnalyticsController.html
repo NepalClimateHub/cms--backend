@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content controller">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -114,7 +132,6 @@
         <p class="comment">
             <code>src/analytics/controllers/analytics.controller.ts</code>
         </p>
-
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
@@ -146,6 +163,25 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getAdminAnalytics" >getAdminAnalytics</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMonthlyUserStats" >getMonthlyUserStats</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getNewJoinedUsers" >getNewJoinedUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTopBlogAuthors" >getTopBlogAuthors</a>
                             </li>
                         </ul>
                     </td>
@@ -196,8 +232,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">src/analytics/controllers/analytics.controller.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/analytics/controllers/analytics.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -243,6 +279,253 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMonthlyUserStats"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMonthlyUserStats</b></span>
+                        <a href="#getMonthlyUserStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMonthlyUserStats(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, year?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/monthly-user-stats&#x27;)<br />@ApiOperation({summary: &#x27;Get monthly user statistics for a given year&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/analytics/controllers/analytics.controller.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>year</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;MonthlyUserStatsResponseDto&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getNewJoinedUsers"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getNewJoinedUsers</b></span>
+                        <a href="#getNewJoinedUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getNewJoinedUsers(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/new-joined-users&#x27;)<br />@ApiOperation({summary: &#x27;Get top 5 newly joined users&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">src/analytics/controllers/analytics.controller.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BaseApiResponse.html" target="_self" >Promise&lt;BaseApiResponse&lt;Array&lt;literal type&gt;&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTopBlogAuthors"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getTopBlogAuthors</b></span>
+                        <a href="#getTopBlogAuthors"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTopBlogAuthors(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/top-blog-authors&#x27;)<br />@ApiOperation({summary: &#x27;Get top 5 users by published blog count&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/analytics/controllers/analytics.controller.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BaseApiResponse.html" target="_self" >Promise&lt;BaseApiResponse&lt;Array&lt;literal type&gt;&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -270,7 +553,9 @@ import { ReqContext } from &quot;../../shared/request-context/req-context.decora
 import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
 import { RegisterInput } from &quot;../../auth/dtos/auth-register-input.dto&quot;;
 import { AdminAnalyticsOutput } from &quot;../dtos/admin-analytics-output.dto&quot;;
+import { MonthlyUserStatsResponseDto } from &quot;../dtos/monthly-user-stats.dto&quot;;
 import { AnalyticsService } from &quot;../services/analytics.service&quot;;
+import { Query } from &quot;@nestjs/common&quot;;
 
 @ApiTags(&quot;analytics&quot;)
 @Controller(&quot;analytics&quot;)
@@ -294,6 +579,44 @@ export class AnalyticsController {
     @ReqContext() ctx: RequestContext
   ): Promise&lt;BaseApiResponse&lt;AdminAnalyticsOutput&gt;&gt; {
     const res &#x3D; await this.analyticsService.getAdminDashboardAnalytics(ctx);
+    return { data: res, meta: {} };
+  }
+
+  @Get(&quot;/monthly-user-stats&quot;)
+  @ApiOperation({
+    summary: &quot;Get monthly user statistics for a given year&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(MonthlyUserStatsResponseDto),
+  })
+  async getMonthlyUserStats(
+    @ReqContext() ctx: RequestContext,
+    @Query(&quot;year&quot;) year?: string
+  ): Promise&lt;BaseApiResponse&lt;MonthlyUserStatsResponseDto&gt;&gt; {
+    const yearNumber &#x3D; year ? parseInt(year, 10) : new Date().getFullYear();
+    const res &#x3D; await this.analyticsService.getMonthlyUserStats(
+      ctx,
+      yearNumber
+    );
+    return { data: res, meta: {} };
+  }
+
+  @Get(&quot;/top-blog-authors&quot;)
+  @ApiOperation({ summary: &quot;Get top 5 users by published blog count&quot; })
+  async getTopBlogAuthors(
+    @ReqContext() ctx: RequestContext
+  ): Promise&lt;BaseApiResponse&lt;Array&lt;{ userId: string; name: string; email: string; blogCount: number }&gt;&gt;&gt; {
+    const res &#x3D; await this.analyticsService.getTopBlogAuthors(ctx);
+    return { data: res, meta: {} };
+  }
+
+  @Get(&quot;/new-joined-users&quot;)
+  @ApiOperation({ summary: &quot;Get top 5 newly joined users&quot; })
+  async getNewJoinedUsers(
+    @ReqContext() ctx: RequestContext
+  ): Promise&lt;BaseApiResponse&lt;Array&lt;{ userId: string; name: string; email: string; joinedAt: Date; role: string }&gt;&gt;&gt; {
+    const res &#x3D; await this.analyticsService.getNewJoinedUsers(ctx);
     return { data: res, meta: {} };
   }
 }

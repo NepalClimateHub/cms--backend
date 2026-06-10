@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -155,17 +173,14 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#bannerImageUrl" >bannerImageUrl</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#description" >description</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#email" >email</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -192,20 +207,6 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#name" >name</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#phoneCountryCode" >phoneCountryCode</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#phoneNumber" >phoneNumber</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -269,7 +270,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/organization/dto/organization.dto.ts:73</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/organization/dto/organization.dto.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -308,7 +309,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">src/organization/dto/organization.dto.ts:100</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/organization/dto/organization.dto.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -323,6 +324,8 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>bannerImageUrl</b></span>
                         <a href="#bannerImageUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -339,13 +342,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Banner image URL&#x27;, example: &#x27;https://example.com/org-banner.jpg&#x27;})<br />@IsString()<br />
+                            @ApiPropertyOptional({description: &#x27;Banner image URL&#x27;, example: &#x27;https://example.com/org-banner.jpg&#x27;, required: false})<br />@IsString()<br />@IsOptional()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/organization/dto/organization.dto.ts:95</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/organization/dto/organization.dto.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -393,43 +396,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="email"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>email</b></span>
-                        <a href="#email"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;Organization email&#x27;, example: &#x27;contact@techinnovations.com&#x27;})<br />@IsEmail()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/organization/dto/organization.dto.ts:47</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="gallery"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -460,7 +426,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/organization/dto/organization.dto.ts:84</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/organization/dto/organization.dto.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -499,7 +465,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="112" class="link-to-prism">src/organization/dto/organization.dto.ts:112</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="89" class="link-to-prism">src/organization/dto/organization.dto.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -536,7 +502,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/organization/dto/organization.dto.ts:107</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/organization/dto/organization.dto.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -584,84 +550,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="phoneCountryCode"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>phoneCountryCode</b></span>
-                        <a href="#phoneCountryCode"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiPropertyOptional({description: &#x27;Phone country code&#x27;, required: false, example: &#x27;+1&#x27;})<br />@IsOptional()<br />@IsString()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/organization/dto/organization.dto.ts:56</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="phoneNumber"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>phoneNumber</b></span>
-                        <a href="#phoneNumber"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiPropertyOptional({description: &#x27;Phone number&#x27;, required: false, example: &#x27;5551234567&#x27;})<br />@IsOptional()<br />@IsString()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/organization/dto/organization.dto.ts:65</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="socials"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -689,7 +577,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/organization/dto/organization.dto.ts:88</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/organization/dto/organization.dto.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -727,7 +615,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="120" class="link-to-prism">src/organization/dto/organization.dto.ts:120</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">src/organization/dto/organization.dto.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -749,7 +637,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import {
   IsArray,
-  IsEmail,
+  IsBoolean,
   IsOptional,
   IsString,
   ValidateNested,
@@ -787,31 +675,6 @@ export class CreateOrganizationDto {
   @IsString()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
-    example: &quot;contact@techinnovations.com&quot;,
-  })
-  @IsEmail()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
-    required: false,
-    example: &quot;+1&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
-    required: false,
-    example: &quot;5551234567&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
     required: false,
@@ -835,12 +698,14 @@ export class CreateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: &quot;Banner image URL&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
   @IsString()
@@ -885,32 +750,6 @@ export class UpdateOrganizationDto {
   @IsOptional()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
-    example: &quot;contact@techinnovations.com&quot;,
-  })
-  @IsEmail()
-  @IsOptional()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
-    required: false,
-    example: &quot;+1&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
-    required: false,
-    example: &quot;5551234567&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
     required: false,
@@ -934,15 +773,16 @@ export class UpdateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: &quot;Banner image URL&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
   @IsString()
   @IsOptional()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: &quot;Banner image ID&quot;, required: false })
+  @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
   @IsString()
   @IsOptional()
   bannerImageId?: string;
@@ -963,6 +803,14 @@ export class UpdateOrganizationDto {
   @ApiProperty({ description: &quot;Tags IDs&quot;, type: [String], required: false })
   @IsOptional()
   tagIds?: string[];
+}
+
+export class VerifyOrganizationInput {
+  @ApiProperty({
+    description: &quot;Whether the organization is verified by an admin&quot;,
+  })
+  @IsBoolean()
+  isVerified: boolean;
 }
 
 export class OrganizationResponseDto {
@@ -987,29 +835,30 @@ export class OrganizationResponseDto {
   @Expose()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
+  @ApiPropertyOptional({
+    description:
+      &quot;Contact email from the linked user account (User.organizationId), if any&quot;,
     example: &quot;contact@techinnovations.com&quot;,
   })
   @Expose()
-  email: string;
+  email?: string | null;
 
   @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
+    description: &quot;Phone country code from the linked user account&quot;,
     required: false,
     example: &quot;+1&quot;,
   })
   @Expose()
-  phoneCountryCode?: string;
+  phoneCountryCode?: string | null;
 
   @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
+    description: &quot;Phone number from the linked user account&quot;,
     required: false,
     example: &quot;5551234567&quot;,
   })
   @IsOptional()
   @IsString()
-  phoneNumber?: string;
+  phoneNumber?: string | null;
 
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
@@ -1023,27 +872,44 @@ export class OrganizationResponseDto {
   @Expose()
   socials?: any;
 
-  @ApiProperty({
-    description: &quot;Banner image URL&quot;,
+  @ApiPropertyOptional({
+    description: &quot;Banner image URL from the linked user account&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: &quot;Banner image ID&quot;, required: false })
+  @ApiPropertyOptional({
+    description: &quot;Banner image ID from the linked user account&quot;,
+    required: false,
+  })
+  @IsOptional()
   @Expose()
   bannerImageId?: string;
 
   @ApiProperty({
-    description: &quot;Logo image URL&quot;,
+    description:
+      &quot;Logo image URL from the linked user account (profilePhotoUrl)&quot;,
     example: &quot;https://example.com/org-logo.jpg&quot;,
   })
   @Expose()
   logoImageUrl: string;
 
-  @ApiProperty({ description: &quot;Logo image ID&quot;, required: false })
+  @ApiPropertyOptional({
+    description: &quot;Logo image ID from the linked user account (profilePhotoId)&quot;,
+    required: false,
+  })
   @Expose()
   logoImageId?: string;
+
+  @ApiProperty({
+    description:
+      &quot;True when a platform admin has verified the linked organization account (User.isVerifiedByAdmin)&quot;,
+  })
+  @Expose()
+  isVerifiedByAdmin: boolean;
 
   @ApiProperty({ description: &quot;Tags IDs&quot;, type: [String], required: false })
   @Expose()

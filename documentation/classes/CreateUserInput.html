@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -143,8 +161,22 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#district" >district</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#email" >email</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#iAm" >iAm</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -162,8 +194,35 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#orgName" >orgName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#orgType" >orgType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#password" >password</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#province" >province</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#role" >role</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -202,6 +261,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="district"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>district</b></span>
+                        <a href="#district"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />@IsOptional()<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="email"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -231,6 +329,45 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="iAm"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>iAm</b></span>
+                        <a href="#iAm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />@IsOptional()<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -317,6 +454,84 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="orgName"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>orgName</b></span>
+                        <a href="#orgName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />@IsOptional()<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="orgType"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>orgType</b></span>
+                        <a href="#orgType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />@IsOptional()<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="password"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -346,6 +561,88 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="province"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>province</b></span>
+                        <a href="#province"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />@IsOptional()<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="role"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>role</b></span>
+                        <a href="#role"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ROLE" target="_self" >ROLE</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ROLE.INDIVIDUAL</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty({enum: ROLE, default: undefined})<br />@IsEnum(ROLE)<br />@IsOptional()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/user/dtos/user-create-input.dto.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -442,7 +739,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import {
   ArrayNotEmpty,
   IsAlphanumeric,
@@ -455,9 +752,9 @@ import {
   IsString,
   Length,
   MaxLength,
-} from &#x27;class-validator&#x27;;
+} from &quot;class-validator&quot;;
 
-import { ROLE } from &#x27;../../auth/constants/role.constant&#x27;;
+import { ROLE } from &quot;../../auth/constants/role.constant&quot;;
 
 export class CreateUserInput {
   @ApiPropertyOptional()
@@ -493,6 +790,36 @@ export class CreateUserInput {
   @ApiProperty()
   @IsBoolean()
   isAccountDisabled: boolean;
+
+  @ApiProperty({ enum: ROLE, default: ROLE.INDIVIDUAL })
+  @IsEnum(ROLE)
+  @IsOptional()
+  role: ROLE &#x3D; ROLE.INDIVIDUAL;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  orgName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  orgType?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  province?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  district?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  iAm?: string;
 }
 </code></pre>
     </div>
