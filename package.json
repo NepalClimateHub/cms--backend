@@ -96,16 +96,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "bcrypt",
-      "prisma",
-      "@prisma/client",
-      "@prisma/engines",
-      "esbuild",
-      "@compodoc/compodoc",
-      "@scarf/scarf"
-    ]
   }
 }
