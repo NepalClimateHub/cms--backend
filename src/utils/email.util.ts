@@ -1,4 +1,4 @@
-import * as nodemailer from "nodemailer";
+import { EmailClient } from "@azure/communication-email";
 import * as handlebars from "handlebars";
 import * as fs from "fs";
 import * as path from "path";
@@ -24,47 +24,27 @@ export interface EmailMetadata {
 }
 
 export interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-  from: string;
+  connectionString: string;
+  senderAddress: string;
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private client: EmailClient;
   private config: EmailConfig;
 
   constructor(private configService?: ConfigService) {
     this.config = {
-      host:
-        this.configService?.get("smtp.host") ||
-        process.env.SMTP_HOST ||
-        "smtp.gmail.com",
-      port:
-        this.configService?.get("smtp.port") ||
-        parseInt(process.env.SMTP_PORT || "587"),
-      secure:
-        this.configService?.get("smtp.secure") ||
-        process.env.SMTP_PORT === "465",
-      auth: {
-        user:
-          this.configService?.get("smtp.user") || process.env.SMTP_USER || "",
-        pass:
-          this.configService?.get("smtp.pass") || process.env.SMTP_PASS || "",
-      },
-      from: this.configService?.get("smtp.from") || process.env.SMTP_USER || "",
+      connectionString:
+        this.configService?.get("azureEmail.connectionString") ||
+        process.env.AZURE_COMMUNICATION_CONNECTION_STRING ||
+        "",
+      senderAddress:
+        this.configService?.get("azureEmail.senderAddress") ||
+        process.env.SENDER_EMAIL_ADDRESS ||
+        "",
     };
 
-    this.transporter = nodemailer.createTransport({
-      host: this.config.host,
-      port: this.config.port,
-      secure: this.config.secure,
-      auth: this.config.auth,
-    });
+    this.client = new EmailClient(this.config.connectionString);
   }
 
   private async getTemplate(templateName: string): Promise<string> {
@@ -73,21 +53,21 @@ class EmailService {
       process.cwd(),
       "src",
       "templates",
-      `${templateName}.hbs`
+      `${templateName}.hbs`,
     );
 
     try {
       return fs.readFileSync(templatePath, "utf8");
     } catch (error) {
       throw new Error(
-        `Template not found: ${templateName}.hbs at path: ${templatePath}`
+        `Template not found: ${templateName}.hbs at path: ${templatePath}`,
       );
     }
   }
 
   private async renderTemplate(
     templateName: string,
-    data: Record<string, any>
+    data: Record<string, any>,
   ): Promise<string> {
     const templateContent = await this.getTemplate(templateName);
     const template = handlebars.compile(templateContent);
@@ -125,7 +105,7 @@ class EmailService {
 
   private prepareTemplateData(
     emailType: EmailType,
-    metadata: EmailMetadata
+    metadata: EmailMetadata,
   ): Record<string, any> {
     const baseData = {
       userName: metadata.userName || "User",
@@ -183,7 +163,7 @@ class EmailService {
 
   async sendEmail(
     emailType: EmailType,
-    metadata: EmailMetadata
+    metadata: EmailMetadata,
   ): Promise<boolean> {
     try {
       const templateName = this.getTemplateName(emailType);
@@ -192,15 +172,19 @@ class EmailService {
       const htmlContent = await this.renderTemplate(templateName, templateData);
       const subject = this.getSubject(emailType, metadata);
 
-      const mailOptions = {
-        from: this.config.from,
-        to: metadata.to,
-        subject,
-        html: htmlContent,
-      };
+      const poller = await this.client.beginSend({
+        senderAddress: this.config.senderAddress,
+        content: {
+          subject,
+          html: htmlContent,
+        },
+        recipients: {
+          to: [{ address: metadata.to }],
+        },
+      });
 
-      const result = await this.transporter.sendMail(mailOptions);
-      console.log(`Email sent successfully: ${result.messageId}`);
+      const result = await poller.pollUntilDone();
+      console.log(`Email sent successfully: ${result.id}`);
       return true;
     } catch (error) {
       console.error("Failed to send email:", error);
@@ -210,11 +194,9 @@ class EmailService {
 
   async verifyConnection(): Promise<boolean> {
     try {
-      await this.transporter.verify();
-      console.log("SMTP connection verified successfully");
-      return true;
+      return !!this.config.connectionString && !!this.config.senderAddress;
     } catch (error) {
-      console.error("SMTP connection failed:", error);
+      console.error("Azure email connection verification failed:", error);
       return false;
     }
   }
@@ -226,7 +208,7 @@ const emailService = new EmailService();
 // Main function for sending emails - simplified interface
 export const sendEmail = async (
   emailType: EmailType,
-  metadata: EmailMetadata
+  metadata: EmailMetadata,
 ): Promise<any> => {
   try {
     const result = await emailService.sendEmail(emailType, metadata);
