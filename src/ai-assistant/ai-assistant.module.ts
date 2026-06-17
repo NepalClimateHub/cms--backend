@@ -3,6 +3,11 @@ import { HttpModule } from "@nestjs/axios";
 import { SharedModule } from "../shared/shared.module";
 import { AiAssistantService } from "./services/ai-assistant.service";
 import { AiAssistantController } from "./controllers/ai-assistant.controller";
+import {
+  AiDocumentAdminController,
+  AiDocumentInternalController,
+} from "./controllers/ai-document-admin.controller";
+import { RagServiceTokenGuard } from "./guards/rag-service-token.guard";
 
 @Module({
   imports: [
@@ -12,8 +17,12 @@ import { AiAssistantController } from "./controllers/ai-assistant.controller";
       maxRedirects: 3,
     }),
   ],
-  providers: [AiAssistantService],
-  controllers: [AiAssistantController],
+  providers: [AiAssistantService, RagServiceTokenGuard],
+  controllers: [
+    AiAssistantController,
+    AiDocumentAdminController,
+    AiDocumentInternalController,
+  ],
   exports: [AiAssistantService],
 })
 export class AiAssistantModule {}

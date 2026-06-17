@@ -8,3 +8,4 @@ build
 .DS_store
 /mydocs
 temp-exports/
+test-report.xml
