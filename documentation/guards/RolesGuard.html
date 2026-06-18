@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content guard">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -114,7 +132,7 @@
 <div class="tab-content">
         <div class="tab-pane fade active in" id="info">
             <p class="comment">
-            <h3>File</h3>
+                <h3>File</h3>
             </p>
             <p class="comment">
                 <code>src/auth/guards/roles.guard.ts</code>
@@ -305,15 +323,24 @@ export class RolesGuard implements CanActivate {
     }
     const { user } &#x3D; context.switchToHttp().getRequest();
 
-    // if (requiredRoles.some((role) &#x3D;&gt; user.roles?.includes(role))) {
-    //   return true;
-    // }
+    if (!user) {
+      return false;
+    }
+
+    // Super Admin has access to everything
+    if (user.userType &#x3D;&#x3D;&#x3D; ROLE.SUPER_ADMIN) {
+      return true;
+    }
+
+    const hasRole &#x3D; requiredRoles.some((r) &#x3D;&gt; user.userType &#x3D;&#x3D;&#x3D; r);
+
+    if (!hasRole) {
+      throw new UnauthorizedException(
+        &#x60;User with role ${user.userType} does not have access to this route; required: ${requiredRoles.join(&quot;, &quot;)}&#x60;,
+      );
+    }
 
     return true;
-
-    throw new UnauthorizedException(
-      &#x60;User with roles ${user.roles} does not have access to this route with roles ${requiredRoles}&#x60;
-    );
   }
 }
 </code></pre>

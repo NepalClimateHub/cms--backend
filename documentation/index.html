@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -79,10 +93,186 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content getting-started">
+               <div class="content readme">
                    <div class="content-data">
 
-<h2>NCH Backend</h2>
+
+<h1>NCH CMS Backend</h1>
+<h2>Tech Stack</h2>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>NestJS (TypeScript)</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>Prisma 6</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL 16</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>JWT (RS256)</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>ImageKit</td>
+</tr>
+<tr>
+<td>Package manager</td>
+<td>npm</td>
+</tr>
+</tbody>
+</table>
+<h2>Prerequisites</h2>
+<ul>
+<li>Node.js ≥ 18</li>
+<li>npm</li>
+<li>PostgreSQL 16 (or Docker + Docker Compose)</li>
+</ul>
+<h2>Local Setup</h2>
+<h3>1. Clone and install</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">git clone https://github.com/NepalClimateHub/cms--backend.git
+cd cms--backend
+npm install</code></pre></div><h3>2. Configure environment</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">cp .env.template .env</code></pre></div><p>Edit <code>.env</code> with your values:</p>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>APP_ENV</code></td>
+<td><code>development</code> or <code>production</code></td>
+</tr>
+<tr>
+<td><code>APP_PORT</code></td>
+<td>Server port (default <code>8080</code>)</td>
+</tr>
+<tr>
+<td><code>DB_URL</code></td>
+<td>PostgreSQL connection string (<code>postgresql://user:pass@localhost:5432/nch_cms_db</code>)</td>
+</tr>
+<tr>
+<td><code>JWT_PUBLIC_KEY_BASE64</code></td>
+<td>RS256 public key (base64 encoded)</td>
+</tr>
+<tr>
+<td><code>JWT_PRIVATE_KEY_BASE64</code></td>
+<td>RS256 private key (base64 encoded)</td>
+</tr>
+<tr>
+<td><code>IMAGEKIT_PUB_KEY</code></td>
+<td>ImageKit public key</td>
+</tr>
+<tr>
+<td><code>IMAGEKIT_PVT_KEY</code></td>
+<td>ImageKit private key</td>
+</tr>
+<tr>
+<td><code>IMAGEKIT_ENDPOINT</code></td>
+<td>ImageKit URL endpoint</td>
+</tr>
+<tr>
+<td><code>SMTP_HOST</code> / <code>SMTP_PORT</code> / <code>SMTP_USER</code> / <code>SMTP_PASS</code></td>
+<td>Email (SMTP) credentials</td>
+</tr>
+<tr>
+<td><code>RAG_SERVICE_URL</code></td>
+<td>NCH Climate Assistant URL (default: <code>http://127.0.0.1:8000</code>)</td>
+</tr>
+<tr>
+<td><code>FRONTEND_BASE_URL</code></td>
+<td>CMS Frontend URL (default: <code>http://localhost:5173</code>)</td>
+</tr>
+<tr>
+<td><code>WEBSITE_BASE_URL</code></td>
+<td>Public website URL</td>
+</tr>
+</tbody>
+</table>
+<h3>3. Run database migrations</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">npm run migrate:dev</code></pre></div><h3>4. (Optional) Seed the database</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">npm run migrate:seed</code></pre></div><h3>5. Start the development server</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">npm run dev</code></pre></div><p>The API will be available at <code>http://localhost:8080</code> and Swagger docs at <code>http://localhost:8080/api</code>.</p>
+<h2>Available Scripts</h2>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm run dev</code></td>
+<td>Start dev server with watch mode</td>
+</tr>
+<tr>
+<td><code>npm run build</code></td>
+<td>Compile TypeScript to <code>dist/</code></td>
+</tr>
+<tr>
+<td><code>npm run migrate:dev</code></td>
+<td>Run Prisma migrations (development)</td>
+</tr>
+<tr>
+<td><code>npm run migrate:seed</code></td>
+<td>Seed the database</td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td>Run unit tests</td>
+</tr>
+<tr>
+<td><code>npm run doc:serve</code></td>
+<td>Browse API docs locally</td>
+</tr>
+</tbody>
+</table>
+<h2>Running with Docker</h2>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker-compose up -d</code></pre></div><p>This starts the NestJS API on port <code>3111</code> (maps to internal <code>8080</code>) alongside PostgreSQL 16. Watchtower is included for automatic image updates in production.</p>
+<h2>Related Services</h2>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>Service</th>
+<th>Port</th>
+<th>Repository</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CMS Frontend</td>
+<td>5173</td>
+<td><a href="https://github.com/NepalClimateHub/cms--frontend">cms--frontend</a></td>
+</tr>
+<tr>
+<td>NCH Climate Assistant</td>
+<td>8000</td>
+<td><a href="https://github.com/NepalClimateHub/NCH-Climate-Assistant">NCH-Climate-Assistant</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Contributing</h2>
+<p>Contributions are welcome. Please open an issue first to discuss what you would like to change.</p>
+<h2>License</h2>
+<p>MIT License — see <a href="./LICENSE">LICENSE</a> for details.</p>
+
+
+
 
 
 
@@ -129,7 +319,7 @@
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 0;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'readme';
             var COMPODOC_CURRENT_PAGE_URL = 'index.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>

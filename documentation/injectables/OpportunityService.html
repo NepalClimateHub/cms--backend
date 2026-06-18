@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content injectable">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -153,6 +171,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#moderateOpportunity" >moderateOpportunity</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateOpportunity" >updateOpportunity</a>
                             </li>
                         </ul>
@@ -178,7 +200,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/opportunity/services/opportunities.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/opportunity/services/opportunities.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -255,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -336,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -417,8 +439,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +520,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -561,6 +583,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="moderateOpportunity"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>moderateOpportunity</b></span>
+                        <a href="#moderateOpportunity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moderateOpportunity(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: <a href="../classes/ContentModerationDto.html" target="_self">ContentModerationDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:268</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../classes/ContentModerationDto.html" target="_self" >ContentModerationDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/OpportunityResponseDto.html" target="_self" >Promise&lt;OpportunityResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateOpportunity"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -579,8 +694,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">src/opportunity/services/opportunities.service.ts:220</a></div>
                         </td>
                     </tr>
 
@@ -669,8 +784,13 @@ import {
   UpdateOpportunityDto,
 } from &quot;../dto/opportunities.dto&quot;;
 import { applyFilters } from &quot;../../shared/filters/prisma-filter.filter&quot;;
-import { Prisma } from &quot;@prisma/client&quot;;
+import { ContentStatus, Prisma } from &quot;@prisma/client&quot;;
 import { createSearchKey } from &quot;../../shared/utils/createSearchKey&quot;;
+import {
+  ContentModerationDto,
+  ModerationAction,
+} from &quot;../../shared/dtos/moderation.dto&quot;;
+import { BadRequestException } from &quot;@nestjs/common&quot;;
 
 @Injectable()
 export class OpportunityService {
@@ -726,6 +846,13 @@ export class OpportunityService {
               },
             };
           },
+          status: async ({ filter }) &#x3D;&gt; {
+            return {
+              where: {
+                status: filter as ContentStatus,
+              },
+            };
+          },
         },
       });
 
@@ -735,7 +862,6 @@ export class OpportunityService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
       take: limit,
@@ -770,7 +896,6 @@ export class OpportunityService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
       },
     });
@@ -789,10 +914,32 @@ export class OpportunityService {
     payload: CreateOpportunityDto
   ): Promise&lt;OpportunityResponseDto&gt; {
     this.logger.log(ctx, &#x60;${this.addOpportunity.name} was called&#x60;);
-    const { address, tagIds, socials, ...restPayload } &#x3D; payload;
+    const { address, tagIds, socials, bannerImageUrl, ...restPayload } &#x3D;
+      payload;
+
+    // Verify tags exist and are opportunity tags
+    if (tagIds?.length) {
+      const existingTags &#x3D; await this.prismaService.tags.findMany({
+        where: {
+          id: {
+            in: tagIds,
+          },
+          isOpportunityTag: true,
+        },
+      });
+
+      if (existingTags.length !&#x3D;&#x3D; tagIds.length) {
+        throw new NotFoundException(
+          &quot;One or more tags not found or are not opportunity tags&quot;
+        );
+      }
+    }
+
     const item &#x3D; await this.prismaService.opportunity.create({
       data: {
         ...restPayload,
+        contributedBy: ctx!.user!.id,
+        bannerImageUrl: bannerImageUrl ?? &quot;&quot;,
         ...(address &amp;&amp; {
           address: {
             create: {
@@ -806,13 +953,6 @@ export class OpportunityService {
               id,
               isOpportunityTag: true,
             })),
-          },
-        }),
-        ...(socials &amp;&amp; {
-          socials: {
-            create: {
-              data: JSON.parse(JSON.stringify(socials)),
-            },
           },
         }),
       },
@@ -865,7 +1005,7 @@ export class OpportunityService {
       throw new NotFoundException(&quot;Opportunity not found!&quot;);
     }
 
-    const { address, tagIds, socials, ...restPayload } &#x3D; payload;
+    const { address, tagIds, ...restPayload } &#x3D; payload;
 
     const updatedItem &#x3D; await this.prismaService.opportunity.update({
       where: {
@@ -873,21 +1013,6 @@ export class OpportunityService {
       },
       data: {
         ...restPayload,
-        address: {
-          upsert: {},
-        },
-        ...(socials &amp;&amp; {
-          socials: {
-            upsert: {
-              create: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-              update: {
-                data: JSON.parse(JSON.stringify(socials)),
-              },
-            },
-          },
-        }),
         ...(address &amp;&amp; {
           address: {
             upsert: {
@@ -898,8 +1023,6 @@ export class OpportunityService {
         }),
         ...(tagIds &amp;&amp; {
           tags: {
-            //set empty then create new records
-            // do not use deletemany here since it maybe used elsewhere
             set: [],
             connect: tagIds?.map((id) &#x3D;&gt; ({
               id,
@@ -911,6 +1034,43 @@ export class OpportunityService {
     });
 
     return plainToClass(OpportunityResponseDto, updatedItem, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async moderateOpportunity(
+    ctx: RequestContext,
+    id: string,
+    payload: ContentModerationDto
+  ): Promise&lt;OpportunityResponseDto&gt; {
+    this.logger.log(ctx, &#x60;${this.moderateOpportunity.name} was called&#x60;);
+
+    if (
+      payload.action &#x3D;&#x3D;&#x3D; ModerationAction.REQUEST_IMPROVEMENTS &amp;&amp;
+      !payload.feedback
+    ) {
+      throw new BadRequestException(
+        &quot;Feedback is mandatory when requesting improvements&quot;
+      );
+    }
+
+    const statusMap &#x3D; {
+      [ModerationAction.APPROVE]: ContentStatus.PUBLISHED,
+      [ModerationAction.REQUEST_IMPROVEMENTS]:
+        ContentStatus.IMPROVEMENT_REQUIRED,
+      [ModerationAction.REJECT]: ContentStatus.REJECTED,
+    };
+
+    const item &#x3D; await this.prismaService.opportunity.update({
+      where: { id },
+      data: {
+        status: statusMap[payload.action],
+        reviewFeedback: payload.feedback || null,
+        isDraft: payload.action !&#x3D;&#x3D; ModerationAction.APPROVE,
+      },
+    });
+
+    return plainToClass(OpportunityResponseDto, item, {
       excludeExtraneousValues: true,
     });
   }

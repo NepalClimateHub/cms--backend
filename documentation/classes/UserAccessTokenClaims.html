@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -157,11 +175,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#isAccountVerified" >isAccountVerified</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#isSuperAdmin" >isSuperAdmin</a>
+                                <a href="#isEmailVerified" >isEmailVerified</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -170,6 +184,11 @@
                             <li>
                                     <span class="modifier"></span>
                                 <a href="#phoneNumber" >phoneNumber</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#userType" >userType</a>
                             </li>
                         </ul>
                     </td>
@@ -219,7 +238,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -255,7 +274,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -291,7 +310,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +346,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -338,11 +357,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isAccountVerified"></a>
+                    <a name="isEmailVerified"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>isAccountVerified</b></span>
-                        <a href="#isAccountVerified"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isEmailVerified</b></span>
+                        <a href="#isEmailVerified"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -363,43 +382,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:28</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isSuperAdmin"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>isSuperAdmin</b></span>
-                        <a href="#isSuperAdmin"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Expose()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -435,7 +418,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -471,10 +454,53 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:36</a></div>
                         </td>
                     </tr>
 
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userType"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>userType</b></span>
+                        <a href="#userType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>UserType</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty({enum: UserType})<br />@Expose()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:41</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Prisma <code>User.userType</code> — same enum as application <code>ROLE</code>.</p>
+</div>
+                </td>
+            </tr>
 
         </tbody>
     </table>
@@ -490,8 +516,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &quot;@nestjs/swagger&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import { Expose } from &quot;class-transformer&quot;;
+import { UserType } from &quot;@prisma/client&quot;;
 
 export class AuthTokenOutput {
   @Expose()
@@ -513,11 +540,9 @@ export class UserAccessTokenClaims {
   @Expose()
   fullName: string;
 
-  @Expose()
-  isSuperAdmin: boolean;
 
   @Expose()
-  isAccountVerified: boolean;
+  isEmailVerified: boolean;
 
   @Expose()
   gender: string | null;
@@ -527,6 +552,11 @@ export class UserAccessTokenClaims {
 
   @Expose()
   phoneNumber: string | null;
+
+  /** Prisma &#x60;User.userType&#x60; — same enum as application &#x60;ROLE&#x60;. */
+  @ApiProperty({ enum: UserType })
+  @Expose()
+  userType: UserType;
 }
 
 export class UserRefreshTokenClaims {

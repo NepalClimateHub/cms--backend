@@ -74,6 +74,7 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.22.4",
     "typescript": "^5.8.2"
   },
   "jest": {
@@ -96,10 +97,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "bcrypt"
-    ]
   }
 }

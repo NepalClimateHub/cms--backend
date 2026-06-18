@@ -10,7 +10,7 @@ RUN apt-get update -y \
 
 RUN npm install -g pnpm
 
-COPY package.json ./
+COPY package.json pnpm-workspace.yaml* .npmrc* ./
 
 RUN pnpm install
 

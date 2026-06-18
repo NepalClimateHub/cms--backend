@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content controller">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -114,7 +132,6 @@
         <p class="comment">
             <code>src/tags/controllers/tags.controller.ts</code>
         </p>
-
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
@@ -150,6 +167,17 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#addTag" >addTag</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteTag" >deleteTag</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -222,8 +250,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -285,6 +313,101 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteTag"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteTag</b></span>
+                        <a href="#deleteTag"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteTag(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard)<br />@ApiBearerAuth()<br />@UseInterceptors(ClassSerializerInterceptor)<br />@Delete(&#x27;:id&#x27;)<br />@ApiOperation({summary: &#x27;Delete a tag by id&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:131</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;TagOutputDto&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getTags"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -315,8 +438,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -394,7 +517,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getTagsType(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, tagType: <a href="../undefineds/TagsType.html" target="_self">TagsType</a>)</code>
+                    <code>getTagsType(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, tagType: <a href="../miscellaneous/typealiases.html#TagsType" target="_self">TagsType</a>)</code>
                 </td>
             </tr>
 
@@ -408,8 +531,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">src/tags/controllers/tags.controller.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -484,6 +607,7 @@
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
+  Delete,
 } from &quot;@nestjs/common&quot;;
 import {
   ApiBearerAuth,
@@ -583,6 +707,30 @@ export class TagController {
     this.logger.log(ctx, &#x60;${this.addTag.name} was called&#x60;);
     const roleData &#x3D; await this.tagsService.addTag(ctx, payload);
     return { data: roleData, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete(&quot;:id&quot;)
+  @ApiOperation({
+    summary: &quot;Delete a tag by id&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(TagOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  async deleteTag(
+    @ReqContext() ctx: RequestContext,
+    @Param(&quot;id&quot;) id: string
+  ): Promise&lt;BaseApiResponse&lt;TagOutputDto&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.deleteTag.name} was called&#x60;);
+    const tag &#x3D; await this.tagsService.deleteTag(ctx, id);
+    return { data: tag, meta: {} };
   }
 }
 </code></pre>

@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content controller">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -114,7 +132,6 @@
         <p class="comment">
             <code>src/organization/controllers/organization.controller.ts</code>
         </p>
-
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
@@ -191,6 +208,17 @@
                                     <span class="modifier">Async</span>
                                 <a href="#updateOrganization" >updateOrganization</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyOrganization" >verifyOrganization</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -244,8 +272,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -339,8 +367,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -432,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -525,8 +553,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -620,8 +648,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -691,6 +719,113 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyOrganization"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyOrganization</b></span>
+                        <a href="#verifyOrganization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyOrganization(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: <a href="../classes/VerifyOrganizationInput.html" target="_self">VerifyOrganizationInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)<br />@ApiBearerAuth()<br />@UseInterceptors(ClassSerializerInterceptor)<br />@Patch(&#x27;/:id/verify&#x27;)<br />@ApiOperation({summary: &#x27;Verify organization API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">src/organization/controllers/organization.controller.ts:202</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../classes/VerifyOrganizationInput.html" target="_self" >VerifyOrganizationInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -717,6 +852,9 @@ import {
 } from &quot;@nestjs/swagger&quot;;
 
 import { JwtAuthGuard } from &quot;../../auth/guards/jwt-auth.guard&quot;;
+import { RolesGuard } from &quot;../../auth/guards/roles.guard&quot;;
+import { Roles } from &quot;../../auth/decorators/role.decorator&quot;;
+import { ROLE } from &quot;../../auth/constants/role.constant&quot;;
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -732,6 +870,7 @@ import {
   OrganizationResponseDto,
   OrganizationSearchInput,
   UpdateOrganizationDto,
+  VerifyOrganizationInput,
 } from &quot;../dto/organization.dto&quot;;
 
 @ApiTags(&quot;organizations&quot;)
@@ -739,7 +878,7 @@ import {
 export class OrganizationController {
   constructor(
     private readonly organizationService: OrganizationService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(OrganizationController.name);
   }
@@ -759,7 +898,7 @@ export class OrganizationController {
   })
   async getOrgs(
     @ReqContext() ctx: RequestContext,
-    @Query() query: OrganizationSearchInput
+    @Query() query: OrganizationSearchInput,
   ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto[]&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getOrgs.name} was called&#x60;);
 
@@ -785,13 +924,13 @@ export class OrganizationController {
   })
   async addOrg(
     @ReqContext() ctx: RequestContext,
-    @Body() payload: CreateOrganizationDto
+    @Body() payload: CreateOrganizationDto,
   ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.addOrg.name} was called&#x60;);
 
     const organization &#x3D; await this.organizationService.addOrganization(
       ctx,
-      payload
+      payload,
     );
     return { data: organization, meta: {} };
   }
@@ -811,13 +950,13 @@ export class OrganizationController {
   })
   async getOneOrganization(
     @ReqContext() ctx: RequestContext,
-    @Param(&quot;id&quot;) id: string
+    @Param(&quot;id&quot;) id: string,
   ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getOrgs.name} was called&#x60;);
 
     const organization &#x3D; await this.organizationService.getOneOrganization(
       ctx,
-      id
+      id,
     );
     return { data: organization, meta: {} };
   }
@@ -839,13 +978,13 @@ export class OrganizationController {
   })
   async deleteOrganization(
     @ReqContext() ctx: RequestContext,
-    @Param(&quot;id&quot;) id: string
+    @Param(&quot;id&quot;) id: string,
   ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getOrgs.name} was called&#x60;);
 
     const organization &#x3D; await this.organizationService.deleteOrganization(
       ctx,
-      id
+      id,
     );
     return { data: organization, meta: {} };
   }
@@ -868,14 +1007,41 @@ export class OrganizationController {
   async updateOrganization(
     @ReqContext() ctx: RequestContext,
     @Param(&quot;id&quot;) id: string,
-    @Body() payload: UpdateOrganizationDto
+    @Body() payload: UpdateOrganizationDto,
   ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getOrgs.name} was called&#x60;);
 
     const organization &#x3D; await this.organizationService.updateOrganization(
       ctx,
       id,
-      payload
+      payload,
+    );
+    return { data: organization, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch(&quot;/:id/verify&quot;)
+  @ApiOperation({
+    summary: &quot;Verify organization API&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(OrganizationResponseDto),
+  })
+  async verifyOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Param(&quot;id&quot;) id: string,
+    @Body() payload: VerifyOrganizationInput,
+  ): Promise&lt;BaseApiResponse&lt;OrganizationResponseDto&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.verifyOrganization.name} was called&#x60;);
+
+    const organization &#x3D; await this.organizationService.verifyOrganization(
+      ctx,
+      id,
+      payload.isVerified,
     );
     return { data: organization, meta: {} };
   }

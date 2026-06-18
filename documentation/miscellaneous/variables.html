@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -99,6 +113,10 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Miscellaneous</li>
   <li class="breadcrumb-item">Variables</li>
@@ -111,6 +129,9 @@
             <tr>
                 <td class="col-md-4">
                     <ul class="index-list">
+                        <li>
+                            <a href="#ALL_ROLES" title="src/auth/constants/role.constant.ts" ><b>ALL_ROLES</b>&nbsp;&nbsp;&nbsp;(src/.../role.constant.ts)</a>
+                        </li>
                         <li>
                             <a href="#ApiSortingQuery" title="src/shared/decorators/sorting-params-swagger.decorator.ts" ><b>ApiSortingQuery</b>&nbsp;&nbsp;&nbsp;(src/.../sorting-params-swagger.decorator.ts)</a>
                         </li>
@@ -130,16 +151,37 @@
                             <a href="#createSearchKey" title="src/shared/utils/createSearchKey.ts" ><b>createSearchKey</b>&nbsp;&nbsp;&nbsp;(src/.../createSearchKey.ts)</a>
                         </li>
                         <li>
+                            <a href="#DAILY_PROMPT_LIMIT" title="src/ai-assistant/services/ai-assistant.service.ts" ><b>DAILY_PROMPT_LIMIT</b>&nbsp;&nbsp;&nbsp;(src/.../ai-assistant.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#emailService" title="src/utils/email.util.ts" ><b>emailService</b>&nbsp;&nbsp;&nbsp;(src/.../email.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#execPromise" title="src/database/database.service.ts" ><b>execPromise</b>&nbsp;&nbsp;&nbsp;(src/.../database.service.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FORWARDED_FOR_TOKEN_HEADER" title="src/shared/constants/common.ts" ><b>FORWARDED_FOR_TOKEN_HEADER</b>&nbsp;&nbsp;&nbsp;(src/.../common.ts)</a>
                         </li>
                         <li>
                             <a href="#fullTextOperatorMap" title="src/shared/utils/createSearchKey.ts" ><b>fullTextOperatorMap</b>&nbsp;&nbsp;&nbsp;(src/.../createSearchKey.ts)</a>
                         </li>
                         <li>
+                            <a href="#getJWTTokenForEmailVerification" title="src/utils/jwt.util.ts" ><b>getJWTTokenForEmailVerification</b>&nbsp;&nbsp;&nbsp;(src/.../jwt.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#linkedUserSelect" title="src/organization/services/organization.service.ts" ><b>linkedUserSelect</b>&nbsp;&nbsp;&nbsp;(src/.../organization.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#main" title="scripts/seed/index.ts" ><b>main</b>&nbsp;&nbsp;&nbsp;(scripts/.../index.ts)</a>
+                        </li>
+                        <li>
                             <a href="#permissions" title="src/shared/constants/permissions/index.ts" ><b>permissions</b>&nbsp;&nbsp;&nbsp;(src/.../index.ts)</a>
                         </li>
                         <li>
                             <a href="#prisma" title="scripts/seed/user.ts" ><b>prisma</b>&nbsp;&nbsp;&nbsp;(scripts/.../user.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RAG_SERVICE_URL" title="src/ai-assistant/services/ai-assistant.service.ts" ><b>RAG_SERVICE_URL</b>&nbsp;&nbsp;&nbsp;(src/.../ai-assistant.service.ts)</a>
                         </li>
                         <li>
                             <a href="#ReqContext" title="src/shared/request-context/req-context.decorator.ts" ><b>ReqContext</b>&nbsp;&nbsp;&nbsp;(src/.../req-context.decorator.ts)</a>
@@ -163,6 +205,9 @@
                             <a href="#seedSuperAdmin" title="scripts/seed/user.ts" ><b>seedSuperAdmin</b>&nbsp;&nbsp;&nbsp;(scripts/.../user.ts)</a>
                         </li>
                         <li>
+                            <a href="#sendEmail" title="src/utils/email.util.ts" ><b>sendEmail</b>&nbsp;&nbsp;&nbsp;(src/.../email.util.ts)</a>
+                        </li>
+                        <li>
                             <a href="#SortingParams" title="src/shared/decorators/sorting-params.decorator.ts" ><b>SortingParams</b>&nbsp;&nbsp;&nbsp;(src/.../sorting-params.decorator.ts)</a>
                         </li>
                         <li>
@@ -184,6 +229,47 @@
     </table>
 </section>
 
+    <h3>src/auth/constants/role.constant.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ALL_ROLES"></a>
+                    <span class="name">
+                        <span ><b>ALL_ROLES</b></span>
+                        <a href="#ALL_ROLES"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ROLE" target="_self" >ROLE[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+  ROLE.SUPER_ADMIN,
+  ROLE.ADMIN,
+  ROLE.CONTENT_ADMIN,
+  ROLE.ORGANIZATION,
+  ROLE.INDIVIDUAL,
+] as const</code>
+                    </td>
+                </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>All roles; use for routes that any signed-in user may access (replaces the old <code>ROLE.USER</code> catch-all).</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</section>
     <h3>src/shared/decorators/sorting-params-swagger.decorator.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -197,6 +283,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(params: string[]) &#x3D;&gt; {
@@ -233,6 +325,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>async &lt;T&gt;(
@@ -276,6 +374,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <i>Default value : </i><code>{
   key: &quot;ROLES&quot;,
   name: &quot;Role Management&quot;,
@@ -311,6 +415,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
@@ -372,6 +482,12 @@
     IMAGEKIT_PUB_KEY: Joi.string().required(),
     IMAGEKIT_PVT_KEY: Joi.string().required(),
     IMAGEKIT_ENDPOINT: Joi.string().required(),
+    SMTP_HOST: Joi.string().required(),
+    SMTP_PORT: Joi.number().required(),
+    SMTP_USER: Joi.string().required(),
+    SMTP_PASS: Joi.string().required(),
+    BASE_URL: Joi.string().required(),
+    FRONTEND_BASE_URL: Joi.string().allow(&#x27;&#x27;),
   }),
 }</code>
                     </td>
@@ -394,6 +510,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(input: string, operator: Operators) &#x3D;&gt; {
@@ -435,6 +557,156 @@
   OR: &#x27;|&#x27;,
   AND: &#x27;&amp;&#x27;,
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/ai-assistant/services/ai-assistant.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DAILY_PROMPT_LIMIT"></a>
+                    <span class="name">
+                        <span ><b>DAILY_PROMPT_LIMIT</b></span>
+                        <a href="#DAILY_PROMPT_LIMIT"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>3</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RAG_SERVICE_URL"></a>
+                    <span class="name">
+                        <span ><b>RAG_SERVICE_URL</b></span>
+                        <a href="#RAG_SERVICE_URL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>process.env.RAG_SERVICE_URL || &quot;http://localhost:8000&quot;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/utils/email.util.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emailService"></a>
+                    <span class="name">
+                        <span ><b>emailService</b></span>
+                        <a href="#emailService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new EmailService()</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendEmail"></a>
+                    <span class="name">
+                        <span ><b>sendEmail</b></span>
+                        <a href="#sendEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>async (
+  emailType: EmailType,
+  metadata: EmailMetadata
+): Promise&lt;any&gt; &#x3D;&gt; {
+  try {
+    const result &#x3D; await emailService.sendEmail(emailType, metadata);
+    return { success: result, message: &quot;Email sent successfully&quot; };
+  } catch (error) {
+    console.error(&quot;Failed to send email:&quot;, error);
+    return { success: false, message: &quot;Failed to send email&quot; };
+  }
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/database/database.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="execPromise"></a>
+                    <span class="name">
+                        <span ><b>execPromise</b></span>
+                        <a href="#execPromise"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>promisify(exec)</code>
                     </td>
                 </tr>
 
@@ -523,6 +795,120 @@
         </tbody>
     </table>
 </section>
+    <h3>src/utils/jwt.util.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getJWTTokenForEmailVerification"></a>
+                    <span class="name">
+                        <span ><b>getJWTTokenForEmailVerification</b></span>
+                        <a href="#getJWTTokenForEmailVerification"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(email: string) &#x3D;&gt; {
+    const jwtService &#x3D; new JwtService();
+
+    return jwtService.sign({email}, {
+        expiresIn: &quot;10m&quot;,
+        secret:&quot;temp-secret-key&quot;
+      });
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/organization/services/organization.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="linkedUserSelect"></a>
+                    <span class="name">
+                        <span ><b>linkedUserSelect</b></span>
+                        <a href="#linkedUserSelect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  select: {
+    email: true,
+    phoneCountryCode: true,
+    phoneNumber: true,
+    profilePhotoUrl: true,
+    profilePhotoId: true,
+    bannerImageUrl: true,
+    bannerImageId: true,
+    socials: true,
+    isVerifiedByAdmin: true,
+  },
+} as const</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>scripts/seed/index.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="main"></a>
+                    <span class="name">
+                        <span ><b>main</b></span>
+                        <a href="#main"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>async () &#x3D;&gt; {
+  try {
+    await seedSuperAdmin();
+    console.log(&quot;Seeding completed successfully!&quot;);
+  } catch (error) {
+    console.error(&quot;Error during seeding:&quot;, error);
+    process.exit(1);
+  }
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>src/shared/constants/permissions/index.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -536,6 +922,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[userPermissions, rolePermissions] as const</code>
@@ -561,6 +953,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <i>Default value : </i><code>new PrismaClient()</code>
                     </td>
                 </tr>
@@ -581,6 +979,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <i>Default value : </i><code>async () &#x3D;&gt; {
   const pass &#x3D; &quot;Test@123&quot;;
   const hasedPW &#x3D; await hash(pass, 10);
@@ -590,17 +994,8 @@
       fullName: &quot;NCH Admin&quot;,
       email: &quot;nchadmin@mailinator.com&quot;,
       password: hasedPW,
-      isAccountVerified: true,
-      isSuperAdmin: true,
-      gender: &quot;Male&quot;,
-    },
-    {
-      fullName: &quot;Mukesh Kumar Chaudhary&quot;,
-      email: &quot;mukezhz@gmail.com&quot;,
-      password: hasedPW,
-      isAccountVerified: true,
-      isSuperAdmin: true,
-      gender: &quot;Male&quot;,
+      isEmailVerified: true,
+      userType: UserType.SUPER_ADMIN,
     },
   ];
 
@@ -632,6 +1027,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
                         <i>Default value : </i><code>createParamDecorator(
   (data: unknown, ctx: ExecutionContext): RequestContext &#x3D;&gt; {
     const request &#x3D; ctx.switchToHttp().getRequest();
@@ -659,6 +1060,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(
@@ -719,6 +1126,8 @@
   AuthTokenOutput: AuthTokenApiResponse,
   RegisterOutput: RegisterApiResponse,
   ImagekitResponseDto: ImagekitApiResponse,
+  BlogResponseDto: BlogApiResponse,
+  &quot;BlogResponseDto[]&quot;: BlogArrayApiResponse,
 }</code>
                     </td>
                 </tr>
@@ -740,6 +1149,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(...roles: ROLE[]): CustomDecorator&lt;string&gt; &#x3D;&gt;
@@ -790,6 +1205,12 @@
                     </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>createParamDecorator(

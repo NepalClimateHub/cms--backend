@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content injectable">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -138,6 +156,10 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#addTag" >addTag</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteTag" >deleteTag</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -247,8 +269,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">src/tags/services/tags.service.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">src/tags/services/tags.service.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -284,6 +306,87 @@
                                                 <td>payload</td>
                                             <td>
                                                             <code><a href="../classes/AddTagDto.html" target="_self" >AddTagDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/TagOutputDto.html" target="_self" >Promise&lt;TagOutputDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteTag"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteTag</b></span>
+                        <a href="#deleteTag"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteTag(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="226"
+                                    class="link-to-prism">src/tags/services/tags.service.ts:226</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -402,15 +505,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getTagsByType(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, type: <a href="../undefineds/TagsType.html" target="_self">TagsType</a>)</code>
+                    <code>getTagsByType(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, type: <a href="../miscellaneous/typealiases.html#TagsType" target="_self">TagsType</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">src/tags/services/tags.service.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">src/tags/services/tags.service.ts:121</a></div>
                         </td>
                     </tr>
 
@@ -557,13 +660,23 @@ export class TagsService {
               },
             };
           },
+          isProjectTag: async ({ filter }) &#x3D;&gt; {
+            return {
+              where: {
+                isProjectTag: true,
+              },
+            };
+          },
         },
       });
 
     const tags &#x3D; await this.prismaService.tags.findMany({
       where: {
         AND: [tagsWhereQuery],
+        deletedAt: null,
       },
+      take: limit,
+      skip: offset,
       orderBy: {
         createdAt: &quot;desc&quot;,
       },
@@ -632,6 +745,20 @@ export class TagsService {
                 },
               };
             }
+            if (tagType &#x3D;&#x3D;&#x3D; &quot;BLOG&quot;) {
+              return {
+                where: {
+                  isBlogTag: true,
+                },
+              };
+            }
+            if (tagType &#x3D;&#x3D;&#x3D; &quot;PROJECT&quot;) {
+              return {
+                where: {
+                  isProjectTag: true,
+                },
+              };
+            }
             return {
               where: {},
             };
@@ -642,6 +769,7 @@ export class TagsService {
     const tags &#x3D; await this.prismaService.tags.findMany({
       where: {
         AND: [tagsWhereQuery],
+        deletedAt: null,
       },
       orderBy: {
         createdAt: &quot;desc&quot;,
@@ -669,6 +797,17 @@ export class TagsService {
       },
     });
 
+    return plainToClass(TagOutputDto, tag, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async deleteTag(ctx: RequestContext, id: string): Promise&lt;TagOutputDto&gt; {
+    this.logger.log(ctx, &#x60;${this.deleteTag.name} was called&#x60;);
+    const tag &#x3D; await this.prismaService.tags.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
     return plainToClass(TagOutputDto, tag, {
       excludeExtraneousValues: true,
     });

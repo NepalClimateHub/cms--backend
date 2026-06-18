@@ -61,6 +61,20 @@
                }
                toggleDarkMode(darkModeState);
           </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -81,6 +95,10 @@
                <!-- START CONTENT -->
                <div class="content controller">
                    <div class="content-data">
+
+
+
+
 
 
 
@@ -114,7 +132,6 @@
         <p class="comment">
             <code>src/auth/controllers/auth.controller.ts</code>
         </p>
-
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
@@ -148,6 +165,18 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#changePassword" >changePassword</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#login" >login</a>
                             </li>
                             <li>
@@ -168,6 +197,26 @@
                                     <span class="modifier">Async</span>
                                 <a href="#registerLocal" >registerLocal</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#resendVerification" >resendVerification</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyEmail" >verifyEmail</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -185,6 +234,102 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="changePassword"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>changePassword</b></span>
+                        <a href="#changePassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>changePassword(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, input: <a href="../classes/ChangePasswordInput.html" target="_self">ChangePasswordInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;change-password&#x27;)<br />@ApiOperation({summary: &#x27;Change user password API&#x27;, description: &#x27;Changes the user&#x27;s password after verifying the current password&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Password changed successfully&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Invalid current password or authentication required&#x27;, type: BaseApiErrorResponse})<br />@ApiResponse({status: undefined, description: &#x27;Invalid password format&#x27;, type: BaseApiErrorResponse})<br />@HttpCode(HttpStatus.OK)<br />@UseGuards(JwtAuthGuard)<br />@UseInterceptors(ClassSerializerInterceptor)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:220</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/ChangePasswordInput.html" target="_self" >ChangePasswordInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BaseApiResponse.html" target="_self" >Promise&lt;BaseApiResponse&lt;literal type&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -220,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -315,8 +460,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:249</a></div>
                         </td>
                     </tr>
 
@@ -406,8 +551,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -465,6 +610,206 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resendVerification"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>resendVerification</b></span>
+                        <a href="#resendVerification"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resendVerification(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, input: <a href="../classes/ResendVerificationInput.html" target="_self">ResendVerificationInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;resend-verification&#x27;)<br />@ApiOperation({summary: &#x27;Resend email verification API&#x27;, description: &#x27;Resends email verification to the specified email address&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Verification email sent successfully&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;User not found&#x27;, type: BaseApiErrorResponse})<br />@ApiResponse({status: undefined, description: &#x27;Invalid email or user already verified&#x27;, type: BaseApiErrorResponse})<br />@HttpCode(HttpStatus.OK)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:125</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/ResendVerificationInput.html" target="_self" >ResendVerificationInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BaseApiResponse.html" target="_self" >Promise&lt;BaseApiResponse&lt;literal type&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyEmail"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyEmail</b></span>
+                        <a href="#verifyEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyEmail(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;verify-email&#x27;)<br />@ApiOperation({summary: &#x27;Verify email address API&#x27;, description: &#x27;Verifies user email address using JWT token from verification link&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Email verified successfully&#x27;, type: BaseApiResponse})<br />@ApiResponse({status: undefined, description: &#x27;Invalid or expired token&#x27;, type: BaseApiErrorResponse})<br />@ApiResponse({status: undefined, description: &#x27;User not found&#x27;, type: BaseApiErrorResponse})<br />@HttpCode(HttpStatus.OK)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">src/auth/controllers/auth.controller.ts:161</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>token</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -473,44 +818,55 @@
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
+  Res,
   UseGuards,
   UseInterceptors,
-} from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+} from &quot;@nestjs/common&quot;;
+import { ConfigService } from &quot;@nestjs/config&quot;;
+import { ApiOperation, ApiResponse, ApiTags } from &quot;@nestjs/swagger&quot;;
+import { Response } from &quot;express&quot;;
 
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
   SwaggerBaseApiResponse,
-} from &#x27;../../shared/dtos/base-api-response.dto&#x27;;
-import { AppLogger } from &#x27;../../shared/logger/logger.service&#x27;;
-import { ReqContext } from &#x27;../../shared/request-context/req-context.decorator&#x27;;
-import { RequestContext } from &#x27;../../shared/request-context/request-context.dto&#x27;;
-import { LoginInput } from &#x27;../dtos/auth-login-input.dto&#x27;;
-import { RefreshTokenInput } from &#x27;../dtos/auth-refresh-token-input.dto&#x27;;
-import { RegisterInput } from &#x27;../dtos/auth-register-input.dto&#x27;;
-import { RegisterOutput } from &#x27;../dtos/auth-register-output.dto&#x27;;
-import { AuthTokenOutput } from &#x27;../dtos/auth-token-output.dto&#x27;;
-import { JwtRefreshGuard } from &#x27;../guards/jwt-refresh.guard&#x27;;
-import { LocalAuthGuard } from &#x27;../guards/local-auth.guard&#x27;;
-import { AuthService } from &#x27;../services/auth.service&#x27;;
-
-@ApiTags(&#x27;auth&#x27;)
-@Controller(&#x27;auth&#x27;)
+} from &quot;../../shared/dtos/base-api-response.dto&quot;;
+import { AppLogger } from &quot;../../shared/logger/logger.service&quot;;
+import { ReqContext } from &quot;../../shared/request-context/req-context.decorator&quot;;
+import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
+import { LoginInput } from &quot;../dtos/auth-login-input.dto&quot;;
+import { RefreshTokenInput } from &quot;../dtos/auth-refresh-token-input.dto&quot;;
+import { RegisterInput } from &quot;../dtos/auth-register-input.dto&quot;;
+import { RegisterOutput } from &quot;../dtos/auth-register-output.dto&quot;;
+import { AuthTokenOutput } from &quot;../dtos/auth-token-output.dto&quot;;
+import { ResendVerificationInput } from &quot;../dtos/auth-resend-verification-input.dto&quot;;
+import { ChangePasswordInput } from &quot;../dtos/auth-change-password-input.dto&quot;;
+import { JwtRefreshGuard } from &quot;../guards/jwt-refresh.guard&quot;;
+import { JwtAuthGuard } from &quot;../guards/jwt-auth.guard&quot;;
+import { LocalAuthGuard } from &quot;../guards/local-auth.guard&quot;;
+import { AuthService } from &quot;../services/auth.service&quot;;
+import { EmailType, sendEmail } from &quot;src/utils/email.util&quot;;
+import { JwtService } from &quot;@nestjs/jwt&quot;;
+import { RolesGuard } from &quot;../guards/roles.guard&quot;;
+@ApiTags(&quot;auth&quot;)
+@Controller(&quot;auth&quot;)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly logger: AppLogger,
+    private readonly configService: ConfigService,
+    private readonly logger: AppLogger
   ) {
     this.logger.setContext(AuthController.name);
   }
 
-  @Post(&#x27;login&#x27;)
+  @Post(&quot;login&quot;)
   @ApiOperation({
-    summary: &#x27;User login API&#x27;,
+    summary: &quot;User login API&quot;,
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -525,33 +881,175 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   login(
     @ReqContext() ctx: RequestContext,
-    @Body() _: LoginInput,
+    @Body() _: LoginInput
   ): BaseApiResponse&lt;AuthTokenOutput&gt; {
     this.logger.log(ctx, &#x60;${this.login.name} was called&#x60;);
-
     const authToken &#x3D; this.authService.login(ctx);
     return { data: authToken, meta: {} };
   }
 
-  @Post(&#x27;register&#x27;)
+  @Post(&quot;register&quot;)
   @ApiOperation({
-    summary: &#x27;User registration API&#x27;,
+    summary: &quot;User registration API&quot;,
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: SwaggerBaseApiResponse(RegisterOutput),
+    type: SwaggerBaseApiResponse(RegisterOutput), // RegisterOutput now includes userType
   })
   async registerLocal(
     @ReqContext() ctx: RequestContext,
-    @Body() input: RegisterInput,
+    @Body() input: RegisterInput // RegisterInput now includes userType
   ): Promise&lt;BaseApiResponse&lt;RegisterOutput&gt;&gt; {
     const registeredUser &#x3D; await this.authService.register(ctx, input);
+
+    const jwtService &#x3D; new JwtService();
+
+    const accountVerificationToken &#x3D; jwtService.sign(
+      { email: registeredUser.email },
+      { secret: &quot;temp-secret-key&quot;, expiresIn: &quot;10m&quot; }
+    );
+    // Send verification email
+    await sendEmail(EmailType.EMAIL_VERIFICATION, {
+      to: registeredUser.email,
+      fullName: registeredUser.name,
+      verificationCode: accountVerificationToken,
+    });
+
     return { data: registeredUser, meta: {} };
   }
 
-  @Post(&#x27;refresh-token&#x27;)
+  @Post(&quot;resend-verification&quot;)
   @ApiOperation({
-    summary: &#x27;Refresh access token API&#x27;,
+    summary: &quot;Resend email verification API&quot;,
+    description: &quot;Resends email verification to the specified email address&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: &quot;Verification email sent successfully&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: &quot;User not found&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: &quot;Invalid email or user already verified&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: ResendVerificationInput
+  ): Promise&lt;BaseApiResponse&lt;{ message: string }&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.resendVerification.name} was called&#x60;);
+
+    const result &#x3D; await this.authService.resendVerification(ctx, input.email);
+
+    return {
+      data: { message: result.message },
+      meta: {},
+    };
+  }
+
+  @Get(&quot;verify-email&quot;)
+  @ApiOperation({
+    summary: &quot;Verify email address API&quot;,
+    description:
+      &quot;Verifies user email address using JWT token from verification link&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: &quot;Email verified successfully&quot;,
+    type: BaseApiResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: &quot;Invalid or expired token&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: &quot;User not found&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @ReqContext() ctx: RequestContext,
+    @Query(&quot;token&quot;) token: string,
+    @Res() res: Response
+  ) {
+    this.logger.log(ctx, &#x60;${this.verifyEmail.name} was called&#x60;);
+
+    try {
+      const result &#x3D; await this.authService.verifyEmail(ctx, token);
+
+      // send email verified email
+      await sendEmail(EmailType.EMAIL_VERIFIED, {
+        to: result.email,
+        fullName: result.email,
+      });
+
+      const frontendUrl &#x3D;
+        this.configService.get(&quot;urls.frontendBaseUrl&quot;) ||
+        process.env.FRONTEND_BASE_URL ||
+        &quot;http://localhost:5173&quot;;
+
+      return res.redirect(&#x60;${frontendUrl}/?verified&#x3D;true&#x60;);
+    } catch (error: any) {
+      const frontendUrl &#x3D;
+        this.configService.get(&quot;urls.frontendBaseUrl&quot;) ||
+        process.env.FRONTEND_BASE_URL ||
+        &quot;http://localhost:5173&quot;;
+
+      return res.redirect(
+        &#x60;${frontendUrl}/login?verified&#x3D;false&amp;error&#x3D;${encodeURIComponent(
+          error.message
+        )}&#x60;
+      );
+    }
+  }
+
+  @Post(&quot;change-password&quot;)
+  @ApiOperation({
+    summary: &quot;Change user password API&quot;,
+    description:
+      &quot;Changes the user&#x27;s password after verifying the current password&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: &quot;Password changed successfully&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: &quot;Invalid current password or authentication required&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: &quot;Invalid password format&quot;,
+    type: BaseApiErrorResponse,
+  })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async changePassword(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: ChangePasswordInput
+  ): Promise&lt;BaseApiResponse&lt;{ message: string }&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.changePassword.name} was called&#x60;);
+
+    const result &#x3D; await this.authService.changePassword(ctx, input);
+
+    return {
+      data: { message: result.message },
+      meta: {},
+    };
+  }
+
+  @Post(&quot;refresh-token&quot;)
+  @ApiOperation({
+    summary: &quot;Refresh access token API&quot;,
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -567,7 +1065,7 @@ export class AuthController {
   async refreshToken(
     @ReqContext() ctx: RequestContext,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() credential: RefreshTokenInput,
+    @Body() credential: RefreshTokenInput
   ): Promise&lt;BaseApiResponse&lt;AuthTokenOutput&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.refreshToken.name} was called&#x60;);
 

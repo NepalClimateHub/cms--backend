@@ -1,0 +1,8 @@
+allowBuilds:
+  bcrypt: true
+  prisma: true
+  "@prisma/client": true
+  "@prisma/engines": true
+  esbuild: true
+  "@compodoc/compodoc": true
+  "@scarf/scarf": true
