@@ -22,6 +22,7 @@
     "migrate:seed": "npx tsx scripts/seed/index.ts"
   },
   "dependencies": {
+    "@azure/communication-email": "^1.1.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.11",
     "@nestjs/config": "^4.0.0",
@@ -40,6 +41,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "handlebars": "^4.7.8",
     "imagekit": "^6.0.0",
@@ -95,10 +97,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "bcrypt"
-    ]
   }
 }
