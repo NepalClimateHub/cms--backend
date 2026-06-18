@@ -142,7 +142,7 @@ export class AiAssistantService {
       throw new ForbiddenException("Not authorized to access this session");
     }
 
-    return this.prismaService.chat_messages.findMany({
+    const messages = await this.prismaService.chat_messages.findMany({
       where: {
         session_id: sessionId,
       },
@@ -150,6 +150,12 @@ export class AiAssistantService {
         created_at: "asc",
       },
     });
+
+    return messages.map((message) => ({
+      ...message,
+      createdAt: message.created_at,
+      sources: Array.isArray(message.sources) ? message.sources : [],
+    }));
   }
 
   /**
@@ -972,6 +978,7 @@ export class AiAssistantService {
         session_id: sessionId,
         role: "assistant",
         content: String(ragResponse.response || ""),
+        sources: (ragResponse.sources || []) as Prisma.InputJsonValue,
       },
     });
 

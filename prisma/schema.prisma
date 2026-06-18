@@ -319,6 +319,7 @@ model chat_messages {
   session_id    String        @db.Uuid
   role          String        @db.VarChar(50)
   content       String
+  sources       Json?
   created_at    DateTime      @default(now()) @db.Timestamptz(6)
   chat_sessions chat_sessions @relation(fields: [session_id], references: [id], onDelete: Cascade)
 
