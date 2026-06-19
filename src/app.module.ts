@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -21,9 +22,14 @@ import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
 import { DatabaseModule } from "./database/database.module";
 import { NotificationModule } from "./notification/notification.module";
 import { MemberModule } from "./member/member.module";
+import { ClimateChampionModule } from "./climate-champion/climate-champion.module";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ".env",
+    }),
     SharedModule,
     UserModule,
     AuthModule,
@@ -43,6 +49,7 @@ import { MemberModule } from "./member/member.module";
     DatabaseModule,
     NotificationModule,
     MemberModule,
+    ClimateChampionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
