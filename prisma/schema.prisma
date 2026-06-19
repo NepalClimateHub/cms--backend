@@ -509,3 +509,25 @@ model NchMembers {
 
   @@map("nch_members")
 }
+
+model ClimateChampion {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  location  String?
+  bio       String?  @db.Text
+  photoUrl  String?
+  photoId   String?
+  tags      String[]
+  website   String?
+  facebook  String?
+  instagram String?
+  linkedin  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
+
+  @@map("nch_climate_champions")
+}
+
