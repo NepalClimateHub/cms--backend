@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  buffer-equal-constant-time@1.0.1:
+    hash: 8cae7d6b6c0b3bb36737f86bcae7b09fa2dc7fc428640497b1834093f8364368
+    path: patches/buffer-equal-constant-time@1.0.1.patch
+
 importers:
 
   .:
@@ -7774,7 +7779,7 @@ snapshots:
 
   buffer-crc32@1.0.0: {}
 
-  buffer-equal-constant-time@1.0.1: {}
+  buffer-equal-constant-time@1.0.1(patch_hash=8cae7d6b6c0b3bb36737f86bcae7b09fa2dc7fc428640497b1834093f8364368): {}
 
   buffer-from@1.1.2: {}
 
@@ -9284,7 +9289,7 @@ snapshots:
 
   jwa@1.4.1:
     dependencies:
-      buffer-equal-constant-time: 1.0.1
+      buffer-equal-constant-time: 1.0.1(patch_hash=8cae7d6b6c0b3bb36737f86bcae7b09fa2dc7fc428640497b1834093f8364368)
       ecdsa-sig-formatter: 1.0.11
       safe-buffer: 5.2.1
 

@@ -20,6 +20,7 @@ import { CategoryModule } from "./category/category.module";
 import { AiAssistantModule } from "./ai-assistant/ai-assistant.module";
 import { DatabaseModule } from "./database/database.module";
 import { NotificationModule } from "./notification/notification.module";
+import { MemberModule } from "./member/member.module";
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { NotificationModule } from "./notification/notification.module";
     AiAssistantModule,
     DatabaseModule,
     NotificationModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
