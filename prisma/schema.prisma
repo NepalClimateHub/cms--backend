@@ -485,3 +485,49 @@ enum CategoryType {
   RESOURCE
   ORGANIZATION
 }
+
+model NchMembers {
+  id               String    @id @default(cuid())
+  name             String
+  email            String
+  currentAddress   String?
+  permanentAddress String?
+  phoneNumber      String?
+  linkedinProfile  String?
+  photoUrl         String?
+  photoId          String?
+  bio              String?
+  role             String
+  startDate        DateTime? @db.Timestamptz(6)
+  endDate          DateTime? @db.Timestamptz(6)
+  isActive         Boolean   @default(true)
+  team             String
+  status           String
+  order            Int       @default(0)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt
+
+  @@map("nch_members")
+}
+
+model ClimateChampion {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  location  String?
+  bio       String?  @db.Text
+  photoUrl  String?
+  photoId   String?
+  tags      String[]
+  website   String?
+  facebook  String?
+  instagram String?
+  linkedin  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt
+
+  @@map("nch_climate_champions")
+}
+

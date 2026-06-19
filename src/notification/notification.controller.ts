@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiExtraModels,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -29,6 +30,7 @@ import { NotificationOutputDto } from "./dto/notification-output.dto";
 import { NotificationService } from "./notification.service";
 
 @ApiTags("notifications")
+@ApiExtraModels(NotificationOutputDto)
 @Controller("notifications")
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
