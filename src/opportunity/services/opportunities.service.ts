@@ -76,7 +76,14 @@ export class OpportunityService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as ContentStatus,
+                status: filter as string,
+              },
+            };
+          },
+          moderationStatus: async ({ filter }) => {
+            return {
+              where: {
+                moderationStatus: filter as ContentStatus,
               },
             };
           },
@@ -291,7 +298,7 @@ export class OpportunityService {
     const item = await this.prismaService.opportunity.update({
       where: { id },
       data: {
-        status: statusMap[payload.action],
+        moderationStatus: statusMap[payload.action],
         reviewFeedback: payload.feedback || null,
         isDraft: payload.action !== ModerationAction.APPROVE,
       },
