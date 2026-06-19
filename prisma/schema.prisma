@@ -116,7 +116,8 @@ model Events {
   locationType         String
   organizer            String    @map("organizer")
   isDraft              Boolean   @default(true)
-  status               ContentStatus @default(DRAFT)
+  moderationStatus     ContentStatus @default(DRAFT)
+  status               String    @default("OPEN")
   reviewFeedback       String?
   website              String?
   socials              Json?
@@ -146,7 +147,8 @@ model Opportunity {
   locationType        String
   organizer           String    @map("organizer")
   isDraft             Boolean   @default(true)
-  status              ContentStatus @default(DRAFT)
+  moderationStatus    ContentStatus @default(DRAFT)
+  status              String    @default("open")
   reviewFeedback      String?
   websiteUrl          String?
   socials             Json?
