@@ -1,15 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `linkedin` on the `User` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "Blog" ADD COLUMN     "reviewFeedback" TEXT;
-
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "linkedin";
-
 -- CreateTable
 CREATE TABLE "nch_members" (
     "id" TEXT NOT NULL,
