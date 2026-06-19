@@ -139,6 +139,18 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getAdminDashboardAnalytics" >getAdminDashboardAnalytics</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMonthlyUserStats" >getMonthlyUserStats</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getNewJoinedUsers" >getNewJoinedUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTopBlogAuthors" >getTopBlogAuthors</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -162,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/analytics/services/analytics.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/analytics/services/analytics.service.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -239,8 +251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">src/analytics/services/analytics.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/analytics/services/analytics.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -286,6 +298,225 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMonthlyUserStats"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getMonthlyUserStats</b></span>
+                        <a href="#getMonthlyUserStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMonthlyUserStats(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, year: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="231"
+                                    class="link-to-prism">src/analytics/services/analytics.service.ts:231</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>year</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/MonthlyUserStatsResponseDto.html" target="_self" >Promise&lt;MonthlyUserStatsResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getNewJoinedUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getNewJoinedUsers</b></span>
+                        <a href="#getNewJoinedUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getNewJoinedUsers(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/analytics/services/analytics.service.ts:184</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Array&lt;literal type&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTopBlogAuthors"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getTopBlogAuthors</b></span>
+                        <a href="#getTopBlogAuthors"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTopBlogAuthors(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">src/analytics/services/analytics.service.ts:147</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Array&lt;literal type&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -296,6 +527,7 @@
 import { ConfigService } from &quot;@nestjs/config&quot;;
 import { JwtService } from &quot;@nestjs/jwt&quot;;
 import { plainToClass } from &quot;class-transformer&quot;;
+import { UserType } from &quot;@prisma/client&quot;;
 
 import { AppLogger } from &quot;../../shared/logger/logger.service&quot;;
 import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
@@ -304,29 +536,64 @@ import { UserService } from &quot;../../user/services/user.service&quot;;
 
 import { PrismaService } from &quot;../../shared/prisma-module/prisma.service&quot;;
 import { AdminAnalyticsOutput } from &quot;../dtos/admin-analytics-output.dto&quot;;
+import {
+  MonthlyUserStatsResponseDto,
+  MonthlyUserStatsDto,
+} from &quot;../dtos/monthly-user-stats.dto&quot;;
 
 @Injectable()
 export class AnalyticsService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
   ) {
     this.logger.setContext(AnalyticsService.name);
   }
 
   async getAdminDashboardAnalytics(
-    ctx: RequestContext
+    ctx: RequestContext,
   ): Promise&lt;AdminAnalyticsOutput&gt; {
     this.logger.log(ctx, &#x60;${this.getAdminDashboardAnalytics.name} was called&#x60;);
 
     const res &#x3D; Promise.all([
-      this.prismaService.user.count(),
-      this.prismaService.news.count(),
-      this.prismaService.events.count(),
-      this.prismaService.opportunity.count(),
+      this.prismaService.user.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.news.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.events.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.opportunity.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
+      this.prismaService.blog.count({
+        where: {
+          deletedAt: null,
+        },
+      }),
     ]);
 
-    console.log(&quot;res&quot;, await res);
+    const now &#x3D; new Date();
+    const todayStart &#x3D; new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const yesterdayStart &#x3D; new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const yesterdayEnd &#x3D; todayStart;
+    const thisMonthStart &#x3D; new Date(now.getFullYear(), now.getMonth(), 1);
+
     return plainToClass(
       AdminAnalyticsOutput,
       {
@@ -334,11 +601,225 @@ export class AnalyticsService {
         newsCount: (await res)[1],
         eventCount: (await res)[2],
         opportunityCount: (await res)[3],
+        blogCount: (await res)[4],
+        projectCount: await this.prismaService.project.count({
+          where: { deletedAt: null },
+        }),
+        adminCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: &quot;ADMIN&quot; },
+        }),
+        organizationCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: &quot;ORGANIZATION&quot; },
+        }),
+        individualCount: await this.prismaService.user.count({
+          where: { deletedAt: null, userType: &quot;INDIVIDUAL&quot; },
+        }),
+        pendingOrganizationVerificationCount:
+          await this.prismaService.user.count({
+            where: {
+              deletedAt: null,
+              userType: &quot;ORGANIZATION&quot;,
+              isVerifiedByAdmin: false,
+              organization: {
+                deletedAt: null,
+                OR: [
+                  { verificationRequestedAt: { not: null } },
+                  { verificationDocumentUrl: { not: null } },
+                ],
+              },
+            },
+          }),
+        aiChatSessionsToday: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: { gte: todayStart },
+          },
+        }),
+        aiChatSessionsYesterday: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: { gte: yesterdayStart, lt: yesterdayEnd },
+          },
+        }),
+        aiChatSessionsThisMonth: await this.prismaService.chat_sessions.count({
+          where: {
+            created_at: { gte: thisMonthStart },
+          },
+        }),
+        aiChatSessionsAllTime: await this.prismaService.chat_sessions.count(),
+        aiChatMessagesToday: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: { gte: todayStart },
+          },
+        }),
+        aiChatMessagesYesterday: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: { gte: yesterdayStart, lt: yesterdayEnd },
+          },
+        }),
+        aiChatMessagesThisMonth: await this.prismaService.chat_messages.count({
+          where: {
+            created_at: { gte: thisMonthStart },
+          },
+        }),
+        aiChatMessagesAllTime: await this.prismaService.chat_messages.count(),
       },
 
       {
         excludeExtraneousValues: true,
-      }
+      },
+    );
+  }
+
+  async getTopBlogAuthors(
+    ctx: RequestContext,
+  ): Promise&lt;
+    Array&lt;{ userId: string; name: string; email: string; blogCount: number }&gt;
+  &gt; {
+    this.logger.log(ctx, &#x60;${this.getTopBlogAuthors.name} was called&#x60;);
+
+    const topAuthors &#x3D; await this.prismaService.blog.groupBy({
+      by: [&quot;authorId&quot;],
+      where: {
+        deletedAt: null,
+        isDraft: false,
+        authorId: { not: null },
+      },
+      _count: { authorId: true },
+      orderBy: { _count: { authorId: &quot;desc&quot; } },
+      take: 20,
+    });
+
+    const results &#x3D; await Promise.all(
+      topAuthors.map(async (entry) &#x3D;&gt; {
+        const user &#x3D; await this.prismaService.user.findUnique({
+          where: { id: entry.authorId! },
+          select: { id: true, fullName: true, email: true },
+        });
+        return {
+          userId: entry.authorId!,
+          name: user?.fullName?.trim() || &quot;Unknown&quot;,
+          email: user?.email ?? &quot;&quot;,
+          blogCount: entry._count.authorId,
+        };
+      }),
+    );
+
+    return results;
+  }
+
+  async getNewJoinedUsers(ctx: RequestContext): Promise&lt;
+    Array&lt;{
+      userId: string;
+      name: string;
+      email: string;
+      joinedAt: Date;
+      role: string;
+    }&gt;
+  &gt; {
+    this.logger.log(ctx, &#x60;${this.getNewJoinedUsers.name} was called&#x60;);
+
+    const newestUsers &#x3D; await this.prismaService.user.findMany({
+      where: {
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        createdAt: true,
+        userType: true,
+        profilePhotoUrl: true,
+        organization: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: &quot;desc&quot;,
+      },
+      take: 5,
+    });
+
+    return newestUsers.map((user) &#x3D;&gt; ({
+      userId: user.id,
+      name:
+        user.userType &#x3D;&#x3D;&#x3D; UserType.ORGANIZATION &amp;&amp; user.organization?.name
+          ? user.organization.name
+          : user.fullName?.trim() || &quot;Unknown&quot;,
+      email: user.email,
+      joinedAt: user.createdAt,
+      role: user.userType,
+      profilePhotoUrl: user.profilePhotoUrl,
+    }));
+  }
+
+  async getMonthlyUserStats(
+    ctx: RequestContext,
+    year: number,
+  ): Promise&lt;MonthlyUserStatsResponseDto&gt; {
+    this.logger.log(ctx, &#x60;${this.getMonthlyUserStats.name} was called&#x60;);
+
+    // Get all users for the specified year
+    const startDate &#x3D; new Date(year, 0, 1); // January 1st of the year
+    const endDate &#x3D; new Date(year + 1, 0, 1); // January 1st of next year
+
+    const users &#x3D; await this.prismaService.user.findMany({
+      where: {
+        deletedAt: null,
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+    });
+
+    // Initialize monthly counts
+    const monthlyCounts: { [key: number]: number } &#x3D; {};
+    for (let i &#x3D; 0; i &lt; 12; i++) {
+      monthlyCounts[i] &#x3D; 0;
+    }
+
+    // Count users by month
+    users.forEach((user) &#x3D;&gt; {
+      const month &#x3D; user.createdAt.getMonth();
+      monthlyCounts[month] &#x3D; (monthlyCounts[month] || 0) + 1;
+    });
+
+    // Convert to array format with month names
+    const monthNames &#x3D; [
+      &quot;Jan&quot;,
+      &quot;Feb&quot;,
+      &quot;Mar&quot;,
+      &quot;Apr&quot;,
+      &quot;May&quot;,
+      &quot;Jun&quot;,
+      &quot;Jul&quot;,
+      &quot;Aug&quot;,
+      &quot;Sep&quot;,
+      &quot;Oct&quot;,
+      &quot;Nov&quot;,
+      &quot;Dec&quot;,
+    ];
+
+    const monthlyStats: MonthlyUserStatsDto[] &#x3D; monthNames.map(
+      (name, index) &#x3D;&gt; ({
+        month: name,
+        count: monthlyCounts[index] || 0,
+      }),
+    );
+
+    return plainToClass(
+      MonthlyUserStatsResponseDto,
+      {
+        monthlyStats,
+        year,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
     );
   }
 }

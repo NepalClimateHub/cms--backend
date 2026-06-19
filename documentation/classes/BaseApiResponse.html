@@ -187,7 +187,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -229,7 +229,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -262,6 +262,7 @@ import { OpportunityResponseDto } from &quot;../../opportunity/dto/opportunities
 import { AuthTokenOutput } from &quot;../../auth/dtos/auth-token-output.dto&quot;;
 import { RegisterOutput } from &quot;../../auth/dtos/auth-register-output.dto&quot;;
 import { ImagekitResponseDto } from &quot;../../imagekit/imagekit.dto&quot;;
+import { BlogResponseDto } from &quot;../../blog/dto/blog.dto&quot;;
 import {
   UserApiResponse,
   UserArrayApiResponse,
@@ -276,6 +277,8 @@ import {
   AuthTokenApiResponse,
   RegisterApiResponse,
   ImagekitApiResponse,
+  BlogApiResponse,
+  BlogArrayApiResponse,
 } from &quot;./specific-api-responses.dto&quot;;
 
 // Keeping this for backward compatibility
@@ -315,6 +318,8 @@ const responseTypeMap: TypeMapping &#x3D; {
   AuthTokenOutput: AuthTokenApiResponse,
   RegisterOutput: RegisterApiResponse,
   ImagekitResponseDto: ImagekitApiResponse,
+  BlogResponseDto: BlogApiResponse,
+  &quot;BlogResponseDto[]&quot;: BlogArrayApiResponse,
 };
 
 /**

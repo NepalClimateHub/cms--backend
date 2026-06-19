@@ -305,15 +305,24 @@ export class RolesGuard implements CanActivate {
     }
     const { user } &#x3D; context.switchToHttp().getRequest();
 
-    // if (requiredRoles.some((role) &#x3D;&gt; user.roles?.includes(role))) {
-    //   return true;
-    // }
+    if (!user) {
+      return false;
+    }
+
+    // Super Admin has access to everything
+    if (user.userType &#x3D;&#x3D;&#x3D; ROLE.SUPER_ADMIN) {
+      return true;
+    }
+
+    const hasRole &#x3D; requiredRoles.some((r) &#x3D;&gt; user.userType &#x3D;&#x3D;&#x3D; r);
+
+    if (!hasRole) {
+      throw new UnauthorizedException(
+        &#x60;User with role ${user.userType} does not have access to this route; required: ${requiredRoles.join(&quot;, &quot;)}&#x60;,
+      );
+    }
 
     return true;
-
-    throw new UnauthorizedException(
-      &#x60;User with roles ${user.roles} does not have access to this route with roles ${requiredRoles}&#x60;
-    );
   }
 }
 </code></pre>

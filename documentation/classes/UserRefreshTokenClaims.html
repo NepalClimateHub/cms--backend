@@ -180,7 +180,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/auth/dtos/auth-token-output.dto.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -199,8 +199,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &quot;@nestjs/swagger&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import { Expose } from &quot;class-transformer&quot;;
+import { UserType } from &quot;@prisma/client&quot;;
 
 export class AuthTokenOutput {
   @Expose()
@@ -222,11 +223,9 @@ export class UserAccessTokenClaims {
   @Expose()
   fullName: string;
 
-  @Expose()
-  isSuperAdmin: boolean;
 
   @Expose()
-  isAccountVerified: boolean;
+  isEmailVerified: boolean;
 
   @Expose()
   gender: string | null;
@@ -236,6 +235,11 @@ export class UserAccessTokenClaims {
 
   @Expose()
   phoneNumber: string | null;
+
+  /** Prisma &#x60;User.userType&#x60; — same enum as application &#x60;ROLE&#x60;. */
+  @ApiProperty({ enum: UserType })
+  @Expose()
+  userType: UserType;
 }
 
 export class UserRefreshTokenClaims {

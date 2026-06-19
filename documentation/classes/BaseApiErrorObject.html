@@ -222,7 +222,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="127" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:127</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -259,7 +259,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="124" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:124</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="129" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:129</a></div>
                         </td>
                     </tr>
 
@@ -296,7 +296,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:121</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:126</a></div>
                         </td>
                     </tr>
 
@@ -333,7 +333,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:118</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -370,7 +370,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="130" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:130</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="135" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -407,7 +407,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="133" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:133</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="138" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -444,7 +444,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="115" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:115</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="120" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -481,7 +481,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="136" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:136</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="141" class="link-to-prism">src/shared/dtos/base-api-response.dto.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -514,6 +514,7 @@ import { OpportunityResponseDto } from &quot;../../opportunity/dto/opportunities
 import { AuthTokenOutput } from &quot;../../auth/dtos/auth-token-output.dto&quot;;
 import { RegisterOutput } from &quot;../../auth/dtos/auth-register-output.dto&quot;;
 import { ImagekitResponseDto } from &quot;../../imagekit/imagekit.dto&quot;;
+import { BlogResponseDto } from &quot;../../blog/dto/blog.dto&quot;;
 import {
   UserApiResponse,
   UserArrayApiResponse,
@@ -528,6 +529,8 @@ import {
   AuthTokenApiResponse,
   RegisterApiResponse,
   ImagekitApiResponse,
+  BlogApiResponse,
+  BlogArrayApiResponse,
 } from &quot;./specific-api-responses.dto&quot;;
 
 // Keeping this for backward compatibility
@@ -567,6 +570,8 @@ const responseTypeMap: TypeMapping &#x3D; {
   AuthTokenOutput: AuthTokenApiResponse,
   RegisterOutput: RegisterApiResponse,
   ImagekitResponseDto: ImagekitApiResponse,
+  BlogResponseDto: BlogApiResponse,
+  &quot;BlogResponseDto[]&quot;: BlogArrayApiResponse,
 };
 
 /**

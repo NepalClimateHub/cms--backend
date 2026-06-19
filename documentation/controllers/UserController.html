@@ -157,6 +157,8 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getUser" >getUser</a>
                             </li>
@@ -173,6 +175,41 @@
                                 <a href="#getUsers" >getUsers</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#promoteUser" >promoteUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateMyOrganization" >updateMyOrganization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateMyProfile" >updateMyProfile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -234,8 +271,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/user/controllers/user.controller.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -292,6 +329,8 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>getUser</b></span>
                         <a href="#getUser"><span class="icon ion-ios-link"></span></a>
@@ -301,7 +340,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getUser(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>getUser(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -309,14 +348,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@UseInterceptors(ClassSerializerInterceptor)<br />@Get(&#x27;:id&#x27;)<br />@ApiOperation({summary: &#x27;Get user by id API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br /></code>
+                    <code>@UseGuards(JwtAuthGuard)<br />@ApiBearerAuth()<br />@UseInterceptors(ClassSerializerInterceptor)<br />@Get(&#x27;:id&#x27;)<br />@ApiOperation({summary: &#x27;Get user by id API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">src/user/controllers/user.controller.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -351,7 +390,7 @@
                                         <tr>
                                                 <td>id</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -405,14 +444,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@UseInterceptors(ClassSerializerInterceptor)<br />@Get()<br />@ApiOperation({summary: &#x27;Get users as a list API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.ADMIN, ROLE.USER)<br />@ApiBearerAuth()<br /></code>
+                    <code>@UseInterceptors(ClassSerializerInterceptor)<br />@Get()<br />@ApiOperation({summary: &#x27;Get users as a list API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN, ROLE.CONTENT_ADMIN, ROLE.ORGANIZATION, ROLE.INDIVIDUAL)<br />@ApiBearerAuth()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">src/user/controllers/user.controller.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -474,8 +513,307 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="promoteUser"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>promoteUser</b></span>
+                        <a href="#promoteUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>promoteUser(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, input: <a href="../classes/PromoteUserInput.html" target="_self">PromoteUserInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.SUPER_ADMIN)<br />@ApiBearerAuth()<br />@Patch(&#x27;:id/promote&#x27;)<br />@ApiOperation({summary: &#x27;Promote user to Admin or Content Admin role&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="231"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:231</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/PromoteUserInput.html" target="_self" >PromoteUserInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateMyOrganization"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateMyOrganization</b></span>
+                        <a href="#updateMyOrganization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateMyOrganization(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, input: <a href="../classes/UpdateMyOrganizationInput.html" target="_self">UpdateMyOrganizationInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard)<br />@ApiBearerAuth()<br />@Patch(&#x27;me/organization&#x27;)<br />@ApiOperation({summary: &#x27;Update linked organization (logo, verification request) — organization accounts only&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseInterceptors(ClassSerializerInterceptor)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:115</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateMyOrganizationInput.html" target="_self" >UpdateMyOrganizationInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateMyProfile"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateMyProfile</b></span>
+                        <a href="#updateMyProfile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateMyProfile(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, input: <a href="../classes/UpdateUserInput.html" target="_self">UpdateUserInput</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard)<br />@ApiBearerAuth()<br />@Patch(&#x27;me&#x27;)<br />@ApiOperation({summary: &#x27;Update current user profile API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseInterceptors(ClassSerializerInterceptor)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateUserInput.html" target="_self" >UpdateUserInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateUser"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -490,7 +828,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateUser(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, input: <a href="../classes/UpdateUserInput.html" target="_self">UpdateUserInput</a>)</code>
+                    <code>updateUser(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, userId: number | string, input: <a href="../classes/UpdateUserInput.html" target="_self">UpdateUserInput</a>)</code>
                 </td>
             </tr>
 
@@ -498,14 +836,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Patch(&#x27;:id&#x27;)<br />@ApiOperation({summary: &#x27;Update user API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseInterceptors(ClassSerializerInterceptor)<br /></code>
+                    <code>@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN, ROLE.CONTENT_ADMIN)<br />@ApiBearerAuth()<br />@Patch(&#x27;:id&#x27;)<br />@ApiOperation({summary: &#x27;Update user API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br />@ApiResponse({status: undefined, type: BaseApiErrorResponse})<br />@UseInterceptors(ClassSerializerInterceptor)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">src/user/controllers/user.controller.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">src/user/controllers/user.controller.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -540,7 +878,7 @@
                                         <tr>
                                                 <td>userId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                        <code>number | string</code>
                                             </td>
 
                                             <td>
@@ -613,7 +951,9 @@ import { AppLogger } from &quot;../../shared/logger/logger.service&quot;;
 import { ReqContext } from &quot;../../shared/request-context/req-context.decorator&quot;;
 import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
 import { UserOutput } from &quot;../dtos/user-output.dto&quot;;
+import { UpdateMyOrganizationInput } from &quot;../dtos/update-my-organization.dto&quot;;
 import { UpdateUserInput } from &quot;../dtos/user-update-input.dto&quot;;
+import { PromoteUserInput } from &quot;../dtos/promote-user.dto&quot;;
 import { UserService } from &quot;../services/user.service&quot;;
 
 @ApiTags(&quot;users&quot;)
@@ -621,7 +961,7 @@ import { UserService } from &quot;../services/user.service&quot;;
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(UserController.name);
   }
@@ -642,11 +982,62 @@ export class UserController {
     type: BaseApiErrorResponse,
   })
   async getMyProfile(
-    @ReqContext() ctx: RequestContext
+    @ReqContext() ctx: RequestContext,
   ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getMyProfile.name} was called&#x60;);
 
     const user &#x3D; await this.userService.findById(ctx, ctx.user!.id);
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch(&quot;me&quot;)
+  @ApiOperation({
+    summary: &quot;Update current user profile API&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateMyProfile(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: UpdateUserInput,
+  ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.updateMyProfile.name} was called&#x60;);
+
+    const user &#x3D; await this.userService.updateUser(ctx, ctx.user!.id, input);
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch(&quot;me/organization&quot;)
+  @ApiOperation({
+    summary:
+      &quot;Update linked organization (logo, verification request) — organization accounts only&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateMyOrganization(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: UpdateMyOrganizationInput,
+  ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.updateMyOrganization.name} was called&#x60;);
+
+    const user &#x3D; await this.userService.updateMyOrganization(ctx, input);
     return { data: user, meta: {} };
   }
 
@@ -664,18 +1055,24 @@ export class UserController {
     type: BaseApiErrorResponse,
   })
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.USER)
+  @Roles(
+    ROLE.SUPER_ADMIN,
+    ROLE.ADMIN,
+    ROLE.CONTENT_ADMIN,
+    ROLE.ORGANIZATION,
+    ROLE.INDIVIDUAL,
+  )
   @ApiBearerAuth()
   async getUsers(
     @ReqContext() ctx: RequestContext,
-    @Query() query: PaginationParamsDto
+    @Query() query: PaginationParamsDto,
   ): Promise&lt;BaseApiResponse&lt;UserOutput[]&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getUsers.name} was called&#x60;);
 
     const { users, count } &#x3D; await this.userService.getUsers(
       ctx,
       query.limit,
-      query.offset
+      query.offset,
     );
 
     return { data: users, meta: { count } };
@@ -683,6 +1080,8 @@ export class UserController {
 
   // TODO: ADD RoleGuard
   // NOTE : This can be made a admin only endpoint. For normal users they can use GET /me
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(&quot;:id&quot;)
   @ApiOperation({
@@ -698,7 +1097,7 @@ export class UserController {
   })
   async getUser(
     @ReqContext() ctx: RequestContext,
-    @Param(&quot;id&quot;) id: number
+    @Param(&quot;id&quot;) id: string,
   ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.getUser.name} was called&#x60;);
 
@@ -706,8 +1105,9 @@ export class UserController {
     return { data: user, meta: {} };
   }
 
-  // TODO: ADD RoleGuard
-  // NOTE : This can be made a admin only endpoint. For normal users they can use PATCH /me
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN, ROLE.CONTENT_ADMIN)
+  @ApiBearerAuth()
   @Patch(&quot;:id&quot;)
   @ApiOperation({
     summary: &quot;Update user API&quot;,
@@ -723,12 +1123,38 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   async updateUser(
     @ReqContext() ctx: RequestContext,
-    @Param(&quot;id&quot;) userId: number,
-    @Body() input: UpdateUserInput
+    @Param(&quot;id&quot;) userId: number | string,
+    @Body() input: UpdateUserInput,
   ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
     this.logger.log(ctx, &#x60;${this.updateUser.name} was called&#x60;);
 
-    const user &#x3D; await this.userService.updateUser(ctx, userId, input);
+    const user &#x3D; await this.userService.updateUser(
+      ctx,
+      userId as string,
+      input,
+    );
+    return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @Patch(&quot;:id/promote&quot;)
+  @ApiOperation({
+    summary: &quot;Promote user to Admin or Content Admin role&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  async promoteUser(
+    @ReqContext() ctx: RequestContext,
+    @Param(&quot;id&quot;) id: string,
+    @Body() input: PromoteUserInput,
+  ): Promise&lt;BaseApiResponse&lt;UserOutput&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.promoteUser.name} was called&#x60;);
+
+    const user &#x3D; await this.userService.promoteUser(ctx, id, input.role);
     return { data: user, meta: {} };
   }
 }

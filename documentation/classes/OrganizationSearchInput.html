@@ -387,7 +387,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import {
   IsArray,
-  IsEmail,
+  IsBoolean,
   IsOptional,
   IsString,
   ValidateNested,
@@ -425,31 +425,6 @@ export class CreateOrganizationDto {
   @IsString()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
-    example: &quot;contact@techinnovations.com&quot;,
-  })
-  @IsEmail()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
-    required: false,
-    example: &quot;+1&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
-    required: false,
-    example: &quot;5551234567&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
     required: false,
@@ -473,12 +448,14 @@ export class CreateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: &quot;Banner image URL&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
   @IsString()
-  bannerImageUrl: string;
+  @IsOptional()
+  bannerImageUrl?: string;
 
   @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
   @IsString()
@@ -523,32 +500,6 @@ export class UpdateOrganizationDto {
   @IsOptional()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
-    example: &quot;contact@techinnovations.com&quot;,
-  })
-  @IsEmail()
-  @IsOptional()
-  email: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
-    required: false,
-    example: &quot;+1&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneCountryCode?: string;
-
-  @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
-    required: false,
-    example: &quot;5551234567&quot;,
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
-
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
     required: false,
@@ -572,15 +523,16 @@ export class UpdateOrganizationDto {
   @IsOptional()
   socials?: any;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: &quot;Banner image URL&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
   @IsString()
   @IsOptional()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: &quot;Banner image ID&quot;, required: false })
+  @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
   @IsString()
   @IsOptional()
   bannerImageId?: string;
@@ -601,6 +553,14 @@ export class UpdateOrganizationDto {
   @ApiProperty({ description: &quot;Tags IDs&quot;, type: [String], required: false })
   @IsOptional()
   tagIds?: string[];
+}
+
+export class VerifyOrganizationInput {
+  @ApiProperty({
+    description: &quot;Whether the organization is verified by an admin&quot;,
+  })
+  @IsBoolean()
+  isVerified: boolean;
 }
 
 export class OrganizationResponseDto {
@@ -625,29 +585,30 @@ export class OrganizationResponseDto {
   @Expose()
   description: string;
 
-  @ApiProperty({
-    description: &quot;Organization email&quot;,
+  @ApiPropertyOptional({
+    description:
+      &quot;Contact email from the linked user account (User.organizationId), if any&quot;,
     example: &quot;contact@techinnovations.com&quot;,
   })
   @Expose()
-  email: string;
+  email?: string | null;
 
   @ApiPropertyOptional({
-    description: &quot;Phone country code&quot;,
+    description: &quot;Phone country code from the linked user account&quot;,
     required: false,
     example: &quot;+1&quot;,
   })
   @Expose()
-  phoneCountryCode?: string;
+  phoneCountryCode?: string | null;
 
   @ApiPropertyOptional({
-    description: &quot;Phone number&quot;,
+    description: &quot;Phone number from the linked user account&quot;,
     required: false,
     example: &quot;5551234567&quot;,
   })
   @IsOptional()
   @IsString()
-  phoneNumber?: string;
+  phoneNumber?: string | null;
 
   @ApiPropertyOptional({
     description: &quot;Address&quot;,
@@ -661,27 +622,44 @@ export class OrganizationResponseDto {
   @Expose()
   socials?: any;
 
-  @ApiProperty({
-    description: &quot;Banner image URL&quot;,
+  @ApiPropertyOptional({
+    description: &quot;Banner image URL from the linked user account&quot;,
     example: &quot;https://example.com/org-banner.jpg&quot;,
+    required: false,
   })
+  @IsOptional()
   @Expose()
-  bannerImageUrl: string;
+  bannerImageUrl?: string;
 
-  @ApiProperty({ description: &quot;Banner image ID&quot;, required: false })
+  @ApiPropertyOptional({
+    description: &quot;Banner image ID from the linked user account&quot;,
+    required: false,
+  })
+  @IsOptional()
   @Expose()
   bannerImageId?: string;
 
   @ApiProperty({
-    description: &quot;Logo image URL&quot;,
+    description:
+      &quot;Logo image URL from the linked user account (profilePhotoUrl)&quot;,
     example: &quot;https://example.com/org-logo.jpg&quot;,
   })
   @Expose()
   logoImageUrl: string;
 
-  @ApiProperty({ description: &quot;Logo image ID&quot;, required: false })
+  @ApiPropertyOptional({
+    description: &quot;Logo image ID from the linked user account (profilePhotoId)&quot;,
+    required: false,
+  })
   @Expose()
   logoImageId?: string;
+
+  @ApiProperty({
+    description:
+      &quot;True when a platform admin has verified the linked organization account (User.isVerifiedByAdmin)&quot;,
+  })
+  @Expose()
+  isVerifiedByAdmin: boolean;
 
   @ApiProperty({ description: &quot;Tags IDs&quot;, type: [String], required: false })
   @Expose()
