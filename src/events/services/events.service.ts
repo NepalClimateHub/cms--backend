@@ -76,7 +76,14 @@ export class EventsService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as ContentStatus,
+                status: filter as string,
+              },
+            };
+          },
+          moderationStatus: async ({ filter }) => {
+            return {
+              where: {
+                moderationStatus: filter as ContentStatus,
               },
             };
           },
@@ -292,7 +299,7 @@ export class EventsService {
     const event = await this.prismaService.events.update({
       where: { id },
       data: {
-        status: statusMap[payload.action],
+        moderationStatus: statusMap[payload.action],
         reviewFeedback: payload.feedback || null,
         isDraft: payload.action !== ModerationAction.APPROVE,
       },
