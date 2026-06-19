@@ -152,8 +152,16 @@
                                 <a href="#getOrganizations" >getOrganizations</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#toOrganizationResponseDto" >toOrganizationResponseDto</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateOrganization" >updateOrganization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyOrganization" >verifyOrganization</a>
                             </li>
                         </ul>
                     </td>
@@ -173,12 +181,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/AppLogger.html" target="_self">AppLogger</a>, prismaService: <a href="../injectables/PrismaService.html" target="_self">PrismaService</a>)</code>
+<code>constructor(logger: <a href="../injectables/AppLogger.html" target="_self">AppLogger</a>, prismaService: <a href="../injectables/PrismaService.html" target="_self">PrismaService</a>, notificationService: <a href="../injectables/NotificationService.html" target="_self">NotificationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/organization/services/organization.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/organization/services/organization.service.ts:34</a></div>
                             </td>
                         </tr>
 
@@ -212,6 +220,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/PrismaService.html" target="_self" >PrismaService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>notificationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/NotificationService.html" target="_self" >NotificationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -255,8 +275,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">src/organization/services/organization.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:184</a></div>
                         </td>
                     </tr>
 
@@ -336,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="177"
-                                    class="link-to-prism">src/organization/services/organization.service.ts:177</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -417,8 +437,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">src/organization/services/organization.service.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -498,8 +518,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/organization/services/organization.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -561,6 +581,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="toOrganizationResponseDto"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>toOrganizationResponseDto</b></span>
+                        <a href="#toOrganizationResponseDto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toOrganizationResponseDto(org: Record<string | >)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>org</td>
+                                            <td>
+                                                        <code>Record&lt;string | &gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/OrganizationResponseDto.html" target="_self" >OrganizationResponseDto</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateOrganization"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -579,8 +668,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">src/organization/services/organization.service.ts:204</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="289"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:289</a></div>
                         </td>
                     </tr>
 
@@ -650,6 +739,99 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyOrganization"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyOrganization</b></span>
+                        <a href="#verifyOrganization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyOrganization(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, isVerified: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="382"
+                                    class="link-to-prism">src/organization/services/organization.service.ts:382</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>isVerified</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/OrganizationResponseDto.html" target="_self" >Promise&lt;OrganizationResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -657,7 +839,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &quot;@nestjs/common&quot;;
-import { plainToClass, plainToInstance } from &quot;class-transformer&quot;;
+import { plainToInstance } from &quot;class-transformer&quot;;
 
 import { AppLogger } from &quot;../../shared/logger/logger.service&quot;;
 import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
@@ -671,19 +853,72 @@ import {
 import { applyFilters } from &quot;../../shared/filters/prisma-filter.filter&quot;;
 import { Prisma } from &quot;@prisma/client&quot;;
 import { createSearchKey } from &quot;../../shared/utils/createSearchKey&quot;;
+import { NotificationService } from &quot;../../notification/notification.service&quot;;
+import { EmailType, sendEmail } from &quot;../../utils/email.util&quot;;
+
+const linkedUserSelect &#x3D; {
+  select: {
+    email: true,
+    phoneCountryCode: true,
+    phoneNumber: true,
+    profilePhotoUrl: true,
+    profilePhotoId: true,
+    bannerImageUrl: true,
+    bannerImageId: true,
+    socials: true,
+    isVerifiedByAdmin: true,
+  },
+} as const;
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
   ) {
     this.logger.setContext(OrganizationService.name);
   }
 
+  private toOrganizationResponseDto(
+    org: Record&lt;string, unknown&gt;,
+  ): OrganizationResponseDto {
+    const u &#x3D; org.linkedAccountUser as
+      | {
+          email: string | null;
+          phoneCountryCode: string | null;
+          phoneNumber: string | null;
+          profilePhotoUrl: string | null;
+          profilePhotoId: string | null;
+          bannerImageUrl: string | null;
+          bannerImageId: string | null;
+          socials: any | null;
+          isVerifiedByAdmin: boolean;
+        }
+      | null
+      | undefined;
+    const { linkedAccountUser: _lu, ...rest } &#x3D; org;
+    return plainToInstance(
+      OrganizationResponseDto,
+      {
+        ...rest,
+        isVerifiedByAdmin: u?.isVerifiedByAdmin ?? false,
+        email: u?.email ?? null,
+        phoneCountryCode: u?.phoneCountryCode ?? null,
+        phoneNumber: u?.phoneNumber ?? null,
+        logoImageUrl: u?.profilePhotoUrl ?? null,
+        logoImageId: u?.profilePhotoId ?? null,
+        bannerImageUrl: u?.bannerImageUrl ?? null,
+        bannerImageId: u?.bannerImageId ?? null,
+        socials: u?.socials ?? null,
+      },
+      { excludeExtraneousValues: true },
+    );
+  }
+
   async getOrganizations(
     ctx: RequestContext,
-    query: OrganizationSearchInput
+    query: OrganizationSearchInput,
   ): Promise&lt;{ organizations: OrganizationResponseDto[]; count: number }&gt; {
     this.logger.log(ctx, &#x60;${this.getOrganizations.name} was called&#x60;);
     const { limit, offset, ...restQuery } &#x3D; query;
@@ -735,8 +970,8 @@ export class OrganizationService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
+        linkedAccountUser: linkedUserSelect,
       },
       take: limit,
       skip: offset,
@@ -752,16 +987,16 @@ export class OrganizationService {
     });
 
     return {
-      organizations: plainToInstance(OrganizationResponseDto, organizations, {
-        excludeExtraneousValues: true,
-      }),
+      organizations: organizations.map((o) &#x3D;&gt;
+        this.toOrganizationResponseDto(o as unknown as Record&lt;string, unknown&gt;),
+      ),
       count: organizationCount,
     };
   }
 
   async getOneOrganization(
     ctx: RequestContext,
-    id: string
+    id: string,
   ): Promise&lt;OrganizationResponseDto&gt; {
     this.logger.log(ctx, &#x60;${this.getOneOrganization.name} was called&#x60;);
 
@@ -771,9 +1006,9 @@ export class OrganizationService {
       },
       include: {
         address: true,
-        socials: true,
         tags: true,
         organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
       },
     });
 
@@ -781,19 +1016,29 @@ export class OrganizationService {
       throw new NotFoundException(&quot;Organization not found&quot;);
     }
 
-    return plainToInstance(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
-    });
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record&lt;string, unknown&gt;,
+    );
   }
 
   async addOrganization(
     ctx: RequestContext,
-    payload: CreateOrganizationDto
+    payload: CreateOrganizationDto,
   ): Promise&lt;OrganizationResponseDto&gt; {
     this.logger.log(ctx, &#x60;${this.addOrganization.name} was called&#x60;);
-    const { address, tagIds, gallery, socials, ...restPayload } &#x3D; payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      bannerImageId,
+      logoImageUrl,
+      logoImageId,
+      ...restPayload
+    } &#x3D; payload;
 
-    const organization &#x3D; await this.prismaService.organizations.create({
+    const created &#x3D; await this.prismaService.organizations.create({
       data: {
         ...restPayload,
         ...(address &amp;&amp; {
@@ -827,14 +1072,28 @@ export class OrganizationService {
       },
     });
 
-    return plainToClass(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
+    const organization &#x3D; await this.prismaService.organizations.findUnique({
+      where: { id: created.id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
+
+    if (!organization) {
+      throw new NotFoundException(&quot;Organization not found after create&quot;);
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record&lt;string, unknown&gt;,
+    );
   }
 
   async deleteOrganization(
     ctx: RequestContext,
-    id: string
+    id: string,
   ): Promise&lt;OrganizationResponseDto&gt; {
     this.logger.log(ctx, &#x60;${this.deleteOrganization.name} was called&#x60;);
 
@@ -842,11 +1101,21 @@ export class OrganizationService {
       where: {
         id,
       },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
 
     if (!organization) {
       throw new NotFoundException(&quot;Organization not found&quot;);
     }
+
+    const dto &#x3D; this.toOrganizationResponseDto(
+      organization as unknown as Record&lt;string, unknown&gt;,
+    );
 
     await this.prismaService.organizations.delete({
       where: {
@@ -854,15 +1123,13 @@ export class OrganizationService {
       },
     });
 
-    return plainToInstance(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
-    });
+    return dto;
   }
 
   async updateOrganization(
     ctx: RequestContext,
     id: string,
-    payload: UpdateOrganizationDto
+    payload: UpdateOrganizationDto,
   ): Promise&lt;OrganizationResponseDto&gt; {
     this.logger.log(ctx, &#x60;${this.addOrganization.name} was called&#x60;);
     const org &#x3D; await this.prismaService.organizations.findUnique({
@@ -874,9 +1141,19 @@ export class OrganizationService {
       throw new NotFoundException(&quot;Organization not found!&quot;);
     }
 
-    const { address, tagIds, gallery, socials, ...restPayload } &#x3D; payload;
+    const {
+      address,
+      tagIds,
+      gallery,
+      socials,
+      bannerImageUrl,
+      bannerImageId,
+      logoImageUrl,
+      logoImageId,
+      ...restPayload
+    } &#x3D; payload;
 
-    const organization &#x3D; await this.prismaService.organizations.update({
+    await this.prismaService.organizations.update({
       where: {
         id: org.id,
       },
@@ -907,11 +1184,9 @@ export class OrganizationService {
         }),
         ...(tagIds &amp;&amp; {
           tags: {
-            //set empty then create new records
-            // do not use deletemany here since it maybe used elsewhere
             set: [],
-            connect: tagIds?.map((id) &#x3D;&gt; ({
-              id,
+            connect: tagIds?.map((tid) &#x3D;&gt; ({
+              id: tid,
               isOrganizationTag: true,
             })),
           },
@@ -925,9 +1200,96 @@ export class OrganizationService {
       },
     });
 
-    return plainToClass(OrganizationResponseDto, organization, {
-      excludeExtraneousValues: true,
+    const organization &#x3D; await this.prismaService.organizations.findUnique({
+      where: { id: org.id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
     });
+
+    if (!organization) {
+      throw new NotFoundException(&quot;Organization not found&quot;);
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record&lt;string, unknown&gt;,
+    );
+  }
+
+  async verifyOrganization(
+    ctx: RequestContext,
+    id: string,
+    isVerified: boolean,
+  ): Promise&lt;OrganizationResponseDto&gt; {
+    this.logger.log(ctx, &#x60;${this.verifyOrganization.name} was called&#x60;);
+
+    const org &#x3D; await this.prismaService.organizations.findUnique({
+      where: { id },
+    });
+    if (!org) {
+      throw new NotFoundException(&quot;Organization not found!&quot;);
+    }
+
+    let usersToNotifyOnVerify: {
+      id: string;
+      email: string;
+      fullName: string;
+    }[] &#x3D; [];
+    if (isVerified) {
+      usersToNotifyOnVerify &#x3D; await this.prismaService.user.findMany({
+        where: {
+          organizationId: id,
+          deletedAt: null,
+          isVerifiedByAdmin: false,
+        },
+        select: { id: true, email: true, fullName: true },
+      });
+    }
+
+    await this.prismaService.user.updateMany({
+      where: { organizationId: id, deletedAt: null },
+      data: { isVerifiedByAdmin: isVerified },
+    });
+
+    for (const u of usersToNotifyOnVerify) {
+      await this.notificationService.notifyOrganizationVerified(
+        u.id,
+        id,
+        org.name,
+      );
+      const mailResult &#x3D; await sendEmail(EmailType.ORGANIZATION_VERIFIED, {
+        to: u.email,
+        userName: u.fullName,
+        organizationName: org.name,
+      });
+      if (!mailResult?.success) {
+        this.logger.log(
+          ctx,
+          &#x60;${this.verifyOrganization.name}: verification email not sent for ${u.email}&#x60;,
+        );
+      }
+    }
+
+    const organization &#x3D; await this.prismaService.organizations.findUnique({
+      where: { id },
+      include: {
+        address: true,
+        tags: true,
+        organizationGallery: true,
+        linkedAccountUser: linkedUserSelect,
+      },
+    });
+
+    if (!organization) {
+      throw new NotFoundException(&quot;Organization not found&quot;);
+    }
+
+    return this.toOrganizationResponseDto(
+      organization as unknown as Record&lt;string, unknown&gt;,
+    );
   }
 }
 </code></pre>

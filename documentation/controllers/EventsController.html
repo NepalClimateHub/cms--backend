@@ -189,6 +189,17 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#moderateEvent" >moderateEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateEvent" >updateEvent</a>
                             </li>
                         </ul>
@@ -244,8 +255,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">src/events/controllers/events.controller.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -339,8 +350,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/events/controllers/events.controller.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:139</a></div>
                         </td>
                     </tr>
 
@@ -432,8 +443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/events/controllers/events.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -525,8 +536,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">src/events/controllers/events.controller.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -588,6 +599,113 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="moderateEvent"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>moderateEvent</b></span>
+                        <a href="#moderateEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moderateEvent(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: <a href="../classes/ContentModerationDto.html" target="_self">ContentModerationDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseGuards(JwtAuthGuard, RolesGuard)<br />@Roles(ROLE.CONTENT_ADMIN, ROLE.SUPER_ADMIN)<br />@ApiBearerAuth()<br />@UseInterceptors(ClassSerializerInterceptor)<br />@Patch(&#x27;/:id/moderate&#x27;)<br />@ApiOperation({summary: &#x27;Moderate event API&#x27;})<br />@ApiResponse({status: undefined, type: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:189</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../classes/ContentModerationDto.html" target="_self" >ContentModerationDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;BaseApiResponse&lt;EventResponseDto&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateEvent"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -620,8 +738,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="160"
-                                    class="link-to-prism">src/events/controllers/events.controller.ts:160</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">src/events/controllers/events.controller.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -717,6 +835,10 @@ import {
 } from &quot;@nestjs/swagger&quot;;
 
 import { JwtAuthGuard } from &quot;../../auth/guards/jwt-auth.guard&quot;;
+import { RolesGuard } from &quot;../../auth/guards/roles.guard&quot;;
+import { Roles } from &quot;../../auth/decorators/role.decorator&quot;;
+import { ROLE } from &quot;../../auth/constants/role.constant&quot;;
+import { ContentModerationDto } from &quot;../../shared/dtos/moderation.dto&quot;;
 import {
   BaseApiErrorResponse,
   BaseApiResponse,
@@ -864,6 +986,29 @@ export class EventsController {
     console.log(&quot;body payload&quot;, payload);
 
     const event &#x3D; await this.eventsService.updateEvent(ctx, id, payload);
+    return { data: event, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.CONTENT_ADMIN, ROLE.SUPER_ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Patch(&quot;/:id/moderate&quot;)
+  @ApiOperation({
+    summary: &quot;Moderate event API&quot;,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(EventResponseDto),
+  })
+  async moderateEvent(
+    @ReqContext() ctx: RequestContext,
+    @Param(&quot;id&quot;) id: string,
+    @Body() payload: ContentModerationDto
+  ): Promise&lt;BaseApiResponse&lt;EventResponseDto&gt;&gt; {
+    this.logger.log(ctx, &#x60;${this.moderateEvent.name} was called&#x60;);
+
+    const event &#x3D; await this.eventsService.moderateEvent(ctx, id, payload);
     return { data: event, meta: {} };
   }
 }

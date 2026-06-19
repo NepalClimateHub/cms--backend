@@ -226,7 +226,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/news/dto/news.dto.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/news/dto/news.dto.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -265,7 +265,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/news/dto/news.dto.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/news/dto/news.dto.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -391,6 +391,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &quot;@nestjs/swagger&quot;;
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsDateString,
   IsOptional,
@@ -449,18 +450,6 @@ export class CreateNewsDto {
   @IsUrl()
   newsLink: string;
 
-  @ApiProperty({
-    description: &quot;Banner image URL&quot;,
-    example: &quot;https://example.com/news-banner.jpg&quot;,
-  })
-  @IsString()
-  bannerImageUrl: string;
-
-  @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
-  @IsString()
-  @IsOptional()
-  bannerImageId?: string;
-
   @ApiPropertyOptional({
     description: &quot;Tags IDs&quot;,
     type: [String],
@@ -515,19 +504,6 @@ export class UpdateNewsDto {
   @IsOptional()
   newsLink?: string;
 
-  @ApiProperty({
-    description: &quot;Banner image URL&quot;,
-    example: &quot;https://example.com/news-banner.jpg&quot;,
-  })
-  @IsString()
-  @IsOptional()
-  bannerImageUrl?: string;
-
-  @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
-  @IsString()
-  @IsOptional()
-  bannerImageId?: string;
-
   @ApiPropertyOptional({
     description: &quot;Tags IDs&quot;,
     type: [String],
@@ -537,12 +513,12 @@ export class UpdateNewsDto {
   tagIds?: string[];
 
   @ApiProperty({
-    description: &quot;Contributed by&quot;,
-    example: &quot;admin&quot;,
+    description: &quot;isDraft&quot;,
+    example: &quot;true&quot;,
   })
-  @IsString()
   @IsOptional()
-  contributedBy?: string;
+  @IsBoolean()
+  isDraft?: boolean;
 }
 
 export class NewsResponseDto {
@@ -598,20 +574,6 @@ export class NewsResponseDto {
   @Expose()
   newsLink: string;
 
-  @ApiProperty({
-    description: &quot;Banner image URL&quot;,
-    example: &quot;https://example.com/news-banner.jpg&quot;,
-  })
-  @IsString()
-  @Expose()
-  bannerImageUrl: string;
-
-  @ApiPropertyOptional({ description: &quot;Banner image ID&quot;, required: false })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  bannerImageId?: string;
-
   @ApiProperty({ description: &quot;Tags IDs&quot;, type: [String], required: false })
   @Expose()
   tags?: TagOutputDto[];
@@ -642,6 +604,13 @@ export class NewsResponseDto {
   @IsOptional()
   @Expose()
   deletedAt?: Date;
+
+  @ApiProperty({
+    description: &quot;isDraft&quot;,
+  })
+  @IsOptional()
+  @Expose()
+  isDraft?: boolean;
 }
 </code></pre>
     </div>

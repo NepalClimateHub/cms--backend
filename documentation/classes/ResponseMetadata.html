@@ -201,7 +201,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/shared/dtos/specific-api-responses.dto.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/shared/dtos/specific-api-responses.dto.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -239,7 +239,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/shared/dtos/specific-api-responses.dto.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/shared/dtos/specific-api-responses.dto.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -258,15 +258,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { UserOutput } from &#x27;../../user/dtos/user-output.dto&#x27;;
-import { TagOutputDto } from &#x27;../../tags/dto/tags-output.dto&#x27;;
-import { EventResponseDto } from &#x27;../../events/dto/events.dto&#x27;;
-import { OrganizationResponseDto } from &#x27;../../organization/dto/organization.dto&#x27;;
-import { OpportunityResponseDto } from &#x27;../../opportunity/dto/opportunities.dto&#x27;;
-import { AuthTokenOutput } from &#x27;../../auth/dtos/auth-token-output.dto&#x27;;
-import { RegisterOutput } from &#x27;../../auth/dtos/auth-register-output.dto&#x27;;
-import { ImagekitResponseDto } from &#x27;../../imagekit/imagekit.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &quot;@nestjs/swagger&quot;;
+import { UserOutput } from &quot;../../user/dtos/user-output.dto&quot;;
+import { TagOutputDto } from &quot;../../tags/dto/tags-output.dto&quot;;
+import { EventResponseDto } from &quot;../../events/dto/events.dto&quot;;
+import { OrganizationResponseDto } from &quot;../../organization/dto/organization.dto&quot;;
+import { OpportunityResponseDto } from &quot;../../opportunity/dto/opportunities.dto&quot;;
+import { AuthTokenOutput } from &quot;../../auth/dtos/auth-token-output.dto&quot;;
+import { RegisterOutput } from &quot;../../auth/dtos/auth-register-output.dto&quot;;
+import { ImagekitResponseDto } from &quot;../../imagekit/imagekit.dto&quot;;
+import { BlogResponseDto } from &quot;../../blog/dto/blog.dto&quot;;
 
 // Base metadata class used by all responses
 export class ResponseMetadata {
@@ -386,7 +387,25 @@ export class ImagekitApiResponse {
 
   @ApiProperty()
   public meta: ResponseMetadata;
-}</code></pre>
+}
+
+// Blog responses
+export class BlogApiResponse {
+  @ApiProperty()
+  public data: BlogResponseDto;
+
+  @ApiProperty()
+  public meta: ResponseMetadata;
+}
+
+export class BlogArrayApiResponse {
+  @ApiProperty({ type: [BlogResponseDto] })
+  public data: BlogResponseDto[];
+
+  @ApiProperty()
+  public meta: ResponseMetadata;
+}
+</code></pre>
     </div>
 </div>
 

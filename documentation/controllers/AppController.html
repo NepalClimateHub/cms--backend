@@ -136,6 +136,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                <a href="#getHealth" >getHealth</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#getHello" >getHello</a>
                             </li>
                         </ul>
@@ -155,6 +159,52 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getHealth"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>getHealth</b></span>
+                        <a href="#getHealth"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getHealth()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;health&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">src/app.controller.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>literal type</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -235,12 +285,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get } from &quot;@nestjs/common&quot;;
 
-import { AppService } from &#x27;./app.service&#x27;;
-import { AppLogger } from &#x27;./shared/logger/logger.service&#x27;;
-import { ReqContext } from &#x27;./shared/request-context/req-context.decorator&#x27;;
-import { RequestContext } from &#x27;./shared/request-context/request-context.dto&#x27;;
+import { AppService } from &quot;./app.service&quot;;
+import { AppLogger } from &quot;./shared/logger/logger.service&quot;;
+import { ReqContext } from &quot;./shared/request-context/req-context.decorator&quot;;
+import { RequestContext } from &quot;./shared/request-context/request-context.dto&quot;;
 
 @Controller()
 export class AppController {
@@ -253,9 +303,17 @@ export class AppController {
 
   @Get()
   getHello(@ReqContext() ctx: RequestContext): string {
-    this.logger.log(ctx, &#x27;Hello world from App controller&#x27;);
+    this.logger.log(ctx, &quot;Hello world from App controller&quot;);
 
     return this.appService.getHello(ctx);
+  }
+
+  @Get(&quot;health&quot;)
+  getHealth(): { status: string; timestamp: string } {
+    return {
+      status: &quot;ok&quot;,
+      timestamp: new Date().toISOString(),
+    };
   }
 }
 </code></pre>

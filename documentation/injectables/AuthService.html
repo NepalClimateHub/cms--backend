@@ -136,6 +136,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#changePassword" >changePassword</a>
+                            </li>
+                            <li>
                                 <a href="#getAuthToken" >getAuthToken</a>
                             </li>
                             <li>
@@ -151,7 +155,15 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#resendVerification" >resendVerification</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#validateUser" >validateUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#verifyEmail" >verifyEmail</a>
                             </li>
                         </ul>
                     </td>
@@ -176,7 +188,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/auth/services/auth.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/auth/services/auth.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -259,6 +271,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="changePassword"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>changePassword</b></span>
+                        <a href="#changePassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>changePassword(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, input: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:175</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getAuthToken"></a>
                     <span class="name">
                         <span ><b>getAuthToken</b></span>
@@ -275,8 +368,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">src/auth/services/auth.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="218"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">src/auth/services/auth.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +516,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">src/auth/services/auth.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -492,8 +585,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">src/auth/services/auth.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -555,6 +648,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="resendVerification"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>resendVerification</b></span>
+                        <a href="#resendVerification"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resendVerification(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validateUser"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -573,8 +747,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">src/auth/services/auth.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -644,17 +818,104 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="verifyEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>verifyEmail</b></span>
+                        <a href="#verifyEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verifyEmail(ctx: <a href="../classes/RequestContext.html" target="_self">RequestContext</a>, token: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">src/auth/services/auth.service.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ctx</td>
+                                            <td>
+                                                            <code><a href="../classes/RequestContext.html" target="_self" >RequestContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>token</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &quot;@nestjs/common&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from &quot;@nestjs/common&quot;;
 import { ConfigService } from &quot;@nestjs/config&quot;;
 import { JwtService } from &quot;@nestjs/jwt&quot;;
 import { plainToClass } from &quot;class-transformer&quot;;
-
+import * as bcrypt from &quot;bcrypt&quot;;
+import { UserType } from &quot;@prisma/client&quot;;
 import { AppLogger } from &quot;../../shared/logger/logger.service&quot;;
 import { RequestContext } from &quot;../../shared/request-context/request-context.dto&quot;;
 import { UserOutput } from &quot;../../user/dtos/user-output.dto&quot;;
@@ -666,6 +927,8 @@ import {
   AuthTokenOutput,
   UserAccessTokenClaims,
 } from &quot;../dtos/auth-token-output.dto&quot;;
+import { EmailType, sendEmail } from &quot;../../utils/email.util&quot;;
+import { getJWTTokenForEmailVerification } from &quot;src/utils/jwt.util&quot;;
 
 @Injectable()
 export class AuthService {
@@ -673,7 +936,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private readonly logger: AppLogger
+    private readonly logger: AppLogger,
   ) {
     this.logger.setContext(AuthService.name);
   }
@@ -681,7 +944,7 @@ export class AuthService {
   async validateUser(
     ctx: RequestContext,
     email: string,
-    pass: string
+    pass: string,
   ): Promise&lt;UserAccessTokenClaims&gt; {
     this.logger.log(ctx, &#x60;${this.validateUser.name} was called&#x60;);
 
@@ -689,15 +952,26 @@ export class AuthService {
     const user &#x3D; await this.userService.validateUsernamePassword(
       ctx,
       email,
-      pass
+      pass,
     );
 
     // Prevent disabled users from logging in.
-    if (!user.isAccountVerified) {
+    if (!user.isEmailVerified) {
+      // send email to user to verify account
+      await sendEmail(EmailType.EMAIL_VERIFICATION, {
+        to: user.email,
+        fullName: user.fullName,
+        verificationCode: getJWTTokenForEmailVerification(user.email), // makes the url from this JWT token and sends email
+      });
+
       throw new UnauthorizedException(&quot;This account is not verified!&quot;);
     }
 
-    return user;
+    const out &#x3D; user as UserOutput;
+    return {
+      ...out,
+      userType: out.role,
+    } as UserAccessTokenClaims;
   }
 
   login(ctx: RequestContext): AuthTokenOutput {
@@ -707,18 +981,134 @@ export class AuthService {
 
   async register(
     ctx: RequestContext,
-    input: RegisterInput
+    input: RegisterInput,
   ): Promise&lt;RegisterOutput&gt; {
     this.logger.log(ctx, &#x60;${this.register.name} was called&#x60;);
 
-    // TODO : Setting default role as USER here. Will add option to change this later via ADMIN users.
-    input.roles &#x3D; [ROLE.USER];
+    // Set default role and account status
+    input.roles &#x3D; [ROLE.INDIVIDUAL];
     input.isAccountDisabled &#x3D; false;
 
+    // Pass userType from input
     const registeredUser &#x3D; await this.userService.createUser(ctx, input);
     return plainToClass(RegisterOutput, registeredUser, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async resendVerification(
+    ctx: RequestContext,
+    email: string,
+  ): Promise&lt;{ message: string }&gt; {
+    this.logger.log(ctx, &#x60;${this.resendVerification.name} was called&#x60;);
+
+    // Find user by email
+    const user &#x3D; await this.userService.findByEmail(ctx, email);
+
+    if (!user) {
+      throw new NotFoundException(&quot;User not found with this email address&quot;);
+    }
+
+    // Check if user is already verified
+    if (user.isEmailVerified) {
+      throw new BadRequestException(&quot;Account is already verified&quot;);
+    }
+
+    // Send verification email
+    const emailSent &#x3D; await sendEmail(EmailType.EMAIL_VERIFICATION, {
+      to: user.email,
+      userName: user.fullName,
+      verificationCode: getJWTTokenForEmailVerification(user.email),
+    });
+
+    if (!emailSent) {
+      throw new BadRequestException(&quot;Failed to send verification email&quot;);
+    }
+
+    return {
+      message: &quot;Verification email sent successfully&quot;,
+    };
+  }
+
+  async verifyEmail(
+    ctx: RequestContext,
+    token: string,
+  ): Promise&lt;{ email: string }&gt; {
+    this.logger.log(ctx, &#x60;${this.verifyEmail.name} was called&#x60;);
+
+    try {
+      // Verify and decode the JWT token
+      const decoded &#x3D; this.jwtService.verify(token, {
+        secret: &quot;temp-secret-key&quot;,
+      });
+      const email &#x3D; decoded.email;
+
+      if (!email) {
+        throw new BadRequestException(&quot;Invalid token: email not found&quot;);
+      }
+
+      // Find the user by email
+      const user &#x3D; await this.userService.findByEmail(ctx, email);
+
+      if (!user) {
+        throw new NotFoundException(&quot;User not found with this email address&quot;);
+      }
+
+      if (user.isEmailVerified) {
+        throw new BadRequestException(&quot;Account is already verified&quot;);
+      }
+
+      // Update user verification status
+      await this.userService.updateUser(ctx, user.id, {
+        isEmailVerified: true,
+      });
+
+      return {
+        email: email,
+      };
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      // JWT verification errors (expired, invalid, etc.)
+      throw new BadRequestException(&quot;Invalid or expired verification token&quot;);
+    }
+  }
+
+  async changePassword(
+    ctx: RequestContext,
+    input: { currentPassword: string; newPassword: string },
+  ): Promise&lt;{ message: string }&gt; {
+    this.logger.log(ctx, &#x60;${this.changePassword.name} was called&#x60;);
+
+    this.logger.log(ctx, &#x60;user : {ctx.user}&#x60;);
+    // Get the current user with password
+    const user &#x3D; await this.userService.findByIdWithPassword(ctx, ctx.user!.id);
+    if (!user) {
+      throw new UnauthorizedException(&quot;User not found&quot;);
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid &#x3D; await bcrypt.compare(
+      input.currentPassword,
+      user.password,
+    );
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException(&quot;Invalid current password&quot;);
+    }
+
+    // updateUser hashes the password
+    await this.userService.updateUser(ctx, user.id, {
+      password: input.newPassword,
+    });
+
+    return {
+      message: &quot;Password changed successfully&quot;,
+    };
   }
 
   async refreshToken(ctx: RequestContext): Promise&lt;AuthTokenOutput&gt; {
@@ -734,14 +1124,20 @@ export class AuthService {
 
   getAuthToken(
     ctx: RequestContext,
-    user: UserAccessTokenClaims | UserOutput
+    user: UserAccessTokenClaims | UserOutput,
   ): AuthTokenOutput {
     this.logger.log(ctx, &#x60;${this.getAuthToken.name} was called&#x60;);
 
     const subject &#x3D; { sub: user.id };
+    const roleForToken &#x3D;
+      &quot;role&quot; in user &amp;&amp; (user as UserOutput).role !&#x3D; null
+        ? (user as UserOutput).role
+        : (user as unknown as { userType: UserType }).userType;
     const payload &#x3D; {
       id: user.id,
       email: user.email,
+      role: roleForToken,
+      fullName: user.fullName,
     };
 
     const authToken &#x3D; {
@@ -750,7 +1146,7 @@ export class AuthService {
       }),
       accessToken: this.jwtService.sign(
         { ...payload, ...subject },
-        { expiresIn: this.configService.get(&quot;jwt.accessTokenExpiresInSec&quot;) }
+        { expiresIn: this.configService.get(&quot;jwt.accessTokenExpiresInSec&quot;) },
       ),
     };
     return plainToClass(AuthTokenOutput, authToken, {
