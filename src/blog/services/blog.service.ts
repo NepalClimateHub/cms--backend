@@ -14,13 +14,15 @@ import {
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { NotificationService } from "../../notification/notification.service";
-import { ContentStatus, UserType } from "@prisma/client";
+import { ContentStatus, UserType, ActivityAction, ActivityEntity } from "@prisma/client";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class BlogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
+    private readonly activityLogService: ActivityLogService,
   ) {}
 
   /** Staff roles that may edit/delete any blog. */
@@ -119,9 +121,11 @@ export class BlogService {
       },
     });
 
-    return plainToInstance(BlogResponseDto, blog, {
+    const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.BLOG, blog.id, blog.title);
+    return result;
   }
 
   async findAllBlogs(
@@ -330,9 +334,11 @@ export class BlogService {
       },
     });
 
-    return plainToInstance(BlogResponseDto, blog, {
+    const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.BLOG, blog.id, blog.title);
+    return result;
   }
 
   async deleteBlog(id: string, ctx: RequestContext): Promise<void> {
@@ -355,11 +361,13 @@ export class BlogService {
         deletedAt: new Date(),
       },
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.BLOG, id, existingBlog.title);
   }
 
   async blogAction(
     id: string,
     action: "approve" | "reject",
+    ctx: RequestContext,
     remarks?: string,
   ): Promise<BlogResponseDto> {
     const existingBlog = await this.prisma.blog.findFirst({
@@ -402,6 +410,9 @@ export class BlogService {
       blog.title,
       action,
     );
+
+    const activityAction = action === 'approve' ? ActivityAction.APPROVE : ActivityAction.REJECT;
+    this.activityLogService.logActivity(ctx, activityAction, ActivityEntity.BLOG, blog.id, blog.title);
 
     return plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,

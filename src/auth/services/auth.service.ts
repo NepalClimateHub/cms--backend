@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { plainToClass } from "class-transformer";
 import * as bcrypt from "bcrypt";
-import { UserType } from "@prisma/client";
+import { UserType, ActivityAction, ActivityEntity } from "@prisma/client";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { UserOutput } from "../../user/dtos/user-output.dto";
@@ -22,6 +22,7 @@ import {
 } from "../dtos/auth-token-output.dto";
 import { EmailType, sendEmail } from "../../utils/email.util";
 import { getJWTTokenForEmailVerification } from "src/utils/jwt.util";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly logger: AppLogger,
+    private readonly activityLogService: ActivityLogService,
   ) {
     this.logger.setContext(AuthService.name);
   }
@@ -69,7 +71,9 @@ export class AuthService {
 
   login(ctx: RequestContext): AuthTokenOutput {
     this.logger.log(ctx, `${this.login.name} was called`);
-    return this.getAuthToken(ctx, ctx.user!);
+    const token = this.getAuthToken(ctx, ctx.user!);
+    this.activityLogService.logActivity(ctx, ActivityAction.LOGIN, ActivityEntity.AUTH);
+    return token;
   }
 
   async register(
