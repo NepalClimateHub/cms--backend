@@ -8,18 +8,27 @@ import {
   UpdateClimateChampionDto,
 } from "../dto/climate-champion.dto";
 import { Prisma } from "@prisma/client";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
 
 @Injectable()
 export class ClimateChampionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   async createClimateChampion(
     createDto: CreateClimateChampionDto,
+    ctx?: RequestContext,
   ): Promise<ClimateChampionResponseDto> {
     const champion = await this.prisma.climateChampion.create({
       data: createDto,
     });
-    return plainToInstance(ClimateChampionResponseDto, champion);
+    const _c = plainToInstance(ClimateChampionResponseDto, champion);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.CLIMATE_CHAMPION, _c.id, _c.name);
+    return _c;
   }
 
   async findAllClimateChampions(
@@ -70,6 +79,7 @@ export class ClimateChampionService {
   async updateClimateChampion(
     id: string,
     updateDto: UpdateClimateChampionDto,
+    ctx?: RequestContext,
   ): Promise<ClimateChampionResponseDto> {
     const existing = await this.prisma.climateChampion.findUnique({
       where: { id },
@@ -84,10 +94,12 @@ export class ClimateChampionService {
       data: updateDto,
     });
 
-    return plainToInstance(ClimateChampionResponseDto, champion);
+    const _u = plainToInstance(ClimateChampionResponseDto, champion);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.CLIMATE_CHAMPION, _u.id, _u.name);
+    return _u;
   }
 
-  async deleteClimateChampion(id: string): Promise<void> {
+  async deleteClimateChampion(id: string, ctx?: RequestContext): Promise<void> {
     const existing = await this.prisma.climateChampion.findUnique({
       where: { id },
     });
@@ -99,6 +111,7 @@ export class ClimateChampionService {
     await this.prisma.climateChampion.delete({
       where: { id },
     });
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.CLIMATE_CHAMPION, id, existing.name);
   }
 
   async reorderClimateChampions(

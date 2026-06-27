@@ -26,6 +26,9 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../../auth/guards/roles.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
+import { ReqContext } from "../../shared/request-context/req-context.decorator";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+
 
 @ApiTags("Climate Champions")
 @Controller("climate-champions")
@@ -46,9 +49,10 @@ export class ClimateChampionController {
     type: BaseApiErrorResponse,
   })
   async createClimateChampion(
+    @ReqContext() ctx: RequestContext,
     @Body() createDto: CreateClimateChampionDto,
   ): Promise<BaseApiResponse<ClimateChampionResponseDto>> {
-    const champion = await this.championService.createClimateChampion(createDto);
+    const champion = await this.championService.createClimateChampion(createDto, ctx);
     return { data: champion, meta: {} };
   }
 
@@ -113,10 +117,11 @@ export class ClimateChampionController {
     type: BaseApiErrorResponse,
   })
   async updateClimateChampion(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
     @Body() updateDto: UpdateClimateChampionDto,
   ): Promise<BaseApiResponse<ClimateChampionResponseDto>> {
-    const champion = await this.championService.updateClimateChampion(id, updateDto);
+    const champion = await this.championService.updateClimateChampion(id, updateDto, ctx);
     return { data: champion, meta: {} };
   }
 
@@ -134,9 +139,10 @@ export class ClimateChampionController {
     type: BaseApiErrorResponse,
   })
   async deleteClimateChampion(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
   ): Promise<BaseApiResponse<null>> {
-    await this.championService.deleteClimateChampion(id);
+    await this.championService.deleteClimateChampion(id, ctx);
     return { data: null, meta: {} };
   }
 }

@@ -59,9 +59,10 @@ export class ResourceController {
     type: BaseApiErrorResponse,
   })
   async createResource(
+    @ReqContext() ctx: RequestContext,
     @Body() createResourceDto: CreateResourceDto
   ): Promise<BaseApiResponse<ResourceResponseDto>> {
-    const resource = await this.resourceService.createResource(createResourceDto);
+    const resource = await this.resourceService.createResource(createResourceDto, ctx);
     return { data: resource, meta: {} };
   }
 
@@ -112,10 +113,11 @@ export class ResourceController {
     type: BaseApiErrorResponse,
   })
   async updateResource(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
     @Body() updateResourceDto: UpdateResourceDto
   ): Promise<BaseApiResponse<ResourceResponseDto>> {
-    const resource = await this.resourceService.updateResource(id, updateResourceDto);
+    const resource = await this.resourceService.updateResource(id, updateResourceDto, ctx);
     return { data: resource, meta: {} };
   }
 
@@ -133,8 +135,8 @@ export class ResourceController {
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
   })
-  async deleteResource(@Param("id") id: string): Promise<BaseApiResponse<void>> {
-    await this.resourceService.deleteResource(id);
+  async deleteResource(@ReqContext() ctx: RequestContext, @Param("id") id: string): Promise<BaseApiResponse<void>> {
+    await this.resourceService.deleteResource(id, ctx);
     return { data: undefined, meta: {} };
   }
 

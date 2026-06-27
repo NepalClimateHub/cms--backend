@@ -1,30 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma-module/prisma.service';
-import { CreateResourceDto, UpdateResourceDto, ResourceSearchInput, ResourceResponseDto, ResourceType, ResourceLevel } from '../dto/resource.dto';
+import { CreateResourceDto, UpdateResourceDto, ResourceSearchInput, ResourceResponseDto } from '../dto/resource.dto';
 import { plainToInstance } from 'class-transformer';
 import { BadRequestException } from '@nestjs/common';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { ContentStatus } from '@prisma/client';
+import { ContentStatus, ActivityAction, ActivityEntity } from '@prisma/client';
 import { ContentModerationDto, ModerationAction } from '../../shared/dtos/moderation.dto';
+import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class ResourceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
-  async createResource(createResourceDto: CreateResourceDto): Promise<ResourceResponseDto> {
+  async createResource(createResourceDto: CreateResourceDto, ctx?: RequestContext): Promise<ResourceResponseDto> {
     const { tagIds, ...resourceData } = createResourceDto;
-    
+
     const resource = await (this.prisma as any).resource.create({
       data: {
         ...resourceData,
-        tags: tagIds ? { connect: tagIds.map(id => ({ id })) } : undefined,
+        tags: tagIds ? { connect: tagIds.map((id: string) => ({ id })) } : undefined,
       },
       include: {
         tags: true,
       },
     });
 
-    return plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+    const _c = plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.RESOURCE, _c.id, _c.title);
+    return _c;
   }
 
   async findAllResources(searchInput: ResourceSearchInput): Promise<{ resources: ResourceResponseDto[]; total: number }> {
@@ -73,16 +79,16 @@ export class ResourceService {
           where: { id, deletedAt: null },
           include: { tags: true }
       });
-      
+
       if (!resource) {
           throw new NotFoundException(`Resource with ID ${id} not found`);
       }
       return plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
   }
 
-  async updateResource(id: string, updateResourceDto: UpdateResourceDto): Promise<ResourceResponseDto> {
+  async updateResource(id: string, updateResourceDto: UpdateResourceDto, ctx?: RequestContext): Promise<ResourceResponseDto> {
       const { tagIds, ...resourceData } = updateResourceDto;
-      
+
       // Check existence
       await this.findResourceById(id);
 
@@ -90,19 +96,23 @@ export class ResourceService {
           where: { id },
           data: {
               ...resourceData,
-              tags: tagIds ? { set: tagIds.map(id => ({ id })) } : undefined,
+              tags: tagIds ? { set: tagIds.map((id: string) => ({ id })) } : undefined,
           },
           include: { tags: true }
       });
-      return plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+
+      const _u = plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+      if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.RESOURCE, _u.id, _u.title);
+      return _u;
   }
 
-  async deleteResource(id: string): Promise<void> {
+  async deleteResource(id: string, ctx?: RequestContext): Promise<void> {
       await this.findResourceById(id);
       await (this.prisma as any).resource.update({
           where: { id },
           data: { deletedAt: new Date() }
       });
+      if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.RESOURCE, id, undefined);
   }
 
   async moderateResource(

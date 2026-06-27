@@ -35,6 +35,9 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
 import { RolesGuard } from "../../auth/guards/roles.guard";
+import { ReqContext } from "../../shared/request-context/req-context.decorator";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+
 
 @ApiTags("Members")
 @Controller("members")
@@ -56,9 +59,10 @@ export class MemberController {
     type: BaseApiErrorResponse,
   })
   async createMember(
+    @ReqContext() ctx: RequestContext,
     @Body() createMemberDto: CreateMemberDto,
   ): Promise<BaseApiResponse<MemberResponseDto>> {
-    const member = await this.memberService.createMember(createMemberDto);
+    const member = await this.memberService.createMember(createMemberDto, ctx);
     return { data: member, meta: {} };
   }
 
@@ -132,10 +136,11 @@ export class MemberController {
     type: BaseApiErrorResponse,
   })
   async updateMember(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
     @Body() updateMemberDto: UpdateMemberDto,
   ): Promise<BaseApiResponse<MemberResponseDto>> {
-    const member = await this.memberService.updateMember(id, updateMemberDto);
+    const member = await this.memberService.updateMember(id, updateMemberDto, ctx);
     return { data: member, meta: {} };
   }
 
@@ -153,8 +158,8 @@ export class MemberController {
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
   })
-  async deleteMember(@Param("id") id: string): Promise<BaseApiResponse<void>> {
-    await this.memberService.deleteMember(id);
+  async deleteMember(@ReqContext() ctx: RequestContext, @Param("id") id: string): Promise<BaseApiResponse<void>> {
+    await this.memberService.deleteMember(id, ctx);
     return { data: undefined, meta: {} };
   }
 }

@@ -8,13 +8,20 @@ import {
 } from "../dto/member.dto";
 import { plainToInstance } from "class-transformer";
 import { Prisma } from "@prisma/client";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
 
 @Injectable()
 export class MemberService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   async createMember(
     createMemberDto: CreateMemberDto,
+    ctx?: RequestContext,
   ): Promise<MemberResponseDto> {
     const member = await this.prisma.nchMembers.create({
       data: {
@@ -28,7 +35,9 @@ export class MemberService {
       },
     });
 
-    return plainToInstance(MemberResponseDto, member);
+    const _c = plainToInstance(MemberResponseDto, member);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.MEMBER, _c.id, _c.name);
+    return _c;
   }
 
   async findAllMembers(
@@ -97,6 +106,7 @@ export class MemberService {
   async updateMember(
     id: string,
     updateMemberDto: UpdateMemberDto,
+    ctx?: RequestContext,
   ): Promise<MemberResponseDto> {
     const existingMember = await this.prisma.nchMembers.findUnique({
       where: { id },
@@ -119,10 +129,12 @@ export class MemberService {
       },
     });
 
-    return plainToInstance(MemberResponseDto, member);
+    const _u = plainToInstance(MemberResponseDto, member);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.MEMBER, _u.id, _u.name);
+    return _u;
   }
 
-  async deleteMember(id: string): Promise<void> {
+  async deleteMember(id: string, ctx?: RequestContext): Promise<void> {
     const existingMember = await this.prisma.nchMembers.findUnique({
       where: { id },
     });
@@ -134,6 +146,7 @@ export class MemberService {
     await this.prisma.nchMembers.delete({
       where: { id },
     });
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.MEMBER, id, existingMember.name);
   }
 
   async reorderMembers(orders: { id: string; order: number }[]): Promise<void> {
