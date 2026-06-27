@@ -23,6 +23,7 @@ import { DatabaseModule } from "./database/database.module";
 import { NotificationModule } from "./notification/notification.module";
 import { MemberModule } from "./member/member.module";
 import { ClimateChampionModule } from "./climate-champion/climate-champion.module";
+import { ActivityLogModule } from "./activity-log/activity-log.module";
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ClimateChampionModule } from "./climate-champion/climate-champion.modul
     NotificationModule,
     MemberModule,
     ClimateChampionModule,
+    ActivityLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
