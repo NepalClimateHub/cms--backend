@@ -488,6 +488,46 @@ enum CategoryType {
   ORGANIZATION
 }
 
+enum ActivityAction {
+  LOGIN
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+}
+
+enum ActivityEntity {
+  AUTH
+  BLOG
+  EVENT
+  NEWS
+  OPPORTUNITY
+  PROJECT
+  RESOURCE
+  MEMBER
+  CLIMATE_CHAMPION
+}
+
+model ActivityLog {
+  id         String         @id @default(cuid())
+  userId     String
+  userEmail  String
+  userName   String
+  userRole   String
+  action     ActivityAction
+  entity     ActivityEntity
+  entityId   String?
+  entityName String?
+  createdAt  DateTime       @default(now()) @db.Timestamptz(6)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
 model NchMembers {
   id               String    @id @default(cuid())
   name             String
