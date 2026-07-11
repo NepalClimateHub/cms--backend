@@ -6,3 +6,4 @@ allowBuilds:
   esbuild: true
   "@compodoc/compodoc": true
   "@scarf/scarf": true
+  '@nestjs/core': true
