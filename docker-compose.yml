@@ -15,7 +15,8 @@ services:
   postgres:
     container_name: nch-postgres
     image: postgres:16
-    platform: linux/arm64
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

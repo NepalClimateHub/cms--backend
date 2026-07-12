@@ -24,7 +24,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "incremental": true
+    "incremental": true,
+    "types": [
+      "node",
+      "jest"
+    ]
   },
   "exclude": [
     "node_modules",

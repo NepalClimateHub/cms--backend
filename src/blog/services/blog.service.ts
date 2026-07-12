@@ -301,6 +301,10 @@ export class BlogService {
       delete updatedData.isFeatured;
       delete updatedData.isTopRead;
     }
+    // Feature 1: editing someone else's blog must not change the author name.
+    if (existingBlog.authorId !== ctx.user!.id) {
+      delete updatedData.author;
+    }
     if (blogData.content) {
       updatedData.readingTime = this.calculateReadingTime(blogData.content);
     }
@@ -309,12 +313,20 @@ export class BlogService {
       updatedData.status = ContentStatus.DRAFT;
     } else if (blogData.isDraft === false) {
       // Transitioning from draft to non-draft
+      // Once approved/published, edits stay live without reapproval (writer or admin).
+      const alreadyPublished =
+        existingBlog.approvedByAdmin &&
+        existingBlog.status === ContentStatus.PUBLISHED;
       const canAutoPublish =
         ctx.user?.userType === UserType.SUPER_ADMIN ||
         ctx.user?.userType === UserType.CONTENT_ADMIN;
-      updatedData.status = canAutoPublish
-        ? ContentStatus.PUBLISHED
-        : ContentStatus.UNDER_REVIEW;
+      updatedData.status =
+        alreadyPublished || canAutoPublish
+          ? ContentStatus.PUBLISHED
+          : ContentStatus.UNDER_REVIEW;
+      if (alreadyPublished) {
+        updatedData.approvedByAdmin = true;
+      }
     }
 
     const blog = await this.prisma.blog.update({
