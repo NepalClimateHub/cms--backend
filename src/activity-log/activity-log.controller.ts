@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiExtraModels,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -31,9 +32,10 @@ import {
 @Controller('activity-logs')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(ROLE.SUPER_ADMIN)
+@ApiExtraModels(ActivityLogResponseDto)
 @ApiBearerAuth()
 export class ActivityLogController {
-  constructor(private readonly activityLogService: ActivityLogService) {}
+  constructor(private readonly activityLogService: ActivityLogService) { }
 
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
