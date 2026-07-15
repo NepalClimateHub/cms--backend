@@ -32,4 +32,5 @@ export default (): any => ({
     baseUrl: process.env.BASE_URL,
     frontendBaseUrl: process.env.FRONTEND_BASE_URL,
   },
+  ragServiceUrl: process.env.RAG_SERVICE_URL || "http://localhost:8000",
 });
