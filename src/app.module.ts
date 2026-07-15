@@ -25,6 +25,7 @@ import { NotificationModule } from "./notification/notification.module";
 import { MemberModule } from "./member/member.module";
 import { ClimateChampionModule } from "./climate-champion/climate-champion.module";
 import { ActivityLogModule } from "./activity-log/activity-log.module";
+import { MinutesModule } from "./minutes/minutes.module";
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ActivityLogModule } from "./activity-log/activity-log.module";
     MemberModule,
     ClimateChampionModule,
     ActivityLogModule,
+    MinutesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
