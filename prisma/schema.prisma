@@ -573,3 +573,17 @@ model ClimateChampion {
   @@map("nch_climate_champions")
 }
 
+model Minutes {
+  id             String    @id @default(cuid())
+  title          String
+  date           DateTime?
+  meetingTime    String?
+  agenda         String    @db.Text
+  meetingSummary String    @db.Text
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@map("nch_minutes")
+}
+
