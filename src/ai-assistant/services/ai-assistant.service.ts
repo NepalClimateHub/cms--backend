@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException, HttpException, HttpStatus } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "@nestjs/config";
 import { firstValueFrom } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
@@ -9,16 +10,13 @@ import { UserType } from "@prisma/client";
 
 const DAILY_PROMPT_LIMIT = 3;
 
-const RAG_SERVICE_URL = process.env.RAG_SERVICE_URL || "http://localhost:8000";
-
-console.log("RAG_SERVICE_URL",RAG_SERVICE_URL)
-
 @Injectable()
 export class AiAssistantService {
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService,
-    private readonly httpService: HttpService
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService
   ) {
     this.logger.setContext(AiAssistantService.name);
   }
@@ -381,10 +379,11 @@ export class AiAssistantService {
     }
 
     // Call RAG service 
+    const ragServiceUrl = this.configService.get<string>("ragServiceUrl") || "http://localhost:8000";
     let ragResponse: any;
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${RAG_SERVICE_URL}/chat`, {
+        this.httpService.post(`${ragServiceUrl}/chat`, {
           query,
           conversation_history: conversationHistory,
           top_k: topK || 5,
