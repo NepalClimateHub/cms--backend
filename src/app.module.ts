@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -31,6 +32,7 @@ import { ActivityLogModule } from "./activity-log/activity-log.module";
       isGlobal: true,
       envFilePath: ".env",
     }),
+    ScheduleModule.forRoot(),
     SharedModule,
     UserModule,
     AuthModule,
@@ -56,4 +58,4 @@ import { ActivityLogModule } from "./activity-log/activity-log.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
