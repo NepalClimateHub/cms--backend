@@ -507,6 +507,7 @@ enum ActivityEntity {
   RESOURCE
   MEMBER
   CLIMATE_CHAMPION
+  TESTIMONIAL
 }
 
 model ActivityLog {
@@ -586,4 +587,20 @@ model Minutes {
 
   @@map("nch_minutes")
 }
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  photoUrl    String?
+  photoId     String?
+  description String   @db.Text
+  stars       Int      @default(5)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt
+
+  @@map("nch_testimonials")
+}
+
 
