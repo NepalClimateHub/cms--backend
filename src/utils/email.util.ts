@@ -11,6 +11,7 @@ export enum EmailType {
   PASSWORD_RESET = "PASSWORD_RESET",
   PASSWORD_RESET_SUCCESS = "PASSWORD_RESET_SUCCESS",
   ORGANIZATION_VERIFIED = "ORGANIZATION_VERIFIED",
+  DB_BACKUP = "DB_BACKUP",
 }
 
 export interface EmailMetadata {
@@ -20,6 +21,12 @@ export interface EmailMetadata {
   verificationCode?: string;
   resetLink?: string;
   organizationName?: string;
+  backupDate?: string;
+  attachments?: Array<{
+    name: string;
+    contentType: string;
+    contentInBase64: string;
+  }>;
   [key: string]: any;
 }
 
@@ -106,6 +113,7 @@ class EmailService {
         "Password Reset Successful - Nepal Climate Hub",
       [EmailType.ORGANIZATION_VERIFIED]:
         "Your organization is verified - Nepal Climate Hub",
+      [EmailType.DB_BACKUP]: "Database Backup - Nepal Climate Hub",
     };
 
     return metadata.subject || subjects[emailType] || "Nepal Climate Hub";
@@ -119,6 +127,7 @@ class EmailService {
       [EmailType.PASSWORD_RESET]: "password-reset",
       [EmailType.PASSWORD_RESET_SUCCESS]: "password-reset-success",
       [EmailType.ORGANIZATION_VERIFIED]: "organization-verified",
+      [EmailType.DB_BACKUP]: "db-backup",
     };
 
     return templates[emailType];
@@ -177,6 +186,12 @@ class EmailService {
           profileLink: `${baseData.frontendBaseUrl}/dashboard/profile`,
         };
 
+      case EmailType.DB_BACKUP:
+        return {
+          ...baseData,
+          backupDate: metadata.backupDate || new Date().toLocaleString(),
+        };
+
       default:
         return baseData;
     }
@@ -208,6 +223,7 @@ class EmailService {
         recipients: {
           to: [{ address: metadata.to }],
         },
+        attachments: metadata.attachments,
       });
 
       const result = await poller.pollUntilDone();

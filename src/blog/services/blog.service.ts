@@ -14,13 +14,15 @@ import {
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { NotificationService } from "../../notification/notification.service";
-import { ContentStatus, UserType } from "@prisma/client";
+import { ContentStatus, UserType, ActivityAction, ActivityEntity } from "@prisma/client";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class BlogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
+    private readonly activityLogService: ActivityLogService,
   ) {}
 
   /** Staff roles that may edit/delete any blog. */
@@ -119,9 +121,11 @@ export class BlogService {
       },
     });
 
-    return plainToInstance(BlogResponseDto, blog, {
+    const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.BLOG, blog.id, blog.title);
+    return result;
   }
 
   async findAllBlogs(
@@ -297,6 +301,10 @@ export class BlogService {
       delete updatedData.isFeatured;
       delete updatedData.isTopRead;
     }
+    // Feature 1: editing someone else's blog must not change the author name.
+    if (existingBlog.authorId !== ctx.user!.id) {
+      delete updatedData.author;
+    }
     if (blogData.content) {
       updatedData.readingTime = this.calculateReadingTime(blogData.content);
     }
@@ -305,12 +313,20 @@ export class BlogService {
       updatedData.status = ContentStatus.DRAFT;
     } else if (blogData.isDraft === false) {
       // Transitioning from draft to non-draft
+      // Once approved/published, edits stay live without reapproval (writer or admin).
+      const alreadyPublished =
+        existingBlog.approvedByAdmin &&
+        existingBlog.status === ContentStatus.PUBLISHED;
       const canAutoPublish =
         ctx.user?.userType === UserType.SUPER_ADMIN ||
         ctx.user?.userType === UserType.CONTENT_ADMIN;
-      updatedData.status = canAutoPublish
-        ? ContentStatus.PUBLISHED
-        : ContentStatus.UNDER_REVIEW;
+      updatedData.status =
+        alreadyPublished || canAutoPublish
+          ? ContentStatus.PUBLISHED
+          : ContentStatus.UNDER_REVIEW;
+      if (alreadyPublished) {
+        updatedData.approvedByAdmin = true;
+      }
     }
 
     const blog = await this.prisma.blog.update({
@@ -330,9 +346,11 @@ export class BlogService {
       },
     });
 
-    return plainToInstance(BlogResponseDto, blog, {
+    const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.BLOG, blog.id, blog.title);
+    return result;
   }
 
   async deleteBlog(id: string, ctx: RequestContext): Promise<void> {
@@ -355,11 +373,13 @@ export class BlogService {
         deletedAt: new Date(),
       },
     });
+    this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.BLOG, id, existingBlog.title);
   }
 
   async blogAction(
     id: string,
     action: "approve" | "reject",
+    ctx: RequestContext,
     remarks?: string,
   ): Promise<BlogResponseDto> {
     const existingBlog = await this.prisma.blog.findFirst({
@@ -402,6 +422,9 @@ export class BlogService {
       blog.title,
       action,
     );
+
+    const activityAction = action === 'approve' ? ActivityAction.APPROVE : ActivityAction.REJECT;
+    this.activityLogService.logActivity(ctx, activityAction, ActivityEntity.BLOG, blog.id, blog.title);
 
     return plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,

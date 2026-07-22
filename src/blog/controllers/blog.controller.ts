@@ -207,12 +207,14 @@ export class BlogController {
     type: BaseApiErrorResponse,
   })
   async blogAction(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
     @Body() body: { action: "approve" | "reject"; remarks?: string },
   ): Promise<BaseApiResponse<BlogResponseDto>> {
     const blog = await this.blogService.blogAction(
       id,
       body.action,
+      ctx,
       body.remarks,
     );
     return { data: blog, meta: {} };

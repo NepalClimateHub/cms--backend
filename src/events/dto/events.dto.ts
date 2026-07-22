@@ -27,10 +27,15 @@ export class EventsSearchInput extends PaginationParamsDto {
   @IsArray()
   tagIds?: string[];
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  status?: string;
+
   @ApiPropertyOptional({ enum: ContentStatus })
   @IsOptional()
   @IsEnum(ContentStatus)
-  status?: ContentStatus;
+  moderationStatus?: ContentStatus;
 }
 
 export class CreateEventDto {
@@ -113,12 +118,21 @@ export class CreateEventDto {
 
   @ApiPropertyOptional({
     description: "status",
+    required: false,
+    example: "OPEN",
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: "moderation status",
     enum: ContentStatus,
     required: false,
   })
   @IsOptional()
   @IsEnum(ContentStatus)
-  status?: ContentStatus;
+  moderationStatus?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",
@@ -276,12 +290,20 @@ export class UpdateEventDto {
 
   @ApiPropertyOptional({
     description: "status",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: "moderation status",
     enum: ContentStatus,
     required: false,
   })
   @IsOptional()
   @IsEnum(ContentStatus)
-  status?: ContentStatus;
+  moderationStatus?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",
@@ -454,13 +476,22 @@ export class EventResponseDto {
 
   @ApiPropertyOptional({
     description: "status",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: "moderation status",
     enum: ContentStatus,
     required: false,
   })
   @IsOptional()
   @IsEnum(ContentStatus)
   @Expose()
-  status?: ContentStatus;
+  moderationStatus?: ContentStatus;
 
   @ApiPropertyOptional({
     description: "cost",

@@ -945,7 +945,7 @@ export class AiAssistantService {
       this.logger.log(ctx, `Created new session ${sessionId}`);
     }
 
-    // Call RAG service 
+    // Call RAG service
     let ragResponse: any;
     try {
       const response = await firstValueFrom(

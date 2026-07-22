@@ -19,11 +19,15 @@ import {
 } from "../../shared/dtos/moderation.dto";
 import { BadRequestException } from "@nestjs/common";
 
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
+
 @Injectable()
 export class OpportunityService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly activityLogService: ActivityLogService
   ) {
     this.logger.setContext(OpportunityService.name);
   }
@@ -76,7 +80,14 @@ export class OpportunityService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as ContentStatus,
+                status: filter as string,
+              },
+            };
+          },
+          moderationStatus: async ({ filter }) => {
+            return {
+              where: {
+                moderationStatus: filter as ContentStatus,
               },
             };
           },
@@ -185,9 +196,9 @@ export class OpportunityService {
       },
     });
 
-    return plainToClass(OpportunityResponseDto, item, {
-      excludeExtraneousValues: true,
-    });
+    const _cResult = plainToClass(OpportunityResponseDto, item, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.OPPORTUNITY, _cResult.id, _cResult.title);
+    return _cResult;
   }
 
   async deleteOpportunity(
@@ -212,9 +223,9 @@ export class OpportunityService {
       },
     });
 
-    return plainToInstance(OpportunityResponseDto, item, {
-      excludeExtraneousValues: true,
-    });
+    const _dResult = plainToInstance(OpportunityResponseDto, item, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.OPPORTUNITY, _dResult.id, _dResult.title);
+    return _dResult;
   }
 
   async updateOpportunity(
@@ -260,9 +271,9 @@ export class OpportunityService {
       },
     });
 
-    return plainToClass(OpportunityResponseDto, updatedItem, {
-      excludeExtraneousValues: true,
-    });
+    const _uResult = plainToClass(OpportunityResponseDto, updatedItem, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.OPPORTUNITY, _uResult.id, _uResult.title);
+    return _uResult;
   }
 
   async moderateOpportunity(
@@ -291,7 +302,7 @@ export class OpportunityService {
     const item = await this.prismaService.opportunity.update({
       where: { id },
       data: {
-        status: statusMap[payload.action],
+        moderationStatus: statusMap[payload.action],
         reviewFeedback: payload.feedback || null,
         isDraft: payload.action !== ModerationAction.APPROVE,
       },

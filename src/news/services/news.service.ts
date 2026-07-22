@@ -18,19 +18,22 @@ import {
   ModerationAction,
 } from "../../shared/dtos/moderation.dto";
 import { BadRequestException } from "@nestjs/common";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
 
 @Injectable()
 export class NewsService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly activityLogService: ActivityLogService,
   ) {
     this.logger.setContext(NewsService.name);
   }
 
   async getNews(
     ctx: RequestContext,
-    query: NewsSearchInput
+    query: NewsSearchInput,
   ): Promise<{ news: NewsResponseDto[]; count: number }> {
     this.logger.log(ctx, `${this.getNews.name} was called`);
     const { limit, offset, ...restQuery } = query;
@@ -127,7 +130,7 @@ export class NewsService {
 
   async addNews(
     ctx: RequestContext,
-    payload: CreateNewsDto
+    payload: CreateNewsDto,
   ): Promise<NewsResponseDto> {
     this.logger.log(ctx, `${this.addNews.name} was called`);
     const { tagIds, ...restPayload } = payload;
@@ -149,11 +152,18 @@ export class NewsService {
       },
     });
 
-    return plainToClass(NewsResponseDto, news, {
+    const result = plainToClass(NewsResponseDto, news, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(
+      ctx,
+      ActivityAction.CREATE,
+      ActivityEntity.NEWS,
+      news.id,
+      news.title,
+    );
+    return result;
   }
-
   async deleteNews(ctx: RequestContext, id: string): Promise<NewsResponseDto> {
     this.logger.log(ctx, `${this.deleteNews.name} was called`);
 
@@ -173,15 +183,22 @@ export class NewsService {
       },
     });
 
-    return plainToInstance(NewsResponseDto, news, {
+    const result = plainToInstance(NewsResponseDto, news, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(
+      ctx,
+      ActivityAction.DELETE,
+      ActivityEntity.NEWS,
+      news.id,
+      news.title,
+    );
+    return result;
   }
-
   async updateNews(
     ctx: RequestContext,
     id: string,
-    payload: UpdateNewsDto
+    payload: UpdateNewsDto,
   ): Promise<NewsResponseDto> {
     this.logger.log(ctx, `${this.updateNews.name} was called`);
     const news = await this.prismaService.news.findUnique({
@@ -216,15 +233,23 @@ export class NewsService {
       },
     });
 
-    return plainToClass(NewsResponseDto, updatedNews, {
+    const result = plainToClass(NewsResponseDto, updatedNews, {
       excludeExtraneousValues: true,
     });
+    this.activityLogService.logActivity(
+      ctx,
+      ActivityAction.UPDATE,
+      ActivityEntity.NEWS,
+      updatedNews.id,
+      updatedNews.title,
+    );
+    return result;
   }
 
   async moderateNews(
     ctx: RequestContext,
     id: string,
-    payload: ContentModerationDto
+    payload: ContentModerationDto,
   ): Promise<NewsResponseDto> {
     this.logger.log(ctx, `${this.moderateNews.name} was called`);
 
@@ -233,7 +258,7 @@ export class NewsService {
       !payload.feedback
     ) {
       throw new BadRequestException(
-        "Feedback is mandatory when requesting improvements"
+        "Feedback is mandatory when requesting improvements",
       );
     }
 
@@ -253,8 +278,20 @@ export class NewsService {
       },
     });
 
-    return plainToClass(NewsResponseDto, news, {
+    const result = plainToClass(NewsResponseDto, news, {
       excludeExtraneousValues: true,
     });
+    const actType =
+      payload.action === ModerationAction.APPROVE
+        ? ActivityAction.APPROVE
+        : ActivityAction.REJECT;
+    this.activityLogService.logActivity(
+      ctx,
+      actType,
+      ActivityEntity.NEWS,
+      news.id,
+      news.title,
+    );
+    return result;
   }
 }

@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -95,10 +81,6 @@
                <!-- START CONTENT -->
                <div class="content modules">
                    <div class="content-data">
-
-
-
-
 
 
 
@@ -229,6 +211,23 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card card-module">
                     <div class="card-header">
+                        <h4 class="card-title">ClimateChampionModule</h4>
+                    </div>
+                    <div class="card-block">
+                                <p>
+                                    <object id="demo-svg" type="image/svg+xml" lazy="./modules/ClimateChampionModule/dependencies.svg" style="width: 100%; height: 175px;">
+                                        Your browser does not support SVG
+                                    </object>
+                                </p>
+                        <footer class="text-center">
+                            <a href="./modules/ClimateChampionModule.html" class="btn btn-default">Browse</a>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-module">
+                    <div class="card-header">
                         <h4 class="card-title">DatabaseModule</h4>
                     </div>
                     <div class="card-block">
@@ -290,6 +289,23 @@
                                 </p>
                         <footer class="text-center">
                             <a href="./modules/ImagekitModule.html" class="btn btn-default">Browse</a>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-module">
+                    <div class="card-header">
+                        <h4 class="card-title">MemberModule</h4>
+                    </div>
+                    <div class="card-block">
+                                <p>
+                                    <object id="demo-svg" type="image/svg+xml" lazy="./modules/MemberModule/dependencies.svg" style="width: 100%; height: 175px;">
+                                        Your browser does not support SVG
+                                    </object>
+                                </p>
+                        <footer class="text-center">
+                            <a href="./modules/MemberModule.html" class="btn btn-default">Browse</a>
                         </footer>
                     </div>
                 </div>

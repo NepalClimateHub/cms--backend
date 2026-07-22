@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -95,10 +81,6 @@
                <!-- START CONTENT -->
                <div class="content interface">
                    <div class="content-data">
-
-
-
-
 
 
 
@@ -159,33 +141,15 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#auth" 
+                                        <a href="#connectionString" 
 >
-                                            auth
+                                            connectionString
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#from" 
+                                        <a href="#senderAddress" 
 >
-                                            from
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#host" 
->
-                                            host
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#port" 
->
-                                            port
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#secure" 
->
-                                            secure
+                                            senderAddress
                                         </a>
                                 </li>
                             </ul>
@@ -203,9 +167,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="auth"></a>
-                                        <span class="name "><b>auth</b>
-                                            <a href="#auth">
+                                        <a name="connectionString"></a>
+                                        <span class="name "><b>connectionString</b>
+                                            <a href="#connectionString">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -213,40 +177,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>auth:     <code>literal type</code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>    <code>literal type</code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="from"></a>
-                                        <span class="name "><b>from</b>
-                                            <a href="#from">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>from:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>connectionString:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -269,9 +200,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="host"></a>
-                                        <span class="name "><b>host</b>
-                                            <a href="#host">
+                                        <a name="senderAddress"></a>
+                                        <span class="name "><b>senderAddress</b>
+                                            <a href="#senderAddress">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -279,7 +210,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>host:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>senderAddress:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -288,72 +219,6 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="port"></a>
-                                        <span class="name "><b>port</b>
-                                            <a href="#port">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>port:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="secure"></a>
-                                        <span class="name "><b>secure</b>
-                                            <a href="#secure">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>secure:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                                         </td>
                                     </tr>
@@ -369,7 +234,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import * as nodemailer from &quot;nodemailer&quot;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EmailClient } from &quot;@azure/communication-email&quot;;
 import * as handlebars from &quot;handlebars&quot;;
 import * as fs from &quot;fs&quot;;
 import * as path from &quot;path&quot;;
@@ -395,47 +260,27 @@ export interface EmailMetadata {
 }
 
 export interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-  from: string;
+  connectionString: string;
+  senderAddress: string;
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private client: EmailClient;
   private config: EmailConfig;
 
   constructor(private configService?: ConfigService) {
     this.config &#x3D; {
-      host:
-        this.configService?.get(&quot;smtp.host&quot;) ||
-        process.env.SMTP_HOST ||
-        &quot;smtp.gmail.com&quot;,
-      port:
-        this.configService?.get(&quot;smtp.port&quot;) ||
-        parseInt(process.env.SMTP_PORT || &quot;587&quot;),
-      secure:
-        this.configService?.get(&quot;smtp.secure&quot;) ||
-        process.env.SMTP_PORT &#x3D;&#x3D;&#x3D; &quot;465&quot;,
-      auth: {
-        user:
-          this.configService?.get(&quot;smtp.user&quot;) || process.env.SMTP_USER || &quot;&quot;,
-        pass:
-          this.configService?.get(&quot;smtp.pass&quot;) || process.env.SMTP_PASS || &quot;&quot;,
-      },
-      from: this.configService?.get(&quot;smtp.from&quot;) || process.env.SMTP_USER || &quot;&quot;,
+      connectionString:
+        this.configService?.get(&quot;azureEmail.connectionString&quot;) ||
+        process.env.AZURE_COMMUNICATION_CONNECTION_STRING ||
+        &quot;&quot;,
+      senderAddress:
+        this.configService?.get(&quot;azureEmail.senderAddress&quot;) ||
+        process.env.SENDER_EMAIL_ADDRESS ||
+        &quot;&quot;,
     };
 
-    this.transporter &#x3D; nodemailer.createTransport({
-      host: this.config.host,
-      port: this.config.port,
-      secure: this.config.secure,
-      auth: this.config.auth,
-    });
+    this.client &#x3D; new EmailClient(this.config.connectionString);
   }
 
   private async getTemplate(templateName: string): Promise&lt;string&gt; {
@@ -444,21 +289,21 @@ class EmailService {
       process.cwd(),
       &quot;src&quot;,
       &quot;templates&quot;,
-      &#x60;${templateName}.hbs&#x60;
+      &#x60;${templateName}.hbs&#x60;,
     );
 
     try {
       return fs.readFileSync(templatePath, &quot;utf8&quot;);
     } catch (error) {
       throw new Error(
-        &#x60;Template not found: ${templateName}.hbs at path: ${templatePath}&#x60;
+        &#x60;Template not found: ${templateName}.hbs at path: ${templatePath}&#x60;,
       );
     }
   }
 
   private async renderTemplate(
     templateName: string,
-    data: Record&lt;string, any&gt;
+    data: Record&lt;string, any&gt;,
   ): Promise&lt;string&gt; {
     const templateContent &#x3D; await this.getTemplate(templateName);
     const template &#x3D; handlebars.compile(templateContent);
@@ -496,7 +341,7 @@ class EmailService {
 
   private prepareTemplateData(
     emailType: EmailType,
-    metadata: EmailMetadata
+    metadata: EmailMetadata,
   ): Record&lt;string, any&gt; {
     const baseData &#x3D; {
       userName: metadata.userName || &quot;User&quot;,
@@ -554,7 +399,7 @@ class EmailService {
 
   async sendEmail(
     emailType: EmailType,
-    metadata: EmailMetadata
+    metadata: EmailMetadata,
   ): Promise&lt;boolean&gt; {
     try {
       const templateName &#x3D; this.getTemplateName(emailType);
@@ -563,15 +408,19 @@ class EmailService {
       const htmlContent &#x3D; await this.renderTemplate(templateName, templateData);
       const subject &#x3D; this.getSubject(emailType, metadata);
 
-      const mailOptions &#x3D; {
-        from: this.config.from,
-        to: metadata.to,
-        subject,
-        html: htmlContent,
-      };
+      const poller &#x3D; await this.client.beginSend({
+        senderAddress: this.config.senderAddress,
+        content: {
+          subject,
+          html: htmlContent,
+        },
+        recipients: {
+          to: [{ address: metadata.to }],
+        },
+      });
 
-      const result &#x3D; await this.transporter.sendMail(mailOptions);
-      console.log(&#x60;Email sent successfully: ${result.messageId}&#x60;);
+      const result &#x3D; await poller.pollUntilDone();
+      console.log(&#x60;Email sent successfully: ${result.id}&#x60;);
       return true;
     } catch (error) {
       console.error(&quot;Failed to send email:&quot;, error);
@@ -581,11 +430,9 @@ class EmailService {
 
   async verifyConnection(): Promise&lt;boolean&gt; {
     try {
-      await this.transporter.verify();
-      console.log(&quot;SMTP connection verified successfully&quot;);
-      return true;
+      return !!this.config.connectionString &amp;&amp; !!this.config.senderAddress;
     } catch (error) {
-      console.error(&quot;SMTP connection failed:&quot;, error);
+      console.error(&quot;Azure email connection verification failed:&quot;, error);
       return false;
     }
   }
@@ -597,7 +444,7 @@ const emailService &#x3D; new EmailService();
 // Main function for sending emails - simplified interface
 export const sendEmail &#x3D; async (
   emailType: EmailType,
-  metadata: EmailMetadata
+  metadata: EmailMetadata,
 ): Promise&lt;any&gt; &#x3D;&gt; {
   try {
     const result &#x3D; await emailService.sendEmail(emailType, metadata);

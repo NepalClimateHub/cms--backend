@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -95,10 +81,6 @@
                <!-- START CONTENT -->
                <div class="content module">
                    <div class="content-data">
-
-
-
-
 
 
 
@@ -135,10 +117,6 @@
 <title>cluster_ProjectModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="104,-70 104,-268 392,-268 392,-70 104,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_ProjectModule_exports</title>
-<polygon fill="none" stroke="black" points="181,-208 181,-260 299,-260 299,-208 181,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_ProjectModule_providers</title>
 <polygon fill="none" stroke="black" points="234,-78 234,-130 384,-130 384,-78 234,-78"/>
@@ -146,6 +124,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_ProjectModule_imports</title>
 <polygon fill="none" stroke="black" points="112,-78 112,-130 226,-130 226,-78 112,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ProjectModule_exports</title>
+<polygon fill="none" stroke="black" points="181,-208 181,-260 299,-260 299,-208 181,-208"/>
 </g>
 <!-- SharedModule -->
 <g id="node1" class="node">

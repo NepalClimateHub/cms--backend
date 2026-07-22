@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -95,10 +81,6 @@
                <!-- START CONTENT -->
                <div class="content module">
                    <div class="content-data">
-
-
-
-
 
 
 
@@ -135,59 +117,59 @@
 <title>cluster_NotificationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="84,-70 84,-268 412,-268 412,-70 84,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_NotificationModule_imports</title>
+<polygon fill="none" stroke="black" points="290,-78 290,-130 404,-130 404,-78 290,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_NotificationModule_exports</title>
-<polygon fill="none" stroke="black" points="164,-208 164,-260 310,-260 310,-208 164,-208"/>
+<polygon fill="none" stroke="black" points="186,-208 186,-260 332,-260 332,-208 186,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_NotificationModule_providers</title>
-<polygon fill="none" stroke="black" points="214,-78 214,-130 404,-130 404,-78 214,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_NotificationModule_imports</title>
-<polygon fill="none" stroke="black" points="92,-78 92,-130 206,-130 206,-78 92,-78"/>
+<polygon fill="none" stroke="black" points="92,-78 92,-130 282,-130 282,-78 92,-78"/>
 </g>
 <!-- SharedModule -->
 <g id="node1" class="node">
 <title>SharedModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="198.42,-122 195.42,-126 174.42,-126 171.42,-122 99.58,-122 99.58,-86 198.42,-86 198.42,-122"/>
-<text text-anchor="middle" x="149" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="396.42,-122 393.42,-126 372.42,-126 369.42,-122 297.58,-122 297.58,-86 396.42,-86 396.42,-122"/>
+<text text-anchor="middle" x="347" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
 </g>
 <!-- NotificationModule -->
 <g id="node2" class="node">
 <title>NotificationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="300.7,-187 297.7,-191 276.7,-191 273.7,-187 173.3,-187 173.3,-151 300.7,-151 300.7,-187"/>
-<text text-anchor="middle" x="237" y="-164.8" font-family="Times,serif" font-size="14.00">NotificationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="322.7,-187 319.7,-191 298.7,-191 295.7,-187 195.3,-187 195.3,-151 322.7,-151 322.7,-187"/>
+<text text-anchor="middle" x="259" y="-164.8" font-family="Times,serif" font-size="14.00">NotificationModule</text>
 </g>
 <!-- SharedModule&#45;&gt;NotificationModule -->
 <g id="edge1" class="edge">
 <title>SharedModule&#45;&gt;NotificationModule</title>
-<path fill="none" stroke="black" d="M185.81,-122.11C185.81,-122.11 185.81,-140.99 185.81,-140.99"/>
-<polygon fill="black" stroke="black" points="182.31,-140.99 185.81,-150.99 189.31,-140.99 182.31,-140.99"/>
+<path fill="none" stroke="black" d="M310.19,-122.11C310.19,-122.11 310.19,-140.99 310.19,-140.99"/>
+<polygon fill="black" stroke="black" points="306.69,-140.99 310.19,-150.99 313.69,-140.99 306.69,-140.99"/>
 </g>
 <!-- NotificationService  -->
 <g id="node3" class="node">
 <title>NotificationService </title>
-<polygon fill="#fb8072" stroke="black" points="301.63,-252 172.37,-252 172.37,-216 301.63,-216 301.63,-252"/>
-<text text-anchor="middle" x="237" y="-229.8" font-family="Times,serif" font-size="14.00">NotificationService </text>
+<polygon fill="#fb8072" stroke="black" points="323.63,-252 194.37,-252 194.37,-216 323.63,-216 323.63,-252"/>
+<text text-anchor="middle" x="259" y="-229.8" font-family="Times,serif" font-size="14.00">NotificationService </text>
 </g>
 <!-- NotificationModule&#45;&gt;NotificationService  -->
 <g id="edge2" class="edge">
 <title>NotificationModule&#45;&gt;NotificationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M237,-187.11C237,-187.11 237,-205.99 237,-205.99"/>
-<polygon fill="black" stroke="black" points="233.5,-205.99 237,-215.99 240.5,-205.99 233.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M259,-187.11C259,-187.11 259,-205.99 259,-205.99"/>
+<polygon fill="black" stroke="black" points="255.5,-205.99 259,-215.99 262.5,-205.99 255.5,-205.99"/>
 </g>
 <!-- NotificationService -->
 <g id="node4" class="node">
 <title>NotificationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="309" cy="-104" rx="86.81" ry="18"/>
-<text text-anchor="middle" x="309" y="-99.8" font-family="Times,serif" font-size="14.00">NotificationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="187" cy="-104" rx="86.81" ry="18"/>
+<text text-anchor="middle" x="187" y="-99.8" font-family="Times,serif" font-size="14.00">NotificationService</text>
 </g>
 <!-- NotificationService&#45;&gt;NotificationModule -->
 <g id="edge3" class="edge">
 <title>NotificationService&#45;&gt;NotificationModule</title>
-<path fill="none" stroke="black" d="M261.47,-119.08C261.47,-119.08 261.47,-140.76 261.47,-140.76"/>
-<polygon fill="black" stroke="black" points="257.97,-140.76 261.47,-150.76 264.97,-140.76 257.97,-140.76"/>
+<path fill="none" stroke="black" d="M234.53,-119.08C234.53,-119.08 234.53,-140.76 234.53,-140.76"/>
+<polygon fill="black" stroke="black" points="231.03,-140.76 234.53,-150.76 238.03,-140.76 231.03,-140.76"/>
 </g>
 </g>
 </svg>

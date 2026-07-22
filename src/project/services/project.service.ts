@@ -11,13 +11,20 @@ import {
 } from "../dto/project.dto";
 import { plainToInstance } from "class-transformer";
 import { Prisma } from "@prisma/client";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   async createProject(
-    createProjectDto: CreateProjectDto
+    createProjectDto: CreateProjectDto,
+    ctx?: RequestContext,
   ): Promise<ProjectResponseDto> {
     const { tagIds, ...projectData } = createProjectDto;
 
@@ -35,7 +42,9 @@ export class ProjectService {
       },
     });
 
-    return plainToInstance(ProjectResponseDto, project);
+    const _c = plainToInstance(ProjectResponseDto, project);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.PROJECT, _c.id, _c.title);
+    return _c;
   }
 
   async findAllProjects(
@@ -103,7 +112,8 @@ export class ProjectService {
 
   async updateProject(
     id: string,
-    updateProjectDto: UpdateProjectDto
+    updateProjectDto: UpdateProjectDto,
+    ctx?: RequestContext,
   ): Promise<ProjectResponseDto> {
     const { tagIds, ...projectData } = updateProjectDto;
 
@@ -133,10 +143,12 @@ export class ProjectService {
       },
     });
 
-    return plainToInstance(ProjectResponseDto, project);
+    const _u = plainToInstance(ProjectResponseDto, project);
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.PROJECT, _u.id, _u.title);
+    return _u;
   }
 
-  async deleteProject(id: string): Promise<void> {
+  async deleteProject(id: string, ctx?: RequestContext): Promise<void> {
     const existingProject = await this.prisma.project.findFirst({
       where: {
         id,
@@ -154,5 +166,6 @@ export class ProjectService {
         deletedAt: new Date(),
       },
     });
+    if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.PROJECT, id, existingProject.title);
   }
 }

@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -110,14 +96,12 @@
 
 
 
-
-
-
-
     <ol class="breadcrumb">
         <li class="breadcrumb-item">Dependencies</li>
     </ol>
     <ul class="dependencies-list">
+        <li>
+            <b>@azure/communication-email</b> : ^1.1.0</li>
         <li>
             <b>@nestjs/axios</b> : ^4.0.1</li>
         <li>
@@ -151,11 +135,13 @@
         <li>
             <b>bcrypt</b> : ^5.1.1</li>
         <li>
-            <b>express</b> : ^5.2.1</li>
-        <li>
             <b>class-transformer</b> : ^0.5.1</li>
         <li>
             <b>class-validator</b> : ^0.14.1</li>
+        <li>
+            <b>dotenv</b> : ^17.4.2</li>
+        <li>
+            <b>express</b> : ^5.2.1</li>
         <li>
             <b>handlebars</b> : ^4.7.8</li>
         <li>

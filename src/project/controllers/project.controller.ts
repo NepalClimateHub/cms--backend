@@ -35,6 +35,9 @@ import { OptionalJwtAuthGuard } from "../../auth/guards/optional-jwt-auth.guard"
 import { Roles } from "../../auth/decorators/role.decorator";
 import { ROLE } from "../../auth/constants/role.constant";
 import { RolesGuard } from "../../auth/guards/roles.guard";
+import { ReqContext } from "../../shared/request-context/req-context.decorator";
+import { RequestContext } from "../../shared/request-context/request-context.dto";
+
 
 @ApiTags("Projects")
 @Controller("projects")
@@ -56,9 +59,10 @@ export class ProjectController {
     type: BaseApiErrorResponse,
   })
   async createProject(
+    @ReqContext() ctx: RequestContext,
     @Body() createProjectDto: CreateProjectDto
   ): Promise<BaseApiResponse<ProjectResponseDto>> {
-    const project = await this.projectService.createProject(createProjectDto);
+    const project = await this.projectService.createProject(createProjectDto, ctx);
     return { data: project, meta: {} };
   }
 
@@ -109,10 +113,11 @@ export class ProjectController {
     type: BaseApiErrorResponse,
   })
   async updateProject(
+    @ReqContext() ctx: RequestContext,
     @Param("id") id: string,
     @Body() updateProjectDto: UpdateProjectDto
   ): Promise<BaseApiResponse<ProjectResponseDto>> {
-    const project = await this.projectService.updateProject(id, updateProjectDto);
+    const project = await this.projectService.updateProject(id, updateProjectDto, ctx);
     return { data: project, meta: {} };
   }
 
@@ -130,8 +135,8 @@ export class ProjectController {
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
   })
-  async deleteProject(@Param("id") id: string): Promise<BaseApiResponse<void>> {
-    await this.projectService.deleteProject(id);
+  async deleteProject(@ReqContext() ctx: RequestContext, @Param("id") id: string): Promise<BaseApiResponse<void>> {
+    await this.projectService.deleteProject(id, ctx);
     return { data: undefined, meta: {} };
   }
 }

@@ -18,12 +18,15 @@ import {
   ModerationAction,
 } from "../../shared/dtos/moderation.dto";
 import { BadRequestException } from "@nestjs/common";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { ActivityAction, ActivityEntity } from "@prisma/client";
 
 @Injectable()
 export class EventsService {
   constructor(
     private readonly logger: AppLogger,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly activityLogService: ActivityLogService
   ) {
     this.logger.setContext(EventsService.name);
   }
@@ -76,7 +79,14 @@ export class EventsService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as ContentStatus,
+                status: filter as string,
+              },
+            };
+          },
+          moderationStatus: async ({ filter }) => {
+            return {
+              where: {
+                moderationStatus: filter as ContentStatus,
               },
             };
           },
@@ -174,9 +184,9 @@ export class EventsService {
       },
     });
 
-    return plainToClass(EventResponseDto, event, {
-      excludeExtraneousValues: true,
-    });
+    const addResult = plainToClass(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.EVENT, event.id, event.title);
+    return addResult;
   }
 
   async deleteEvent(
@@ -201,9 +211,9 @@ export class EventsService {
       },
     });
 
-    return plainToInstance(EventResponseDto, event, {
-      excludeExtraneousValues: true,
-    });
+    const delResult = plainToInstance(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.EVENT, event.id, event.title);
+    return delResult;
   }
 
   async updateEvent(
@@ -264,9 +274,9 @@ export class EventsService {
       },
     });
 
-    return plainToClass(EventResponseDto, eventUpdate, {
-      excludeExtraneousValues: true,
-    });
+    const updResult = plainToClass(EventResponseDto, eventUpdate, { excludeExtraneousValues: true });
+    this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.EVENT, eventUpdate.id, eventUpdate.title);
+    return updResult;
   }
 
   async moderateEvent(
@@ -292,7 +302,7 @@ export class EventsService {
     const event = await this.prismaService.events.update({
       where: { id },
       data: {
-        status: statusMap[payload.action],
+        moderationStatus: statusMap[payload.action],
         reviewFeedback: payload.feedback || null,
         isDraft: payload.action !== ModerationAction.APPROVE,
       },

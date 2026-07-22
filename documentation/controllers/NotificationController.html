@@ -61,20 +61,6 @@
                }
                toggleDarkMode(darkModeState);
           </script>
-          <script>
-              // --- Iframe navigation tracking for Template Playground ---
-              function sendCurrentUrlToParent() {
-                  if (window.parent && window.parent !== window) {
-                      window.parent.postMessage({
-                          type: 'compodoc-iframe-navigate',
-                          url: window.location.pathname + window.location.hash
-                      }, '*');
-                  }
-              }
-              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
-              window.addEventListener('popstate', sendCurrentUrlToParent, false);
-              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
-          </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
@@ -95,10 +81,6 @@
                <!-- START CONTENT -->
                <div class="content controller">
                    <div class="content-data">
-
-
-
-
 
 
 
@@ -132,6 +114,7 @@
         <p class="comment">
             <code>src/notification/notification.controller.ts</code>
         </p>
+
             <p class="comment">
                 <h3>Prefix</h3>
             </p>
@@ -249,8 +232,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">src/notification/notification.controller.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">src/notification/notification.controller.ts:116</a></div>
                         </td>
                     </tr>
 
@@ -344,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">src/notification/notification.controller.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">src/notification/notification.controller.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -393,7 +376,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;unknown&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -437,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">src/notification/notification.controller.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">src/notification/notification.controller.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -519,8 +502,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">src/notification/notification.controller.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">src/notification/notification.controller.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -596,6 +579,7 @@
 } from &quot;@nestjs/common&quot;;
 import {
   ApiBearerAuth,
+  ApiExtraModels,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -613,6 +597,7 @@ import { NotificationOutputDto } from &quot;./dto/notification-output.dto&quot;;
 import { NotificationService } from &quot;./notification.service&quot;;
 
 @ApiTags(&quot;notifications&quot;)
+@ApiExtraModels(NotificationOutputDto)
 @Controller(&quot;notifications&quot;)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}

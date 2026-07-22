@@ -11,6 +11,7 @@ import { AuthService } from './services/auth.service';
 import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { ActivityLogModule } from '../activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { LocalStrategy } from './strategies/local.strategy';
       inject: [ConfigService],
     }),
     UserModule,
+    ActivityLogModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtAuthStrategy, JwtRefreshStrategy],
