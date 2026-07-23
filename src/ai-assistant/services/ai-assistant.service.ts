@@ -25,6 +25,7 @@ import {
   UserType,
 } from "@prisma/client";
 import {
+  AdminDocumentChunkSearchDto,
   AdminDocumentSearchDto,
   InternalIndexJobUpdateDto,
   InternalImportDocumentDto,
@@ -63,6 +64,79 @@ export class AiAssistantService {
       throw new Error("RAG_SERVICE_TOKEN is not configured");
     }
     return { Authorization: `Bearer ${token}` };
+  }
+
+  private async ensureAiAssistantSettings() {
+    return this.prismaService.ai_assistant_settings.upsert({
+      where: { id: 1 },
+      create: { id: 1 },
+      update: {},
+    });
+  }
+
+  private async areVisualResponsesEnabled(ctx: RequestContext): Promise<boolean> {
+    try {
+      const settings = await this.ensureAiAssistantSettings();
+      return settings.visual_responses_enabled;
+    } catch (error: unknown) {
+      this.logger.error(
+        ctx,
+        "Unable to read AI visual response setting; continuing with visuals disabled",
+        { error: error instanceof Error ? error.message : String(error) },
+      );
+      return false;
+    }
+  }
+
+  private visibleMetadata(metadata: unknown, visualsEnabled: boolean) {
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+      return {};
+    }
+
+    const visible = { ...(metadata as Record<string, unknown>) };
+    if (!visualsEnabled) {
+      delete visible.visual;
+    }
+    return visible;
+  }
+
+  async getAiAssistantSettings(_ctx: RequestContext) {
+    const settings = await this.ensureAiAssistantSettings();
+    return {
+      visualResponsesEnabled: settings.visual_responses_enabled,
+      updatedAt: settings.updated_at,
+      updatedBy: settings.updated_by,
+    };
+  }
+
+  async updateAiAssistantSettings(
+    ctx: RequestContext,
+    visualResponsesEnabled: boolean,
+  ) {
+    const userId = this.getUserId(ctx);
+    const settings = await this.prismaService.ai_assistant_settings.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        visual_responses_enabled: visualResponsesEnabled,
+        updated_by: userId,
+      },
+      update: {
+        visual_responses_enabled: visualResponsesEnabled,
+        updated_by: userId,
+      },
+    });
+
+    this.logger.log(
+      ctx,
+      `AI visual responses ${visualResponsesEnabled ? "enabled" : "disabled"}`,
+    );
+
+    return {
+      visualResponsesEnabled: settings.visual_responses_enabled,
+      updatedAt: settings.updated_at,
+      updatedBy: settings.updated_by,
+    };
   }
 
   /**
@@ -142,19 +216,23 @@ export class AiAssistantService {
       throw new ForbiddenException("Not authorized to access this session");
     }
 
-    const messages = await this.prismaService.chat_messages.findMany({
-      where: {
-        session_id: sessionId,
-      },
-      orderBy: {
-        created_at: "asc",
-      },
-    });
+    const [messages, visualsEnabled] = await Promise.all([
+      this.prismaService.chat_messages.findMany({
+        where: {
+          session_id: sessionId,
+        },
+        orderBy: {
+          created_at: "asc",
+        },
+      }),
+      this.areVisualResponsesEnabled(ctx),
+    ]);
 
     return messages.map((message) => ({
       ...message,
       createdAt: message.created_at,
       sources: Array.isArray(message.sources) ? message.sources : [],
+      metadata: this.visibleMetadata(message.metadata, visualsEnabled),
     }));
   }
 
@@ -496,6 +574,72 @@ export class AiAssistantService {
       this.prismaService.documents.count({ where }),
     ]);
     return { documents, total, page: query.page, limit: query.limit };
+  }
+
+  async listAdminDocumentChunks(
+    documentId: string,
+    query: AdminDocumentChunkSearchDto,
+  ) {
+    const document = await this.prismaService.documents.findFirst({
+      where: {
+        id: documentId,
+        deleted_at: null,
+        status: { not: AiDocumentStatus.DELETED },
+      },
+      select: {
+        id: true,
+        title: true,
+        active_version: true,
+      },
+    });
+    if (!document) {
+      throw new NotFoundException(`Document ${documentId} not found`);
+    }
+
+    const where: Prisma.chunksWhereInput = {
+      document_id: documentId,
+      version: document.active_version,
+      ...(query.search?.trim()
+        ? { text: { contains: query.search.trim(), mode: "insensitive" } }
+        : {}),
+    };
+    const skip = (query.page - 1) * query.limit;
+    const [chunks, total] = await this.prismaService.$transaction([
+      this.prismaService.chunks.findMany({
+        where,
+        select: {
+          id: true,
+          chunk_index: true,
+          page_start: true,
+          page_end: true,
+          text: true,
+          meta: true,
+        },
+        orderBy: { chunk_index: "asc" },
+        skip,
+        take: query.limit,
+      }),
+      this.prismaService.chunks.count({ where }),
+    ]);
+
+    return {
+      document: {
+        id: document.id,
+        title: document.title,
+        version: document.active_version,
+      },
+      chunks: chunks.map((chunk) => ({
+        id: chunk.id,
+        chunkIndex: chunk.chunk_index,
+        pageStart: chunk.page_start,
+        pageEnd: chunk.page_end,
+        text: chunk.text,
+        meta: chunk.meta,
+      })),
+      total,
+      page: query.page,
+      limit: query.limit,
+    };
   }
 
   async getAdminDocumentSummary() {
@@ -914,6 +1058,7 @@ export class AiAssistantService {
   ) {
     const userId = this.getUserId(ctx);
     this.logger.log(ctx, `Chat request from user ${userId}: "${query.substring(0, 50)}..."`);
+    const visualsEnabled = await this.areVisualResponsesEnabled(ctx);
 
     // Rate-limit check: 3 prompts per day (admins exempt)
     const isAdmin = ctx.user?.userType === UserType.SUPER_ADMIN;
@@ -953,6 +1098,7 @@ export class AiAssistantService {
           query,
           conversation_history: conversationHistory,
           top_k: topK || 5,
+          enable_visuals: visualsEnabled,
         }, { headers: this.ragHeaders })
       );
       ragResponse = response.data;
@@ -971,6 +1117,11 @@ export class AiAssistantService {
       },
     });
 
+    const responseMetadata = this.visibleMetadata(
+      ragResponse.metadata,
+      visualsEnabled,
+    );
+
     // Save assistant response to DB
     const assistantMessage = await this.prismaService.chat_messages.create({
       data: {
@@ -979,6 +1130,7 @@ export class AiAssistantService {
         role: "assistant",
         content: String(ragResponse.response || ""),
         sources: (ragResponse.sources || []) as Prisma.InputJsonValue,
+        metadata: responseMetadata as Prisma.InputJsonValue,
       },
     });
 
@@ -994,7 +1146,7 @@ export class AiAssistantService {
       response: ragResponse.response,
       conversation_id: sessionId,
       sources: ragResponse.sources || [],
-      metadata: ragResponse.metadata || {},
+      metadata: responseMetadata,
       createdAt: assistantMessage.created_at,
     };
   }

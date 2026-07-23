@@ -17,7 +17,10 @@ export class ChatRequestDto {
   @IsString()
   query: string;
 
-  @ApiPropertyOptional({ description: "Conversation history" })
+  @ApiPropertyOptional({
+    description: "Conversation history",
+    type: () => [ChatMessageDto],
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

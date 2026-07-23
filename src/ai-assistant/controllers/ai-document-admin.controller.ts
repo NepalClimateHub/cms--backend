@@ -26,10 +26,12 @@ import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
 import { AiAssistantService } from "../services/ai-assistant.service";
 import {
+  AdminDocumentChunkSearchDto,
   AdminDocumentSearchDto,
   AdminDocumentUploadDto,
   InternalIndexJobUpdateDto,
   InternalImportDocumentDto,
+  UpdateAiAssistantSettingsDto,
 } from "../dtos/admin-document.dto";
 import { RagServiceTokenGuard } from "../guards/rag-service-token.guard";
 
@@ -40,6 +42,24 @@ import { RagServiceTokenGuard } from "../guards/rag-service-token.guard";
 @Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN)
 export class AiDocumentAdminController {
   constructor(private readonly aiAssistantService: AiAssistantService) {}
+
+  @Get("settings")
+  @Roles(ROLE.SUPER_ADMIN)
+  settings(@ReqContext() ctx: RequestContext) {
+    return this.aiAssistantService.getAiAssistantSettings(ctx);
+  }
+
+  @Patch("settings")
+  @Roles(ROLE.SUPER_ADMIN)
+  updateSettings(
+    @ReqContext() ctx: RequestContext,
+    @Body() dto: UpdateAiAssistantSettingsDto,
+  ) {
+    return this.aiAssistantService.updateAiAssistantSettings(
+      ctx,
+      dto.visualResponsesEnabled,
+    );
+  }
 
   @Post("documents")
   @HttpCode(HttpStatus.ACCEPTED)
@@ -56,6 +76,14 @@ export class AiDocumentAdminController {
   @Get("documents")
   list(@Query() query: AdminDocumentSearchDto) {
     return this.aiAssistantService.listAdminDocuments(query);
+  }
+
+  @Get("documents/:documentId/chunks")
+  listChunks(
+    @Param("documentId") documentId: string,
+    @Query() query: AdminDocumentChunkSearchDto,
+  ) {
+    return this.aiAssistantService.listAdminDocumentChunks(documentId, query);
   }
 
   @Get("summary")

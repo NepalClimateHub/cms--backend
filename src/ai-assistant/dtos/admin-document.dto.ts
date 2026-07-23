@@ -1,6 +1,7 @@
 import { Transform, Type } from "class-transformer";
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNumber,
@@ -12,7 +13,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { AiDocumentStatus, AiIndexJobStatus } from "@prisma/client";
 
 export class AdminDocumentUploadDto {
@@ -20,6 +21,12 @@ export class AdminDocumentUploadDto {
   @IsOptional()
   @IsString()
   title?: string;
+}
+
+export class UpdateAiAssistantSettingsDto {
+  @ApiProperty({ description: "Enable evidence-backed inline graphics in chat responses" })
+  @IsBoolean()
+  visualResponsesEnabled: boolean;
 }
 
 export class AdminDocumentSearchDto {
@@ -43,6 +50,25 @@ export class AdminDocumentSearchDto {
   @Max(100)
   @Transform(({ value }) => Number(value))
   limit = 20;
+}
+
+export class AdminDocumentChunkSearchDto {
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => Number(value))
+  page = 1;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @Transform(({ value }) => Number(value))
+  limit = 25;
 }
 
 export class InternalChunkDto {
