@@ -88,7 +88,11 @@ export class AiAssistantService {
     }
   }
 
-  private visibleMetadata(metadata: unknown, visualsEnabled: boolean) {
+  private visibleMetadata(
+    metadata: unknown,
+    visualsEnabled: boolean,
+    userType?: UserType,
+  ) {
     if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
       return {};
     }
@@ -96,6 +100,9 @@ export class AiAssistantService {
     const visible = { ...(metadata as Record<string, unknown>) };
     if (!visualsEnabled) {
       delete visible.visual;
+    }
+    if (userType !== UserType.SUPER_ADMIN) {
+      delete visible.visualDecision;
     }
     return visible;
   }
@@ -232,7 +239,11 @@ export class AiAssistantService {
       ...message,
       createdAt: message.created_at,
       sources: Array.isArray(message.sources) ? message.sources : [],
-      metadata: this.visibleMetadata(message.metadata, visualsEnabled),
+      metadata: this.visibleMetadata(
+        message.metadata,
+        visualsEnabled,
+        ctx.user?.userType,
+      ),
     }));
   }
 
@@ -1097,7 +1108,7 @@ export class AiAssistantService {
         this.httpService.post(`${this.ragServiceUrl}/chat`, {
           query,
           conversation_history: conversationHistory,
-          top_k: topK || 5,
+          top_k: topK || 8,
           enable_visuals: visualsEnabled,
         }, { headers: this.ragHeaders })
       );
@@ -1117,9 +1128,19 @@ export class AiAssistantService {
       },
     });
 
+    const responseSources = Array.isArray(ragResponse.sources)
+      ? ragResponse.sources
+      : [];
+    const rawResponseMetadata =
+      ragResponse.metadata &&
+      typeof ragResponse.metadata === "object" &&
+      !Array.isArray(ragResponse.metadata)
+        ? ragResponse.metadata
+        : {};
     const responseMetadata = this.visibleMetadata(
-      ragResponse.metadata,
+      rawResponseMetadata,
       visualsEnabled,
+      ctx.user?.userType,
     );
 
     // Save assistant response to DB
@@ -1129,8 +1150,8 @@ export class AiAssistantService {
         session_id: sessionId,
         role: "assistant",
         content: String(ragResponse.response || ""),
-        sources: (ragResponse.sources || []) as Prisma.InputJsonValue,
-        metadata: responseMetadata as Prisma.InputJsonValue,
+        sources: responseSources as Prisma.InputJsonValue,
+        metadata: rawResponseMetadata as Prisma.InputJsonValue,
       },
     });
 
@@ -1145,7 +1166,7 @@ export class AiAssistantService {
     return {
       response: ragResponse.response,
       conversation_id: sessionId,
-      sources: ragResponse.sources || [],
+      sources: responseSources,
       metadata: responseMetadata,
       createdAt: assistantMessage.created_at,
     };

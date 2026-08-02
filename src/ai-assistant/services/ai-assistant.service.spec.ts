@@ -15,7 +15,7 @@ function makeService(overrides: Record<string, any> = {}) {
       update: jest.fn(),
     },
     chat_messages: {
-      count: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
       create: jest.fn(),
       findMany: jest.fn(),
     },
@@ -59,16 +59,30 @@ describe("AiAssistantService chat sources", () => {
   const ctx = {
     user: { id: "user-1", userType: UserType.SUPER_ADMIN },
   } as any;
+  const regularUserCtx = {
+    user: { id: "user-1", userType: UserType.INDIVIDUAL },
+  } as any;
+  const visualDecision = {
+    status: "generated",
+    attempted: true,
+    category: "metrics",
+    reason: null,
+    repairAttempted: false,
+    evidenceCount: 8,
+  };
 
-  it("returns saved structured sources when loading session messages", async () => {
-    const source = {
-      documentId: "document-1",
-      chunkId: "chunk-1",
-      title: "Climate Policy",
-      url: "/api/v1/ai-assistant/documents/document-1/file",
-      page: 12,
-      score: 0.91,
-    };
+  const makeSources = () =>
+    Array.from({ length: 8 }, (_, index) => ({
+      documentId: `document-${index + 1}`,
+      chunkId: `chunk-${index + 1}`,
+      title: `Climate Policy ${index + 1}`,
+      url: `/api/v1/ai-assistant/documents/document-${index + 1}/file`,
+      page: index + 1,
+      score: 0.99 - index * 0.01,
+    }));
+
+  it("returns all saved sources and diagnostics to a superadmin", async () => {
+    const sources = makeSources();
     const createdAt = new Date("2026-06-18T12:00:00.000Z");
     const { service, prismaService } = makeService();
     prismaService.chat_sessions.findUnique.mockResolvedValue({ id: "session-1", user_id: "user-1" });
@@ -78,7 +92,7 @@ describe("AiAssistantService chat sources", () => {
         session_id: "session-1",
         role: "assistant",
         content: "Answer",
-        sources: [source],
+        sources,
         metadata: {
           visual: {
             version: 1,
@@ -88,6 +102,7 @@ describe("AiAssistantService chat sources", () => {
               { label: "Transport", sourceIndex: 1 },
             ],
           },
+          visualDecision,
         },
         created_at: createdAt,
       },
@@ -95,44 +110,37 @@ describe("AiAssistantService chat sources", () => {
 
     const messages = await service.getSessionMessages(ctx, "session-1");
 
-    expect(messages[0].sources).toEqual([source]);
+    expect(messages[0].sources).toEqual(sources);
     expect(messages[0].metadata).toEqual(
       expect.objectContaining({
         visual: expect.objectContaining({ type: "sector_chips" }),
+        visualDecision,
       }),
     );
     expect(messages[0].createdAt).toBe(createdAt);
   });
 
-  it("persists RAG sources with the assistant message", async () => {
-    const source = {
-      documentId: "document-1",
-      chunkId: "chunk-1",
-      title: "Climate Policy",
-      url: "/api/v1/ai-assistant/documents/document-1/file",
-      page: 5,
-      score: 0.88,
+  it("persists raw metadata while filtering regular-user live output", async () => {
+    const sources = makeSources();
+    const visual = {
+      version: 2,
+      type: "metric_strip",
+      items: [
+        { label: "Target", value: "45%", sourceIndex: 1 },
+        { label: "Deadline", value: "2030", sourceIndex: 8 },
+      ],
+    };
+    const rawMetadata = {
+      num_sources: 8,
+      visual,
+      visualDecision,
     };
     const { service, prismaService, httpService } = makeService();
     httpService.post.mockReturnValue(of({
       data: {
         response: "Answer",
-        sources: [source],
-        metadata: {
-          num_sources: 1,
-          visual: {
-            version: 1,
-            type: "document_comparison",
-            columns: [
-              { label: "Reference", sourceIndex: 1 },
-              { label: "Additional measures", sourceIndex: 1 },
-            ],
-            rows: [
-              { label: "2030", values: ["34 mMtCO2", "zero"] },
-              { label: "2050", values: ["79 mMtCO2", "net negative"] },
-            ],
-          },
-        },
+        sources,
+        metadata: rawMetadata,
       },
     }));
     prismaService.chat_messages.create
@@ -140,29 +148,27 @@ describe("AiAssistantService chat sources", () => {
       .mockResolvedValueOnce({ id: "assistant-message", created_at: new Date("2026-06-18T12:00:00.000Z") });
     prismaService.chat_sessions.update.mockResolvedValue({ id: "session-1" });
 
-    const result = await service.chat(ctx, "What policy mentions solar?", "session-1");
+    const result = await service.chat(
+      regularUserCtx,
+      "What policy mentions solar?",
+      "session-1",
+    );
 
     expect(prismaService.chat_messages.create).toHaveBeenLastCalledWith({
       data: expect.objectContaining({
         role: "assistant",
         content: "Answer",
-        sources: [source],
-        metadata: expect.objectContaining({
-          visual: expect.objectContaining({ type: "document_comparison" }),
-        }),
+        sources,
+        metadata: rawMetadata,
       }),
     });
     expect(httpService.post).toHaveBeenCalledWith(
       "http://rag-service/chat",
-      expect.objectContaining({ enable_visuals: true }),
+      expect.objectContaining({ enable_visuals: true, top_k: 8 }),
       { headers: { Authorization: "Bearer service-token" } },
     );
-    expect(result.sources).toEqual([source]);
-    expect(result.metadata).toEqual(
-      expect.objectContaining({
-        visual: expect.objectContaining({ type: "document_comparison" }),
-      }),
-    );
+    expect(result.sources).toEqual(sources);
+    expect(result.metadata).toEqual({ num_sources: 8, visual });
   });
 
   it("restores new process visual metadata without changing its payload", async () => {
@@ -194,7 +200,44 @@ describe("AiAssistantService chat sources", () => {
     expect(messages[0].metadata).toEqual({ visual });
   });
 
-  it("hides stored visual metadata while the global setting is disabled", async () => {
+  it("strips diagnostics from regular-user saved history", async () => {
+    const visual = {
+      version: 2,
+      type: "metric_strip",
+      items: [
+        { label: "Target", value: "45%", sourceIndex: 1 },
+        { label: "Deadline", value: "2030", sourceIndex: 8 },
+      ],
+    };
+    const { service, prismaService } = makeService();
+    prismaService.chat_sessions.findUnique.mockResolvedValue({
+      id: "session-1",
+      user_id: "user-1",
+    });
+    prismaService.chat_messages.findMany.mockResolvedValue([
+      {
+        role: "assistant",
+        content: "Answer",
+        sources: makeSources(),
+        metadata: {
+          num_sources: 8,
+          visual,
+          visualDecision,
+        },
+        created_at: new Date(),
+      },
+    ]);
+
+    const messages = await service.getSessionMessages(
+      regularUserCtx,
+      "session-1",
+    );
+
+    expect(messages[0].metadata).toEqual({ num_sources: 8, visual });
+    expect(messages[0].sources).toEqual(makeSources());
+  });
+
+  it("hides stored visuals but retains superadmin diagnostics when disabled", async () => {
     const { service, prismaService } = makeService();
     prismaService.ai_assistant_settings.upsert.mockResolvedValue({
       id: 1,
@@ -214,6 +257,14 @@ describe("AiAssistantService chat sources", () => {
         metadata: {
           num_sources: 2,
           visual: { version: 1, type: "metric_strip", items: [] },
+          visualDecision: {
+            ...visualDecision,
+            status: "skipped",
+            attempted: false,
+            category: null,
+            reason: "disabled",
+            evidenceCount: 0,
+          },
         },
         created_at: new Date(),
       },
@@ -221,21 +272,45 @@ describe("AiAssistantService chat sources", () => {
 
     const messages = await service.getSessionMessages(ctx, "session-1");
 
-    expect(messages[0].metadata).toEqual({ num_sources: 2 });
+    expect(messages[0].metadata).toEqual({
+      num_sources: 2,
+      visualDecision: {
+        ...visualDecision,
+        status: "skipped",
+        attempted: false,
+        category: null,
+        reason: "disabled",
+        evidenceCount: 0,
+      },
+    });
   });
 
-  it("fails closed when the visual setting cannot be read", async () => {
-    const { service, prismaService, httpService, logger } = makeService();
-    prismaService.ai_assistant_settings.upsert.mockRejectedValue(
-      new Error("database unavailable"),
-    );
+  it("persists disabled-path metadata while returning diagnostics to a superadmin", async () => {
+    const disabledDecision = {
+      ...visualDecision,
+      status: "skipped",
+      attempted: false,
+      category: null,
+      reason: "disabled",
+      evidenceCount: 0,
+    };
+    const rawMetadata = {
+      num_sources: 0,
+      visual: { version: 2, type: "metric_strip", items: [] },
+      visualDecision: disabledDecision,
+    };
+    const { service, prismaService, httpService } = makeService();
+    prismaService.ai_assistant_settings.upsert.mockResolvedValue({
+      id: 1,
+      visual_responses_enabled: false,
+      updated_at: new Date(),
+      updated_by: null,
+    });
     httpService.post.mockReturnValue(of({
       data: {
         response: "Answer",
         sources: [],
-        metadata: {
-          visual: { version: 1, type: "metric_strip", items: [] },
-        },
+        metadata: rawMetadata,
       },
     }));
     prismaService.chat_messages.create
@@ -250,9 +325,59 @@ describe("AiAssistantService chat sources", () => {
       expect.objectContaining({ enable_visuals: false }),
       expect.anything(),
     );
+    expect(prismaService.chat_messages.create).toHaveBeenLastCalledWith({
+      data: expect.objectContaining({
+        role: "assistant",
+        metadata: rawMetadata,
+      }),
+    });
+    expect(result.metadata).toEqual({
+      num_sources: 0,
+      visualDecision: disabledDecision,
+    });
+  });
+
+  it("fails closed when the visual setting cannot be read", async () => {
+    const { service, prismaService, httpService, logger } = makeService();
+    prismaService.ai_assistant_settings.upsert.mockRejectedValue(
+      new Error("database unavailable"),
+    );
+    httpService.post.mockReturnValue(of({
+      data: {
+        response: "Answer",
+        sources: [],
+        metadata: {
+          visual: { version: 1, type: "metric_strip", items: [] },
+          visualDecision: {
+            ...visualDecision,
+            status: "skipped",
+            attempted: false,
+            category: null,
+            reason: "disabled",
+            evidenceCount: 0,
+          },
+        },
+      },
+    }));
+    prismaService.chat_messages.create
+      .mockResolvedValueOnce({ id: "user-message" })
+      .mockResolvedValueOnce({ id: "assistant-message", created_at: new Date() });
+    prismaService.chat_sessions.update.mockResolvedValue({ id: "session-1" });
+
+    const result = await service.chat(
+      regularUserCtx,
+      "Question",
+      "session-1",
+    );
+
+    expect(httpService.post).toHaveBeenCalledWith(
+      "http://rag-service/chat",
+      expect.objectContaining({ enable_visuals: false }),
+      expect.anything(),
+    );
     expect(result.metadata).toEqual({});
     expect(logger.error).toHaveBeenCalledWith(
-      ctx,
+      regularUserCtx,
       expect.stringContaining("continuing with visuals disabled"),
       expect.anything(),
     );
