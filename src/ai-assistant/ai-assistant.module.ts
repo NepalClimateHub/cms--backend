@@ -8,6 +8,14 @@ import {
   AiDocumentInternalController,
 } from "./controllers/ai-document-admin.controller";
 import { RagServiceTokenGuard } from "./guards/rag-service-token.guard";
+import {
+  ClimateDataAdminController,
+  ClimateDataClientController,
+  ClimateDataInternalController,
+} from "./controllers/climate-data.controller";
+import { ClimateDataService } from "./services/climate-data.service";
+import { ClimateDataScheduler } from "./services/climate-data.scheduler";
+import { ClimateOntologyService } from "./services/climate-ontology.service";
 
 @Module({
   imports: [
@@ -17,12 +25,21 @@ import { RagServiceTokenGuard } from "./guards/rag-service-token.guard";
       maxRedirects: 3,
     }),
   ],
-  providers: [AiAssistantService, RagServiceTokenGuard],
+  providers: [
+    AiAssistantService,
+    ClimateDataService,
+    ClimateDataScheduler,
+    ClimateOntologyService,
+    RagServiceTokenGuard,
+  ],
   controllers: [
     AiAssistantController,
     AiDocumentAdminController,
     AiDocumentInternalController,
+    ClimateDataAdminController,
+    ClimateDataClientController,
+    ClimateDataInternalController,
   ],
-  exports: [AiAssistantService],
+  exports: [AiAssistantService, ClimateDataService, ClimateOntologyService],
 })
 export class AiAssistantModule {}

@@ -5,4 +5,5 @@ export * from "./create-document.dto";
 export * from "./create-chunk.dto";
 export * from "./get-chunks.dto";
 export * from "./chat.dto";
+export * from "./climate-data.dto";
 export * from "./admin-document.dto";

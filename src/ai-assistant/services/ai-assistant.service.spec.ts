@@ -1,5 +1,5 @@
 import { of } from "rxjs";
-import { UserType } from "@prisma/client";
+import { ClimateRolloutStage, UserType } from "@prisma/client";
 import { AiAssistantService } from "./ai-assistant.service";
 
 function makeService(overrides: Record<string, any> = {}) {
@@ -406,6 +406,26 @@ describe("AiAssistantService chat sources", () => {
       }),
     });
     expect(settings.visualResponsesEnabled).toBe(true);
+  });
+
+  it("enforces administrator, internal, limited, and all rollout stages", () => {
+    const { service } = makeService({
+      configService: {
+        get: jest.fn((key: string) => {
+          if (key === "climate.internalUserIds") return ["internal-1"];
+          if (key === "climate.limitedUserIds") return ["limited-1"];
+          return undefined;
+        }),
+      },
+    });
+    const allows = (stage: ClimateRolloutStage, id: string, userType: UserType) =>
+      (service as any).climateRolloutAllows(stage, { user: { id, userType } });
+    expect(allows(ClimateRolloutStage.ADMIN, "admin-1", UserType.ADMIN)).toBe(true);
+    expect(allows(ClimateRolloutStage.ADMIN, "person-1", UserType.INDIVIDUAL)).toBe(false);
+    expect(allows(ClimateRolloutStage.INTERNAL, "internal-1", UserType.INDIVIDUAL)).toBe(true);
+    expect(allows(ClimateRolloutStage.LIMITED, "limited-1", UserType.INDIVIDUAL)).toBe(true);
+    expect(allows(ClimateRolloutStage.ALL, "person-1", UserType.INDIVIDUAL)).toBe(true);
+    expect(allows(ClimateRolloutStage.DISABLED, "admin-1", UserType.SUPER_ADMIN)).toBe(false);
   });
 });
 

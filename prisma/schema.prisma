@@ -9,16 +9,16 @@ datasource db {
 }
 
 model User {
-  id                              String    @id @default(cuid())
+  id                              String         @id @default(cuid())
   fullName                        String
-  email                           String    @unique @db.VarChar(254)
+  email                           String         @unique @db.VarChar(254)
   password                        String
-  isEmailVerified                 Boolean   @default(false)
+  isEmailVerified                 Boolean        @default(false)
   profession                      String?
   expertise                       String?
   bio                             String?
-  dateOfBirth                     DateTime? @db.Timestamptz(6)
-  dateOfJoin                      DateTime? @db.Timestamptz(6)
+  dateOfBirth                     DateTime?      @db.Timestamptz(6)
+  dateOfJoin                      DateTime?      @db.Timestamptz(6)
   gender                          String?
   phoneCountryCode                String?
   phoneNumber                     String?
@@ -27,24 +27,24 @@ model User {
   resetPasswordExpires            DateTime?
   accountVerificationToken        String?
   accountVerificationTokenExpires DateTime?
-  createdAt                       DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt                       DateTime  @updatedAt
+  createdAt                       DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt                       DateTime       @updatedAt
   deletedAt                       DateTime?
   socials                         Json?
-  userType                        UserType  @default(INDIVIDUAL)
+  userType                        UserType       @default(INDIVIDUAL)
   profilePhotoId                  String?
   profilePhotoUrl                 String?
   currentRole                     String?
   bannerImageId                   String?
   bannerImageUrl                  String?
   /// Platform admin has verified this account (organization-linked users)
-  isVerifiedByAdmin               Boolean   @default(false)
-  i_am                            String    @default("Student")
-  organizationId                String?   @unique
+  isVerifiedByAdmin               Boolean        @default(false)
+  i_am                            String         @default("Student")
+  organizationId                  String?        @unique
   blogs                           Blog[]
-  address                         Address?  @relation(fields: [addressId], references: [id])
-  gallery                         Gallery[] @relation("GalleryToUser")
-  tags                            Tags[]    @relation("TagsToUser")
+  address                         Address?       @relation(fields: [addressId], references: [id])
+  gallery                         Gallery[]      @relation("GalleryToUser")
+  tags                            Tags[]         @relation("TagsToUser")
   organization                    Organizations? @relation("UserOrganizationLink", fields: [organizationId], references: [id], onDelete: SetNull)
   notifications                   Notification[]
 
@@ -74,27 +74,27 @@ model Notification {
 }
 
 model Organizations {
-  id                  String    @id @default(cuid())
-  name                String
-  description         String
+  id                         String    @id @default(cuid())
+  name                       String
+  description                String
   /// e.g. NGO, network, private sector — public-facing category label
-  organizationType    String?
-  addressId           String?
-  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt           DateTime  @updatedAt
-  deletedAt           DateTime?
+  organizationType           String?
+  addressId                  String?
+  createdAt                  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt                  DateTime  @updatedAt
+  deletedAt                  DateTime?
   verificationDocumentUrl    String?
   verificationDocumentId     String?
   verificationRequestRemarks String?
   verificationRequestedAt    DateTime? @db.Timestamptz(6)
-  address             Address?  @relation(fields: [addressId], references: [id])
-  organizationGallery Gallery[] @relation("GalleryToOrganizations")
-  tags                Tags[]    @relation("OrganizationsToTags")
-  linkedAccountUser   User?   @relation("UserOrganizationLink")
+  address                    Address?  @relation(fields: [addressId], references: [id])
+  organizationGallery        Gallery[] @relation("GalleryToOrganizations")
+  tags                       Tags[]    @relation("OrganizationsToTags")
+  linkedAccountUser          User?     @relation("UserOrganizationLink")
 }
 
 model Events {
-  id                   String    @id @default(cuid())
+  id                   String        @id @default(cuid())
   title                String
   description          String
   location             String?
@@ -110,24 +110,24 @@ model Events {
   bannerImageId        String?
   bannerImageUrl       String?
   contributedBy        String
-  createdAt            DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime      @updatedAt
   deletedAt            DateTime?
   locationType         String
-  organizer            String    @map("organizer")
-  isDraft              Boolean   @default(true)
+  organizer            String        @map("organizer")
+  isDraft              Boolean       @default(true)
   moderationStatus     ContentStatus @default(DRAFT)
-  status               String    @default("OPEN")
+  status               String        @default("OPEN")
   reviewFeedback       String?
   website              String?
   socials              Json?
-  address              Address?  @relation(fields: [addressId], references: [id])
-  eventGallery         Gallery[] @relation("EventsToGallery")
-  tags                 Tags[]    @relation("EventsToTags")
+  address              Address?      @relation(fields: [addressId], references: [id])
+  eventGallery         Gallery[]     @relation("EventsToGallery")
+  tags                 Tags[]        @relation("EventsToTags")
 }
 
 model Opportunity {
-  id                  String    @id @default(cuid())
+  id                  String        @id @default(cuid())
   title               String
   description         String
   location            String
@@ -141,41 +141,41 @@ model Opportunity {
   bannerImageId       String?
   bannerImageUrl      String?
   contributedBy       String
-  createdAt           DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime      @updatedAt
   deletedAt           DateTime?
   locationType        String
-  organizer           String    @map("organizer")
-  isDraft             Boolean   @default(true)
+  organizer           String        @map("organizer")
+  isDraft             Boolean       @default(true)
   moderationStatus    ContentStatus @default(DRAFT)
-  status              String    @default("open")
+  status              String        @default("open")
   reviewFeedback      String?
   websiteUrl          String?
   socials             Json?
-  address             Address?  @relation(fields: [addressId], references: [id])
-  tags                Tags[]    @relation("OpportunityToTags")
+  address             Address?      @relation(fields: [addressId], references: [id])
+  tags                Tags[]        @relation("OpportunityToTags")
 }
 
 model News {
-  id            String    @id @default(cuid())
-  title         String
-  source        String
-  publishedDate DateTime
-  publishedYear DateTime
-  newsLink      String
-  contributedBy String
-  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  mode          String
-  isDraft       Boolean   @default(true)
-  status        ContentStatus @default(DRAFT)
+  id             String        @id @default(cuid())
+  title          String
+  source         String
+  publishedDate  DateTime
+  publishedYear  DateTime
+  newsLink       String
+  contributedBy  String
+  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  mode           String
+  isDraft        Boolean       @default(true)
+  status         ContentStatus @default(DRAFT)
   reviewFeedback String?
-  tags          Tags[]    @relation("NewsToTags")
+  tags           Tags[]        @relation("NewsToTags")
 }
 
 model Blog {
-  id              String     @id @default(cuid())
+  id              String        @id @default(cuid())
   title           String
   content         String
   excerpt         String?
@@ -183,22 +183,22 @@ model Blog {
   category        String
   readingTime     String?
   publishedDate   DateTime?
-  isDraft         Boolean    @default(true)
-  isFeatured      Boolean    @default(false)
+  isDraft         Boolean       @default(true)
+  isFeatured      Boolean       @default(false)
   bannerImageUrl  String?
   bannerImageId   String?
-  createdAt       DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt
   deletedAt       DateTime?
-  approvedByAdmin Boolean    @default(false)
+  approvedByAdmin Boolean       @default(false)
   authorId        String?
   status          ContentStatus @default(DRAFT)
   reviewFeedback  String?
-  isTopRead       Boolean    @default(false)
+  isTopRead       Boolean       @default(false)
   categoryId      String?
-  authorUser      User?      @relation(fields: [authorId], references: [id])
-  categoryData    Category?  @relation(fields: [categoryId], references: [id])
-  tags            Tags[]     @relation("BlogToTags")
+  authorUser      User?         @relation(fields: [authorId], references: [id])
+  categoryData    Category?     @relation(fields: [categoryId], references: [id])
+  tags            Tags[]        @relation("BlogToTags")
 }
 
 model Address {
@@ -256,7 +256,7 @@ model Resource {
   bannerImageUrl  String?
   bannerImageId   String?
   isDraft         Boolean        @default(true)
-  status          ContentStatus @default(DRAFT)
+  status          ContentStatus  @default(DRAFT)
   reviewFeedback  String?
   createdAt       DateTime       @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime       @updatedAt
@@ -330,10 +330,232 @@ model chat_messages {
 }
 
 model ai_assistant_settings {
-  id                       Int      @id @default(1)
-  visual_responses_enabled Boolean  @default(false)
-  updated_at               DateTime @updatedAt @db.Timestamptz(6)
-  updated_by               String?  @db.VarChar(255)
+  id                       Int                 @id @default(1)
+  visual_responses_enabled Boolean             @default(false)
+  climate_data_enabled     Boolean             @default(false)
+  climate_maps_enabled     Boolean             @default(false)
+  graph_rag_enabled        Boolean             @default(false)
+  climate_rollout_stage    ClimateRolloutStage @default(DISABLED)
+  updated_at               DateTime            @updatedAt @db.Timestamptz(6)
+  updated_by               String?             @db.VarChar(255)
+}
+
+model climate_datasets {
+  id             String                         @id @default(cuid())
+  code           String                         @unique @db.VarChar(64)
+  name           String                         @db.VarChar(200)
+  provider       String                         @db.VarChar(120)
+  source_url     String
+  temporal_grain String                         @default("month") @db.VarChar(20)
+  last_synced_at DateTime?                      @db.Timestamptz(6)
+  created_at     DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime                       @updatedAt @db.Timestamptz(6)
+  observations   climate_monthly_observations[]
+  manifests      climate_source_manifests[]
+
+  @@index([provider])
+}
+
+model climate_stations {
+  id           String                         @id @db.VarChar(32)
+  name         String                         @db.VarChar(200)
+  country_code String                         @db.VarChar(3)
+  country_name String                         @db.VarChar(100)
+  latitude     Float
+  longitude    Float
+  elevation_m  Float?
+  active       Boolean                        @default(true)
+  metadata     Json                           @default("{}")
+  created_at   DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime                       @updatedAt @db.Timestamptz(6)
+  observations climate_monthly_observations[]
+  normals      climate_normals[]
+
+  @@index([country_code])
+  @@index([latitude, longitude])
+}
+
+model climate_indicators {
+  code         String                         @id @db.VarChar(24)
+  name         String                         @db.VarChar(120)
+  unit         String                         @db.VarChar(24)
+  aggregation  String                         @db.VarChar(40)
+  description  String?
+  created_at   DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime                       @updatedAt @db.Timestamptz(6)
+  observations climate_monthly_observations[]
+  normals      climate_normals[]
+}
+
+model climate_monthly_observations {
+  id             String                  @id @default(cuid())
+  dataset_id     String
+  station_id     String                  @db.VarChar(32)
+  indicator_code String                  @db.VarChar(24)
+  period         DateTime                @db.Date
+  value          Float
+  unit           String                  @db.VarChar(24)
+  days_missing   Int?
+  quality_flag   String?                 @db.VarChar(40)
+  attributes     Json                    @default("{}")
+  source_run_id  String?                 @db.Uuid
+  created_at     DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime                @updatedAt @db.Timestamptz(6)
+  dataset        climate_datasets        @relation(fields: [dataset_id], references: [id], onDelete: Restrict)
+  station        climate_stations        @relation(fields: [station_id], references: [id], onDelete: Cascade)
+  indicator      climate_indicators      @relation(fields: [indicator_code], references: [code], onDelete: Restrict)
+  source_run     climate_ingestion_runs? @relation(fields: [source_run_id], references: [id], onDelete: SetNull)
+
+  @@unique([dataset_id, station_id, indicator_code, period])
+  @@index([station_id, indicator_code, period])
+  @@index([indicator_code, period])
+  @@index([source_run_id])
+}
+
+model climate_normals {
+  id             String             @id @default(cuid())
+  station_id     String             @db.VarChar(32)
+  indicator_code String             @db.VarChar(24)
+  calendar_month Int
+  baseline_start Int                @default(1991)
+  baseline_end   Int                @default(2020)
+  value          Float
+  valid_years    Int
+  created_at     DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime           @updatedAt @db.Timestamptz(6)
+  station        climate_stations   @relation(fields: [station_id], references: [id], onDelete: Cascade)
+  indicator      climate_indicators @relation(fields: [indicator_code], references: [code], onDelete: Cascade)
+
+  @@unique([station_id, indicator_code, calendar_month, baseline_start, baseline_end])
+  @@index([indicator_code, calendar_month])
+}
+
+model climate_ingestion_runs {
+  id             String                         @id @db.Uuid
+  mode           ClimateIngestionMode
+  status         ClimateIngestionStatus         @default(QUEUED)
+  stage          String                         @default("queued") @db.VarChar(80)
+  requested_by   String?                        @db.VarChar(255)
+  started_at     DateTime?                      @db.Timestamptz(6)
+  heartbeat_at   DateTime?                      @db.Timestamptz(6)
+  completed_at   DateTime?                      @db.Timestamptz(6)
+  rows_processed Int                            @default(0)
+  station_count  Int                            @default(0)
+  batch_count    Int                            @default(0)
+  failed_batches Int                            @default(0)
+  error          String?
+  metadata       Json                           @default("{}")
+  created_at     DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime                       @updatedAt @db.Timestamptz(6)
+  observations   climate_monthly_observations[]
+  manifests      climate_source_manifests[]
+
+  @@index([status, created_at])
+}
+
+model climate_source_manifests {
+  id             String                 @id @default(cuid())
+  run_id         String                 @db.Uuid
+  dataset_id     String
+  checksum       String                 @db.VarChar(64)
+  archive_path   String
+  request_url    String
+  response_bytes Int
+  row_count      Int
+  created_at     DateTime               @default(now()) @db.Timestamptz(6)
+  run            climate_ingestion_runs @relation(fields: [run_id], references: [id], onDelete: Cascade)
+  dataset        climate_datasets       @relation(fields: [dataset_id], references: [id], onDelete: Restrict)
+
+  @@unique([run_id, checksum])
+  @@index([checksum])
+  @@index([dataset_id, created_at])
+}
+
+model climate_ontology_versions {
+  id            String                           @id @default(cuid())
+  version       Int                              @unique
+  checksum      String                           @db.VarChar(64)
+  active        Boolean                          @default(false)
+  notes         String?
+  created_at    DateTime                         @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime                         @updatedAt @db.Timestamptz(6)
+  concepts      climate_ontology_concepts[]
+  aliases       climate_ontology_aliases[]
+  relationships climate_ontology_relationships[]
+
+  @@index([active])
+}
+
+model climate_ontology_concepts {
+  id                     String                           @id @default(cuid())
+  version_id             String
+  key                    String                           @db.VarChar(160)
+  type                   ClimateOntologyConceptType
+  canonical_name         String                           @db.VarChar(200)
+  description            String?
+  external_ref           String?                          @db.VarChar(200)
+  metadata               Json                             @default("{}")
+  created_at             DateTime                         @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime                         @updatedAt @db.Timestamptz(6)
+  version                climate_ontology_versions        @relation(fields: [version_id], references: [id], onDelete: Cascade)
+  aliases                climate_ontology_aliases[]
+  outgoing_relationships climate_ontology_relationships[] @relation("ClimateOntologySource")
+  incoming_relationships climate_ontology_relationships[] @relation("ClimateOntologyTarget")
+
+  @@unique([version_id, key])
+  @@index([version_id, type])
+  @@index([external_ref])
+}
+
+model climate_ontology_aliases {
+  id               String                    @id @default(cuid())
+  version_id       String
+  concept_id       String
+  alias            String                    @db.VarChar(200)
+  normalized_alias String                    @db.VarChar(200)
+  language         String                    @default("en") @db.VarChar(12)
+  created_at       DateTime                  @default(now()) @db.Timestamptz(6)
+  version          climate_ontology_versions @relation(fields: [version_id], references: [id], onDelete: Cascade)
+  concept          climate_ontology_concepts @relation(fields: [concept_id], references: [id], onDelete: Cascade)
+
+  @@unique([version_id, normalized_alias, language])
+  @@index([concept_id])
+}
+
+model climate_ontology_relationships {
+  id         String                    @id @default(cuid())
+  version_id String
+  source_id  String
+  predicate  String                    @db.VarChar(80)
+  target_id  String
+  metadata   Json                      @default("{}")
+  created_at DateTime                  @default(now()) @db.Timestamptz(6)
+  version    climate_ontology_versions @relation(fields: [version_id], references: [id], onDelete: Cascade)
+  source     climate_ontology_concepts @relation("ClimateOntologySource", fields: [source_id], references: [id], onDelete: Cascade)
+  target     climate_ontology_concepts @relation("ClimateOntologyTarget", fields: [target_id], references: [id], onDelete: Cascade)
+
+  @@unique([version_id, source_id, predicate, target_id])
+  @@index([version_id, predicate])
+  @@index([target_id])
+}
+
+model climate_query_audits {
+  id            String   @id @default(cuid())
+  request_hash  String   @db.VarChar(64)
+  route         String   @default("climate_data") @db.VarChar(32)
+  query_plan    Json
+  cache_hit     Boolean  @default(false)
+  success       Boolean
+  duration_ms   Int
+  result_count  Int      @default(0)
+  station_count Int      @default(0)
+  visual_type   String?  @db.VarChar(40)
+  error         String?
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at])
+  @@index([route, success, created_at])
+  @@index([request_hash, created_at])
 }
 
 model chat_sessions {
@@ -385,24 +607,24 @@ model citations {
 }
 
 model documents {
-  id                String            @id @db.Uuid
-  title             String            @db.VarChar(300)
-  original_filename String?           @db.VarChar(500)
-  storage_name      String?           @unique @db.VarChar(255)
+  id                String           @id @db.Uuid
+  title             String           @db.VarChar(300)
+  original_filename String?          @db.VarChar(500)
+  storage_name      String?          @unique @db.VarChar(255)
   source_url        String?
-  checksum          String?           @unique @db.VarChar(64)
+  checksum          String?          @unique @db.VarChar(64)
   file_size         Int?
   total_pages       Int?
-  media_type        String            @default("application/pdf") @db.VarChar(80)
-  status            AiDocumentStatus  @default(READY)
-  active_version    Int               @default(1)
-  chunk_count       Int               @default(0)
+  media_type        String           @default("application/pdf") @db.VarChar(80)
+  status            AiDocumentStatus @default(READY)
+  active_version    Int              @default(1)
+  chunk_count       Int              @default(0)
   index_error       String?
-  uploaded_by       String?           @db.VarChar(255)
-  indexed_at        DateTime?         @db.Timestamptz(6)
-  deleted_at        DateTime?         @db.Timestamptz(6)
-  created_at        DateTime          @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime          @updatedAt @db.Timestamptz(6)
+  uploaded_by       String?          @db.VarChar(255)
+  indexed_at        DateTime?        @db.Timestamptz(6)
+  deleted_at        DateTime?        @db.Timestamptz(6)
+  created_at        DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime         @updatedAt @db.Timestamptz(6)
   chunks            chunks[]
   index_jobs        ai_index_jobs[]
 
@@ -412,19 +634,19 @@ model documents {
 }
 
 model ai_index_jobs {
-  id           String             @id @db.Uuid
-  document_id  String?            @db.Uuid
+  id           String           @id @db.Uuid
+  document_id  String?          @db.Uuid
   operation    AiIndexOperation
-  status       AiIndexJobStatus   @default(QUEUED)
-  stage        String             @default("queued") @db.VarChar(80)
-  attempt      Int                @default(1)
+  status       AiIndexJobStatus @default(QUEUED)
+  stage        String           @default("queued") @db.VarChar(80)
+  attempt      Int              @default(1)
   error        String?
-  heartbeat_at DateTime?          @db.Timestamptz(6)
-  started_at   DateTime?          @db.Timestamptz(6)
-  completed_at DateTime?          @db.Timestamptz(6)
-  created_at   DateTime           @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime           @updatedAt @db.Timestamptz(6)
-  document     documents?         @relation(fields: [document_id], references: [id], onDelete: SetNull)
+  heartbeat_at DateTime?        @db.Timestamptz(6)
+  started_at   DateTime?        @db.Timestamptz(6)
+  completed_at DateTime?        @db.Timestamptz(6)
+  created_at   DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime         @updatedAt @db.Timestamptz(6)
+  document     documents?       @relation(fields: [document_id], references: [id], onDelete: SetNull)
 
   @@index([document_id, status])
   @@index([status, heartbeat_at])
@@ -535,6 +757,38 @@ enum AiIndexJobStatus {
   RUNNING
   SUCCEEDED
   FAILED
+}
+
+enum ClimateIngestionMode {
+  BACKFILL
+  INCREMENTAL
+}
+
+enum ClimateIngestionStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum ClimateOntologyConceptType {
+  LOCATION
+  STATION
+  DATASET
+  INDICATOR
+  SECTOR
+  POLICY
+  TARGET
+  UNIT
+  TERM
+}
+
+enum ClimateRolloutStage {
+  DISABLED
+  ADMIN
+  INTERNAL
+  LIMITED
+  ALL
 }
 
 enum ContentStatus {
@@ -675,4 +929,3 @@ model Testimonial {
 
   @@map("nch_testimonials")
 }
-

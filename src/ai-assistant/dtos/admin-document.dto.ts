@@ -14,7 +14,7 @@ import {
   ValidateNested,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { AiDocumentStatus, AiIndexJobStatus } from "@prisma/client";
+import { AiDocumentStatus, AiIndexJobStatus, ClimateRolloutStage } from "@prisma/client";
 
 export class AdminDocumentUploadDto {
   @ApiPropertyOptional({ description: "Display title; defaults to the original filename" })
@@ -24,9 +24,30 @@ export class AdminDocumentUploadDto {
 }
 
 export class UpdateAiAssistantSettingsDto {
-  @ApiProperty({ description: "Enable evidence-backed inline graphics in chat responses" })
+  @ApiPropertyOptional({ description: "Enable evidence-backed inline graphics in chat responses" })
+  @IsOptional()
   @IsBoolean()
-  visualResponsesEnabled: boolean;
+  visualResponsesEnabled?: boolean;
+
+  @ApiPropertyOptional({ description: "Enable structured NOAA climate queries" })
+  @IsOptional()
+  @IsBoolean()
+  climateDataEnabled?: boolean;
+
+  @ApiPropertyOptional({ description: "Enable climate station maps" })
+  @IsOptional()
+  @IsBoolean()
+  climateMapsEnabled?: boolean;
+
+  @ApiPropertyOptional({ description: "Enable the evaluated Neo4j GraphRAG route" })
+  @IsOptional()
+  @IsBoolean()
+  graphRagEnabled?: boolean;
+
+  @ApiPropertyOptional({ enum: ClimateRolloutStage, description: "Climate feature rollout audience" })
+  @IsOptional()
+  @IsEnum(ClimateRolloutStage)
+  climateRolloutStage?: ClimateRolloutStage;
 }
 
 export class AdminDocumentSearchDto {

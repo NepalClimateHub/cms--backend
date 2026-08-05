@@ -55,10 +55,7 @@ export class AiDocumentAdminController {
     @ReqContext() ctx: RequestContext,
     @Body() dto: UpdateAiAssistantSettingsDto,
   ) {
-    return this.aiAssistantService.updateAiAssistantSettings(
-      ctx,
-      dto.visualResponsesEnabled,
-    );
+    return this.aiAssistantService.updateAiAssistantSettings(ctx, dto);
   }
 
   @Post("documents")

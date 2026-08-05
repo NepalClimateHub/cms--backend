@@ -21,6 +21,7 @@ import {
   AiDocumentStatus,
   AiIndexJobStatus,
   AiIndexOperation,
+  ClimateRolloutStage,
   Prisma,
   UserType,
 } from "@prisma/client";
@@ -29,6 +30,7 @@ import {
   AdminDocumentSearchDto,
   InternalIndexJobUpdateDto,
   InternalImportDocumentDto,
+  UpdateAiAssistantSettingsDto,
 } from "../dtos/admin-document.dto";
 
 const DAILY_PROMPT_LIMIT = 3;
@@ -88,10 +90,60 @@ export class AiAssistantService {
     }
   }
 
+  private async runtimeSettings(ctx: RequestContext) {
+    try {
+      const settings = await this.ensureAiAssistantSettings();
+      const rolloutEnabled = this.climateRolloutAllows(settings.climate_rollout_stage, ctx);
+      return {
+        visualsEnabled: settings.visual_responses_enabled,
+        climateDataEnabled: settings.climate_data_enabled && rolloutEnabled,
+        climateMapsEnabled:
+          settings.climate_data_enabled && settings.climate_maps_enabled && rolloutEnabled,
+        graphRagEnabled:
+          settings.climate_data_enabled && settings.graph_rag_enabled && rolloutEnabled,
+      };
+    } catch (error: unknown) {
+      this.logger.error(ctx, "Unable to read AI runtime settings; continuing with visuals disabled and optional routes disabled", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return {
+        visualsEnabled: false,
+        climateDataEnabled: false,
+        climateMapsEnabled: false,
+        graphRagEnabled: false,
+      };
+    }
+  }
+
+  private climateRolloutAllows(stage: ClimateRolloutStage, ctx: RequestContext) {
+    const user = ctx.user;
+    if (!user || stage === ClimateRolloutStage.DISABLED) return false;
+    if (stage === ClimateRolloutStage.ALL) return true;
+    const administrators: UserType[] = [UserType.SUPER_ADMIN, UserType.ADMIN];
+    if (administrators.includes(user.userType)) return true;
+    const internalIds = this.configService.get<string[]>("climate.internalUserIds") || [];
+    if (
+      stage === ClimateRolloutStage.INTERNAL &&
+      (user.userType === UserType.CONTENT_ADMIN || internalIds.includes(user.id))
+    ) {
+      return true;
+    }
+    if (stage === ClimateRolloutStage.LIMITED) {
+      const limitedIds = this.configService.get<string[]>("climate.limitedUserIds") || [];
+      return (
+        user.userType === UserType.CONTENT_ADMIN ||
+        internalIds.includes(user.id) ||
+        limitedIds.includes(user.id)
+      );
+    }
+    return false;
+  }
+
   private visibleMetadata(
     metadata: unknown,
     visualsEnabled: boolean,
     userType?: UserType,
+    mapsEnabled = true,
   ) {
     if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
       return {};
@@ -99,6 +151,15 @@ export class AiAssistantService {
 
     const visible = { ...(metadata as Record<string, unknown>) };
     if (!visualsEnabled) {
+      delete visible.visual;
+    }
+    if (
+      !mapsEnabled &&
+      visible.visual &&
+      typeof visible.visual === "object" &&
+      !Array.isArray(visible.visual) &&
+      (visible.visual as Record<string, unknown>).type === "station_map"
+    ) {
       delete visible.visual;
     }
     if (userType !== UserType.SUPER_ADMIN) {
@@ -111,6 +172,10 @@ export class AiAssistantService {
     const settings = await this.ensureAiAssistantSettings();
     return {
       visualResponsesEnabled: settings.visual_responses_enabled,
+      climateDataEnabled: settings.climate_data_enabled,
+      climateMapsEnabled: settings.climate_maps_enabled,
+      graphRagEnabled: settings.graph_rag_enabled,
+      climateRolloutStage: settings.climate_rollout_stage,
       updatedAt: settings.updated_at,
       updatedBy: settings.updated_by,
     };
@@ -118,29 +183,56 @@ export class AiAssistantService {
 
   async updateAiAssistantSettings(
     ctx: RequestContext,
-    visualResponsesEnabled: boolean,
+    changes: UpdateAiAssistantSettingsDto | boolean,
   ) {
+    if (typeof changes === "boolean") {
+      changes = { visualResponsesEnabled: changes };
+    }
     const userId = this.getUserId(ctx);
+    if (
+      changes.visualResponsesEnabled === undefined &&
+      changes.climateDataEnabled === undefined &&
+      changes.climateMapsEnabled === undefined &&
+      changes.graphRagEnabled === undefined
+      && changes.climateRolloutStage === undefined
+    ) {
+      throw new BadRequestException("At least one AI assistant setting is required");
+    }
+    const data = {
+      ...(changes.visualResponsesEnabled === undefined
+        ? {}
+        : { visual_responses_enabled: changes.visualResponsesEnabled }),
+      ...(changes.climateDataEnabled === undefined
+        ? {}
+        : { climate_data_enabled: changes.climateDataEnabled }),
+      ...(changes.climateMapsEnabled === undefined
+        ? {}
+        : { climate_maps_enabled: changes.climateMapsEnabled }),
+      ...(changes.graphRagEnabled === undefined
+        ? {}
+        : { graph_rag_enabled: changes.graphRagEnabled }),
+      ...(changes.climateRolloutStage === undefined
+        ? {}
+        : { climate_rollout_stage: changes.climateRolloutStage }),
+      updated_by: userId,
+    };
     const settings = await this.prismaService.ai_assistant_settings.upsert({
       where: { id: 1 },
       create: {
         id: 1,
-        visual_responses_enabled: visualResponsesEnabled,
-        updated_by: userId,
+        ...data,
       },
-      update: {
-        visual_responses_enabled: visualResponsesEnabled,
-        updated_by: userId,
-      },
+      update: data,
     });
 
-    this.logger.log(
-      ctx,
-      `AI visual responses ${visualResponsesEnabled ? "enabled" : "disabled"}`,
-    );
+    this.logger.log(ctx, "AI assistant rollout settings updated");
 
     return {
       visualResponsesEnabled: settings.visual_responses_enabled,
+      climateDataEnabled: settings.climate_data_enabled,
+      climateMapsEnabled: settings.climate_maps_enabled,
+      graphRagEnabled: settings.graph_rag_enabled,
+      climateRolloutStage: settings.climate_rollout_stage,
       updatedAt: settings.updated_at,
       updatedBy: settings.updated_by,
     };
@@ -223,7 +315,7 @@ export class AiAssistantService {
       throw new ForbiddenException("Not authorized to access this session");
     }
 
-    const [messages, visualsEnabled] = await Promise.all([
+    const [messages, settings] = await Promise.all([
       this.prismaService.chat_messages.findMany({
         where: {
           session_id: sessionId,
@@ -232,7 +324,7 @@ export class AiAssistantService {
           created_at: "asc",
         },
       }),
-      this.areVisualResponsesEnabled(ctx),
+      this.runtimeSettings(ctx),
     ]);
 
     return messages.map((message) => ({
@@ -241,8 +333,9 @@ export class AiAssistantService {
       sources: Array.isArray(message.sources) ? message.sources : [],
       metadata: this.visibleMetadata(
         message.metadata,
-        visualsEnabled,
+        settings.visualsEnabled,
         ctx.user?.userType,
+        settings.climateMapsEnabled,
       ),
     }));
   }
@@ -1069,7 +1162,8 @@ export class AiAssistantService {
   ) {
     const userId = this.getUserId(ctx);
     this.logger.log(ctx, `Chat request from user ${userId}: "${query.substring(0, 50)}..."`);
-    const visualsEnabled = await this.areVisualResponsesEnabled(ctx);
+    const settings = await this.runtimeSettings(ctx);
+    const visualsEnabled = settings.visualsEnabled;
 
     // Rate-limit check: 3 prompts per day (admins exempt)
     const isAdmin = ctx.user?.userType === UserType.SUPER_ADMIN;
@@ -1110,6 +1204,9 @@ export class AiAssistantService {
           conversation_history: conversationHistory,
           top_k: topK || 8,
           enable_visuals: visualsEnabled,
+          enable_climate_data: settings.climateDataEnabled,
+          enable_maps: settings.climateMapsEnabled,
+          enable_graph_rag: settings.graphRagEnabled,
         }, { headers: this.ragHeaders })
       );
       ragResponse = response.data;
@@ -1141,6 +1238,7 @@ export class AiAssistantService {
       rawResponseMetadata,
       visualsEnabled,
       ctx.user?.userType,
+      settings.climateMapsEnabled,
     );
 
     // Save assistant response to DB
