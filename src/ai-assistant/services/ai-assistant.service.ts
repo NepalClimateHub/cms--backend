@@ -380,14 +380,23 @@ export class AiAssistantService {
 
     // Call RAG service 
     const ragServiceUrl = this.configService.get<string>("ragServiceUrl") || "http://localhost:8000";
+    const ragServiceToken = this.configService.get<string>("ragServiceToken");
     let ragResponse: any;
     try {
+      const headers: Record<string, string> = {};
+      if (ragServiceToken) {
+        headers["Authorization"] = `Bearer ${ragServiceToken}`;
+      }
       const response = await firstValueFrom(
-        this.httpService.post(`${ragServiceUrl}/chat`, {
-          query,
-          conversation_history: conversationHistory,
-          top_k: topK || 5,
-        })
+        this.httpService.post(
+          `${ragServiceUrl}/chat`,
+          {
+            query,
+            conversation_history: conversationHistory,
+            top_k: topK || 5,
+          },
+          { headers },
+        )
       );
       ragResponse = response.data;
     } catch (error: any) {

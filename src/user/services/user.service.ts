@@ -2,9 +2,12 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import {
+  ActivityAction,
+  ActivityEntity,
   Address,
   Organizations,
   Prisma,
@@ -20,6 +23,7 @@ import { UpdateMyOrganizationInput } from "../dtos/update-my-organization.dto";
 import { UserOutput } from "../dtos/user-output.dto";
 import { UpdateUserInput } from "../dtos/user-update-input.dto";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
+import { ActivityLogService } from "../../activity-log/activity-log.service";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
@@ -27,6 +31,7 @@ export class UserService {
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService,
+    private readonly activityLogService: ActivityLogService,
   ) {
     this.logger.setContext(UserService.name);
   }
@@ -235,31 +240,31 @@ export class UserService {
       org === null
         ? null
         : {
-            id: org.id,
-            name: org.name,
-            description: org.description,
-            organizationType: org.organizationType ?? null,
-            address: org.address
-              ? {
-                  street: org.address.street,
-                  country: org.address.country,
-                  city: org.address.city,
-                  state: org.address.state,
-                  postcode: org.address.postcode,
-                }
-              : null,
-            logoImageUrl: user.profilePhotoUrl,
-            logoImageId: user.profilePhotoId,
-            bannerImageUrl: user.bannerImageUrl,
-            bannerImageId: user.bannerImageId,
-            socials: user.socials,
-            verificationDocumentUrl: org.verificationDocumentUrl ?? null,
-            verificationDocumentId: org.verificationDocumentId ?? null,
-            verificationRequestRemarks: org.verificationRequestRemarks ?? null,
-            verificationRequestedAt: org.verificationRequestedAt
-              ? org.verificationRequestedAt.toISOString()
-              : null,
-          };
+          id: org.id,
+          name: org.name,
+          description: org.description,
+          organizationType: org.organizationType ?? null,
+          address: org.address
+            ? {
+              street: org.address.street,
+              country: org.address.country,
+              city: org.address.city,
+              state: org.address.state,
+              postcode: org.address.postcode,
+            }
+            : null,
+          logoImageUrl: user.profilePhotoUrl,
+          logoImageId: user.profilePhotoId,
+          bannerImageUrl: user.bannerImageUrl,
+          bannerImageId: user.bannerImageId,
+          socials: user.socials,
+          verificationDocumentUrl: org.verificationDocumentUrl ?? null,
+          verificationDocumentId: org.verificationDocumentId ?? null,
+          verificationRequestRemarks: org.verificationRequestRemarks ?? null,
+          verificationRequestedAt: org.verificationRequestedAt
+            ? org.verificationRequestedAt.toISOString()
+            : null,
+        };
 
     return {
       id: user.id,
@@ -554,5 +559,78 @@ export class UserService {
     });
 
     return this.toUserOutput(user);
+  }
+
+  async deleteUser(ctx: RequestContext, id: string): Promise<UserOutput> {
+    this.logger.log(ctx, `${this.deleteUser.name} was called for ID ${id}`);
+
+    if (!ctx.user?.id) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+      include: { organization: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found.");
+    }
+
+    // Preventive safety check: user cannot delete their own active session account
+    if (ctx.user.id === id) {
+      throw new BadRequestException("You cannot delete your own user account.");
+    }
+
+    // Role restriction check: Only SUPER_ADMIN and ADMIN can delete users
+    const actorRole = ctx.user.userType;
+    if (actorRole !== UserType.SUPER_ADMIN && actorRole !== UserType.ADMIN) {
+      throw new ForbiddenException(
+        "Only Super Admin and Admin can delete users.",
+      );
+    }
+
+    // ADMIN role cannot delete a SUPER_ADMIN account
+    if (actorRole === UserType.ADMIN && user.userType === UserType.SUPER_ADMIN) {
+      throw new ForbiddenException("Admins cannot delete Super Admin accounts.");
+    }
+
+    const output = await this.toUserOutput(user);
+
+    // Unlink authored blogs before deleting user to prevent DB foreign key constraint errors
+    await this.prismaService.blog.updateMany({
+      where: { authorId: id },
+      data: { authorId: null },
+    });
+
+    const linkedOrgId = user.organizationId;
+
+    // Delete user from database
+    await this.prismaService.user.delete({
+      where: { id },
+    });
+
+    // If user was an organization account, clean up the linked organization record
+    if (linkedOrgId) {
+      await this.prismaService.organizations
+        .delete({
+          where: { id: linkedOrgId },
+        })
+        .catch(() => {
+          // Silently handle if organization record was already deleted
+        });
+    }
+
+    // Log the activity details (who deleted what)
+    const targetName = user.fullName || user.email;
+    this.activityLogService.logActivity(
+      ctx,
+      ActivityAction.DELETE,
+      ActivityEntity.USER,
+      user.id,
+      `${targetName} (${user.userType})`,
+    );
+
+    return output;
   }
 }

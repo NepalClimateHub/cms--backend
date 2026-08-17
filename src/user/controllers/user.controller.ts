@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -237,5 +238,35 @@ export class UserController {
 
     const user = await this.userService.promoteUser(ctx, id, input.role);
     return { data: user, meta: {} };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.SUPER_ADMIN, ROLE.ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete user (Individual or Organization) API",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(UserOutput),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: BaseApiErrorResponse,
+  })
+  async deleteUser(
+    @ReqContext() ctx: RequestContext,
+    @Param("id") id: string,
+  ): Promise<BaseApiResponse<UserOutput>> {
+    this.logger.log(ctx, `${this.deleteUser.name} was called`);
+
+    const deletedUser = await this.userService.deleteUser(ctx, id);
+    return { data: deletedUser, meta: {} };
   }
 }

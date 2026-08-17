@@ -508,6 +508,8 @@ enum ActivityEntity {
   MEMBER
   CLIMATE_CHAMPION
   TESTIMONIAL
+  USER
+  ORGANIZATION
 }
 
 model ActivityLog {
