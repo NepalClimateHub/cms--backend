@@ -27,6 +27,7 @@ import { ClimateChampionModule } from "./climate-champion/climate-champion.modul
 import { ActivityLogModule } from "./activity-log/activity-log.module";
 import { MinutesModule } from "./minutes/minutes.module";
 import { TestimonialModule } from "./testimonial/testimonial.module";
+import { VacancyModule } from "./vacancy/vacancy.module";
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { TestimonialModule } from "./testimonial/testimonial.module";
     ActivityLogModule,
     MinutesModule,
     TestimonialModule,
+    VacancyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
