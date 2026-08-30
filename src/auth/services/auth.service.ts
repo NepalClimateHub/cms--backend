@@ -21,7 +21,7 @@ import {
   UserAccessTokenClaims,
 } from "../dtos/auth-token-output.dto";
 import { EmailType, sendEmail } from "../../utils/email.util";
-import { getJWTTokenForEmailVerification } from "src/utils/jwt.util";
+import { getJWTTokenForEmailVerification } from "../../utils/jwt.util";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()

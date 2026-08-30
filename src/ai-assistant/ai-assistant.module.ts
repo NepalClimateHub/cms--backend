@@ -3,6 +3,19 @@ import { HttpModule } from "@nestjs/axios";
 import { SharedModule } from "../shared/shared.module";
 import { AiAssistantService } from "./services/ai-assistant.service";
 import { AiAssistantController } from "./controllers/ai-assistant.controller";
+import {
+  AiDocumentAdminController,
+  AiDocumentInternalController,
+} from "./controllers/ai-document-admin.controller";
+import { RagServiceTokenGuard } from "./guards/rag-service-token.guard";
+import {
+  ClimateDataAdminController,
+  ClimateDataClientController,
+  ClimateDataInternalController,
+} from "./controllers/climate-data.controller";
+import { ClimateDataService } from "./services/climate-data.service";
+import { ClimateDataScheduler } from "./services/climate-data.scheduler";
+import { ClimateOntologyService } from "./services/climate-ontology.service";
 
 @Module({
   imports: [
@@ -12,8 +25,21 @@ import { AiAssistantController } from "./controllers/ai-assistant.controller";
       maxRedirects: 3,
     }),
   ],
-  providers: [AiAssistantService],
-  controllers: [AiAssistantController],
-  exports: [AiAssistantService],
+  providers: [
+    AiAssistantService,
+    ClimateDataService,
+    ClimateDataScheduler,
+    ClimateOntologyService,
+    RagServiceTokenGuard,
+  ],
+  controllers: [
+    AiAssistantController,
+    AiDocumentAdminController,
+    AiDocumentInternalController,
+    ClimateDataAdminController,
+    ClimateDataClientController,
+    ClimateDataInternalController,
+  ],
+  exports: [AiAssistantService, ClimateDataService, ClimateOntologyService],
 })
 export class AiAssistantModule {}

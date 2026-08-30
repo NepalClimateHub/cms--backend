@@ -24,13 +24,13 @@
 <title>cluster_AppLoggerModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="176,-70 176,-268 320,-268 320,-70 176,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_AppLoggerModule_providers</title>
-<polygon fill="none" stroke="black" points="184,-78 184,-130 312,-130 312,-78 184,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_AppLoggerModule_exports</title>
 <polygon fill="none" stroke="black" points="198,-208 198,-260 298,-260 298,-208 198,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_AppLoggerModule_providers</title>
+<polygon fill="none" stroke="black" points="184,-78 184,-130 312,-130 312,-78 184,-78"/>
 </g>
 <!-- AppLogger  -->
 <g id="node1" class="node">
