@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class ActivityLogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Fire-and-forget activity logger.
@@ -40,8 +40,8 @@ export class ActivityLogService {
           entityName: entityName ?? null,
         },
       })
-      .catch(() => {
-        // Intentionally swallowed — logging must never break business logic
+      .catch((err) => {
+        console.error("Failed to log activity:", err);
       });
   }
 

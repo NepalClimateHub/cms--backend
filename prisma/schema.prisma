@@ -835,6 +835,9 @@ enum ActivityEntity {
   MEMBER
   CLIMATE_CHAMPION
   TESTIMONIAL
+  USER
+  ORGANIZATION
+  VACANCY
 }
 
 model ActivityLog {
@@ -928,4 +931,44 @@ model Testimonial {
   updatedAt   DateTime @updatedAt
 
   @@map("nch_testimonials")
+}
+model Vacancy {
+  id               String               @id @default(cuid())
+  title            String
+  openings         Int                  @default(1)
+  duration         String?
+  hoursPerWeek     String?
+  overview         String?              @db.Text
+  responsibilities String[]             @default([])
+  requirements     String[]             @default([])
+  location         String?
+  type             String?
+  deadline         DateTime?            @db.Timestamptz(6)
+  isActive         Boolean              @default(true)
+  isDraft          Boolean              @default(false)
+  createdAt        DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime             @updatedAt
+  deletedAt        DateTime?
+  applications     VacancyApplication[]
+
+  @@map("nch_vacancies")
+}
+
+model VacancyApplication {
+  id             String   @id @default(cuid())
+  vacancyId      String
+  vacancy        Vacancy  @relation(fields: [vacancyId], references: [id], onDelete: Cascade)
+  fullName       String
+  email          String
+  contact        String
+  currentAddress String?
+  message        String?  @db.Text
+  cvUrl          String
+  cvFileId       String?
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt
+
+  @@index([vacancyId])
+  @@map("nch_vacancy_applications")
 }
