@@ -115,9 +115,9 @@ model Events {
   deletedAt            DateTime?
   locationType         String
   organizer            String    @map("organizer")
-  isDraft              Boolean   @default(true)
-  moderationStatus     ContentStatus @default(DRAFT)
-  status               String    @default("OPEN")
+  publicationStatus    PublicationStatus @default(DRAFT)
+  moderationStatus     ContentStatus     @default(DRAFT)
+  status               EventStatus       @default(OPEN)
   reviewFeedback       String?
   website              String?
   socials              Json?
@@ -470,6 +470,17 @@ enum ContentStatus {
   PUBLISHED
   REJECTED
   IMPROVEMENT_REQUIRED
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum EventStatus {
+  OPEN
+  UPCOMING
+  CLOSED
 }
 
 enum ProjectStatus {
