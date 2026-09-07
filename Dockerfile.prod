@@ -1,23 +1,23 @@
+FROM node:24.2.0-bookworm-slim AS builder
+
+WORKDIR /usr/src/app
+RUN corepack enable
+COPY package.json pnpm-workspace.yaml* .npmrc* ./
+RUN pnpm install
+COPY . .
+RUN pnpm prisma generate
+RUN pnpm run build
 
 FROM node:24.2.0-bookworm-slim
 
 WORKDIR /usr/src/app
+RUN corepack enable
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
+ARG APP_ENV=production
+RUN pnpm i --prod --frozen-lockfile
 
-# Open ssl required for prisma in docker.
-RUN apt-get update -y \
-  && apt-get install -y openssl \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN npm install -g pnpm
-
-COPY package.json pnpm-workspace.yaml* .npmrc* ./
-
-RUN pnpm install
-
-COPY . .
-
-RUN pnpm prisma generate
-
-RUN pnpm run build
-
+CMD ["sh", "-c", "pnpm --version && pnpm dlx prisma generate && pnpm dlx prisma migrate deploy && node dist/src/main"]
 
