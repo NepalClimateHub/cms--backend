@@ -210,6 +210,7 @@ export class BlogService {
     const [blogs, total] = await Promise.all([
       this.prisma.blog.findMany({
         where,
+        omit: searchParams.excludeContent ? { content: true } : undefined,
         include: {
           tags: true,
           authorUser: true,

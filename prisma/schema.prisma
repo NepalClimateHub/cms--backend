@@ -631,6 +631,7 @@ model Vacancy {
   deadline         DateTime?            @db.Timestamptz(6)
   isActive         Boolean              @default(true)
   isDraft          Boolean              @default(false)
+  questions        Json                 @default("[]")
   createdAt        DateTime             @default(now()) @db.Timestamptz(6)
   updatedAt        DateTime             @updatedAt
   deletedAt        DateTime?
@@ -645,11 +646,12 @@ model VacancyApplication {
   vacancy        Vacancy  @relation(fields: [vacancyId], references: [id], onDelete: Cascade)
   fullName       String
   email          String
-  contact        String
+  contact        String?
   currentAddress String?
   message        String?  @db.Text
   cvUrl          String
   cvFileId       String?
+  answers        Json     @default("[]")
   status         String   @default("PENDING")
   createdAt      DateTime @default(now()) @db.Timestamptz(6)
   updatedAt      DateTime @updatedAt
