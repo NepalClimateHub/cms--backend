@@ -106,6 +106,15 @@ export class BlogSearchInput extends PaginationParamsDto {
   @Transform(({ value }) => value === "true" || value === true)
   includeDrafts?: boolean;
 
+  @ApiPropertyOptional({
+    description:
+      "Omit the (potentially very large) content field, for listings",
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => value === "true" || value === true)
+  excludeContent?: boolean;
+
   @ApiPropertyOptional({ description: "Category ID" })
   @IsString()
   @IsOptional()
