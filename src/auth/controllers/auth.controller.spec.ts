@@ -1,4 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigService } from "@nestjs/config";
 
 import { AppLogger } from "../../shared/logger/logger.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -26,6 +27,7 @@ describe("AuthController", () => {
       controllers: [AuthController],
       providers: [
         { provide: AuthService, useValue: mockedAuthService },
+        { provide: ConfigService, useValue: { get: jest.fn() } },
         { provide: AppLogger, useValue: mockedLogger },
       ],
     }).compile();
@@ -46,13 +48,19 @@ describe("AuthController", () => {
       registerInputDto.username = "john@example.com";
       registerInputDto.password = "123123";
 
+      const registeredUser = {
+        id: "user-1",
+        email: "john@example.com",
+        name: "John Doe",
+        userType: "INDIVIDUAL",
+      } as any;
       jest
         .spyOn(mockedAuthService, "register")
-        .mockImplementation(async () => null);
+        .mockImplementation(async () => registeredUser);
 
       expect(await authController.registerLocal(ctx, registerInputDto)).toEqual(
         {
-          data: null,
+          data: registeredUser,
           meta: {},
         }
       );

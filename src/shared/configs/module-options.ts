@@ -19,9 +19,10 @@ export const configModuleOptions: ConfigModuleOptions = {
     IMAGEKIT_PUB_KEY: Joi.string().required(),
     IMAGEKIT_PVT_KEY: Joi.string().required(),
     IMAGEKIT_ENDPOINT: Joi.string().required(),
-    AZURE_COMMUNICATION_CONNECTION_STRING: Joi.string().required(),
-    SENDER_EMAIL_ADDRESS: Joi.string().required(),
+    // Azure email can be empty locally; the email utility skips sends when it is not configured.
+    AZURE_COMMUNICATION_CONNECTION_STRING: Joi.string().allow(""),
+    SENDER_EMAIL_ADDRESS: Joi.string().allow(""),
     BASE_URL: Joi.string().required(),
-    FRONTEND_BASE_URL: Joi.string().allow(''),
+    FRONTEND_BASE_URL: Joi.string().allow(""),
   }),
 };

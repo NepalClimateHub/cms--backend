@@ -24,43 +24,43 @@
 <title>cluster_ImagekitModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="97,-70 97,-195 399,-195 399,-70 97,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ImagekitModule_providers</title>
-<polygon fill="none" stroke="black" points="227,-78 227,-130 391,-130 391,-78 227,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_ImagekitModule_imports</title>
-<polygon fill="none" stroke="black" points="105,-78 105,-130 219,-130 219,-78 105,-78"/>
+<polygon fill="none" stroke="black" points="277,-78 277,-130 391,-130 391,-78 277,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ImagekitModule_providers</title>
+<polygon fill="none" stroke="black" points="105,-78 105,-130 269,-130 269,-78 105,-78"/>
 </g>
 <!-- SharedModule -->
 <g id="node1" class="node">
 <title>SharedModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="211.42,-122 208.42,-126 187.42,-126 184.42,-122 112.58,-122 112.58,-86 211.42,-86 211.42,-122"/>
-<text text-anchor="middle" x="162" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="383.42,-122 380.42,-126 359.42,-126 356.42,-122 284.58,-122 284.58,-86 383.42,-86 383.42,-122"/>
+<text text-anchor="middle" x="334" y="-99.8" font-family="Times,serif" font-size="14.00">SharedModule</text>
 </g>
 <!-- ImagekitModule -->
 <g id="node2" class="node">
 <title>ImagekitModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="289.81,-187 286.81,-191 265.81,-191 262.81,-187 180.19,-187 180.19,-151 289.81,-151 289.81,-187"/>
-<text text-anchor="middle" x="235" y="-164.8" font-family="Times,serif" font-size="14.00">ImagekitModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="314.81,-187 311.81,-191 290.81,-191 287.81,-187 205.19,-187 205.19,-151 314.81,-151 314.81,-187"/>
+<text text-anchor="middle" x="260" y="-164.8" font-family="Times,serif" font-size="14.00">ImagekitModule</text>
 </g>
 <!-- SharedModule&#45;&gt;ImagekitModule -->
 <g id="edge1" class="edge">
 <title>SharedModule&#45;&gt;ImagekitModule</title>
-<path fill="none" stroke="black" d="M195.78,-122.11C195.78,-122.11 195.78,-140.99 195.78,-140.99"/>
-<polygon fill="black" stroke="black" points="192.28,-140.99 195.78,-150.99 199.28,-140.99 192.28,-140.99"/>
+<path fill="none" stroke="black" d="M299.72,-122.11C299.72,-122.11 299.72,-140.99 299.72,-140.99"/>
+<polygon fill="black" stroke="black" points="296.22,-140.99 299.72,-150.99 303.22,-140.99 296.22,-140.99"/>
 </g>
 <!-- ImagekitService -->
 <g id="node3" class="node">
 <title>ImagekitService</title>
-<ellipse fill="#fdb462" stroke="black" cx="309" cy="-104" rx="74.13" ry="18"/>
-<text text-anchor="middle" x="309" y="-99.8" font-family="Times,serif" font-size="14.00">ImagekitService</text>
+<ellipse fill="#fdb462" stroke="black" cx="187" cy="-104" rx="74.13" ry="18"/>
+<text text-anchor="middle" x="187" y="-99.8" font-family="Times,serif" font-size="14.00">ImagekitService</text>
 </g>
 <!-- ImagekitService&#45;&gt;ImagekitModule -->
 <g id="edge2" class="edge">
 <title>ImagekitService&#45;&gt;ImagekitModule</title>
-<path fill="none" stroke="black" d="M262.17,-118.1C262.17,-118.1 262.17,-140.72 262.17,-140.72"/>
-<polygon fill="black" stroke="black" points="258.67,-140.72 262.17,-150.72 265.67,-140.72 258.67,-140.72"/>
+<path fill="none" stroke="black" d="M233.33,-118.1C233.33,-118.1 233.33,-140.72 233.33,-140.72"/>
+<polygon fill="black" stroke="black" points="229.83,-140.72 233.33,-150.72 236.83,-140.72 229.83,-140.72"/>
 </g>
 </g>
 </svg>
