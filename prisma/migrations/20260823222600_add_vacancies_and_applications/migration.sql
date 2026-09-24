@@ -1,8 +1,8 @@
 -- AlterEnum
-ALTER TYPE "ActivityEntity" ADD VALUE 'VACANCY';
+ALTER TYPE "ActivityEntity" ADD VALUE IF NOT EXISTS 'VACANCY';
 
 -- CreateTable
-CREATE TABLE "nch_vacancies" (
+CREATE TABLE IF NOT EXISTS "nch_vacancies" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "openings" INTEGER NOT NULL DEFAULT 1,
@@ -23,7 +23,7 @@ CREATE TABLE "nch_vacancies" (
 );
 
 -- CreateTable
-CREATE TABLE "nch_vacancy_applications" (
+CREATE TABLE IF NOT EXISTS "nch_vacancy_applications" (
     "id" TEXT NOT NULL,
     "vacancyId" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,

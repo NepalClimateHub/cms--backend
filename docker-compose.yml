@@ -1,7 +1,10 @@
 services:
   api:
     container_name: nch-cms-backend
-    image: dahalsaroj/nch-cms-backend:latest
+    # image: dahalsaroj/nch-cms-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     platform: linux/arm64
     depends_on:
       postgres:

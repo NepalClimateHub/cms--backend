@@ -9,7 +9,7 @@ import {
   IsUrl,
   ValidateNested,
 } from "class-validator";
-import { ContentStatus } from "@prisma/client";
+import { ContentStatus, EventStatus, PublicationStatus } from "@prisma/client";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
 import { Expose, Type } from "class-transformer";
@@ -27,10 +27,21 @@ export class EventsSearchInput extends PaginationParamsDto {
   @IsArray()
   tagIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: "Event operational status (OPEN, UPCOMING, CLOSED)",
+    enum: EventStatus,
+  })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(EventStatus)
+  status?: EventStatus;
+
+  @ApiPropertyOptional({
+    description: "Publication status (DRAFT, PUBLISHED)",
+    enum: PublicationStatus,
+  })
+  @IsOptional()
+  @IsEnum(PublicationStatus)
+  publicationStatus?: PublicationStatus;
 
   @ApiPropertyOptional({ enum: ContentStatus })
   @IsOptional()
@@ -95,10 +106,11 @@ export class CreateEventDto {
   @ApiPropertyOptional({
     description: "date",
     required: false,
+    nullable: true,
   })
   @IsOptional()
   @IsString()
-  registrationDeadline?: string;
+  registrationDeadline?: string | null;
 
   @ApiPropertyOptional({
     description: "link",
@@ -117,13 +129,32 @@ export class CreateEventDto {
   contactEmail?: string;
 
   @ApiPropertyOptional({
-    description: "status",
+    description: "Event operational status (OPEN, UPCOMING, CLOSED)",
+    enum: EventStatus,
     required: false,
-    example: "OPEN",
+    example: EventStatus.OPEN,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(EventStatus)
+  status?: EventStatus;
+
+  @ApiPropertyOptional({
+    description: "Publication status (DRAFT, PUBLISHED)",
+    enum: PublicationStatus,
+    required: false,
+    example: PublicationStatus.DRAFT,
+  })
+  @IsOptional()
+  @IsEnum(PublicationStatus)
+  publicationStatus?: PublicationStatus;
+
+  @ApiPropertyOptional({
+    description: "Legacy draft status flag (true = DRAFT, false = PUBLISHED)",
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isDraft?: boolean;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -267,10 +298,11 @@ export class UpdateEventDto {
   @ApiPropertyOptional({
     description: "date",
     required: false,
+    nullable: true,
   })
   @IsOptional()
   @IsString()
-  registrationDeadline?: string;
+  registrationDeadline?: string | null;
 
   @ApiPropertyOptional({
     description: "link",
@@ -289,12 +321,13 @@ export class UpdateEventDto {
   contactEmail?: string;
 
   @ApiPropertyOptional({
-    description: "status",
+    description: "Event operational status (OPEN, UPCOMING, CLOSED)",
+    enum: EventStatus,
     required: false,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(EventStatus)
+  status?: EventStatus;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -358,8 +391,18 @@ export class UpdateEventDto {
   @IsOptional()
   tagIds?: string[];
 
-  @ApiProperty({
-    description: "Event status",
+  @ApiPropertyOptional({
+    description: "Publication status (DRAFT, PUBLISHED)",
+    enum: PublicationStatus,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(PublicationStatus)
+  publicationStatus?: PublicationStatus;
+
+  @ApiPropertyOptional({
+    description: "Legacy draft status flag (true = DRAFT, false = PUBLISHED)",
+    required: false,
   })
   @IsBoolean()
   @IsOptional()
@@ -474,14 +517,12 @@ export class EventResponseDto {
   @Expose()
   contactEmail?: string;
 
-  @ApiPropertyOptional({
-    description: "status",
-    required: false,
+  @ApiProperty({
+    description: "Event operational status",
+    enum: EventStatus,
   })
-  @IsOptional()
-  @IsString()
   @Expose()
-  status?: string;
+  status: EventStatus;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -539,7 +580,16 @@ export class EventResponseDto {
   @Expose()
   eventGallery: GalleryResponse[];
 
-  @ApiProperty({ description: "Draft status" })
+  @ApiProperty({
+    description: "Publication status",
+    enum: PublicationStatus,
+  })
   @Expose()
-  isDraft: boolean;
+  publicationStatus: PublicationStatus;
+
+  @ApiProperty({ description: "Legacy draft status" })
+  @Expose()
+  get isDraft(): boolean {
+    return this.publicationStatus === PublicationStatus.DRAFT;
+  }
 }

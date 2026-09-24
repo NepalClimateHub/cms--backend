@@ -11,7 +11,7 @@ import {
   UpdateEventDto,
 } from "../dto/events.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
-import { ContentStatus, Prisma } from "@prisma/client";
+import { ContentStatus, EventStatus, Prisma, PublicationStatus } from "@prisma/client";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
 import {
   ContentModerationDto,
@@ -79,7 +79,14 @@ export class EventsService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as string,
+                status: filter as EventStatus,
+              },
+            };
+          },
+          publicationStatus: async ({ filter }) => {
+            return {
+              where: {
+                publicationStatus: filter as PublicationStatus,
               },
             };
           },
@@ -153,13 +160,19 @@ export class EventsService {
     payload: CreateEventDto
   ): Promise<EventResponseDto> {
     this.logger.log(ctx, `${this.addEvent.name} was called`);
-    const { address, tagIds, gallery, bannerImageUrl, ...restPayload } =
+    const { address, tagIds, gallery, bannerImageUrl, isDraft, ...restPayload } =
       payload;
+
+    let publicationStatus = payload.publicationStatus;
+    if (!publicationStatus && isDraft !== undefined) {
+      publicationStatus = isDraft ? PublicationStatus.DRAFT : PublicationStatus.PUBLISHED;
+    }
 
     const event = await this.prismaService.events.create({
       data: {
         contributedBy: ctx!.user!.id,
         ...restPayload,
+        publicationStatus: publicationStatus ?? PublicationStatus.DRAFT,
         bannerImageUrl: bannerImageUrl ?? "",
         ...(address && {
           address: {
@@ -231,7 +244,11 @@ export class EventsService {
       throw new NotFoundException("Event not found!");
     }
 
-    const { address, tagIds, gallery, ...restPayload } = payload;
+    const { address, tagIds, gallery, isDraft, ...restPayload } = payload;
+    let publicationStatus = payload.publicationStatus;
+    if (!publicationStatus && isDraft !== undefined) {
+      publicationStatus = isDraft ? PublicationStatus.DRAFT : PublicationStatus.PUBLISHED;
+    }
 
     // Filter out undefined fields to prevent null validation errors
     // const cleanPayload = Object.fromEntries(
@@ -246,6 +263,7 @@ export class EventsService {
       },
       data: {
         ...restPayload,
+        ...(publicationStatus && { publicationStatus }),
         ...(address && {
           address: {
             upsert: {
@@ -304,7 +322,10 @@ export class EventsService {
       data: {
         moderationStatus: statusMap[payload.action],
         reviewFeedback: payload.feedback || null,
-        isDraft: payload.action !== ModerationAction.APPROVE,
+        publicationStatus:
+          payload.action === ModerationAction.APPROVE
+            ? PublicationStatus.PUBLISHED
+            : PublicationStatus.DRAFT,
       },
     });
 
