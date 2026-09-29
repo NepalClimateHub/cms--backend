@@ -7,6 +7,7 @@ import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import {
   CreateEventDto,
   EventResponseDto,
+  EventSummaryDto,
   EventsSearchInput,
   UpdateEventDto,
 } from "../dto/events.dto";
@@ -34,9 +35,10 @@ export class EventsService {
   async getEvents(
     ctx: RequestContext,
     query: EventsSearchInput
-  ): Promise<{ events: EventResponseDto[]; count: number }> {
+  ): Promise<{ events: (EventResponseDto | EventSummaryDto)[]; count: number }> {
     this.logger.log(ctx, `${this.getEvents.name} was called`);
-    const { limit, offset, ...restQuery } = query;
+    const { limit, offset, view, ...restQuery } = query;
+    const summary = view === "summary";
 
     const { whereBuilder: whereQuery } =
       await applyFilters<Prisma.EventsWhereInput>({
@@ -105,16 +107,23 @@ export class EventsService {
         where: {
           AND: [whereQuery],
         },
-        include: {
-          address: true,
-          tags: true,
-        },
+        ...(summary
+          ? {
+              select: {
+                id: true, title: true, description: true, locationType: true,
+                type: true, format: true, status: true, cost: true,
+                bannerImageUrl: true,
+                address: { select: { state: true } },
+                tags: { select: { tag: true } },
+              },
+            }
+          : { include: { address: true, tags: true } }),
         take: limit,
         skip: offset,
         orderBy: {
           createdAt: "desc",
         },
-      }),
+      } as Prisma.EventsFindManyArgs),
       this.prismaService.events.count({
         where: {
           AND: [whereQuery],
@@ -123,7 +132,7 @@ export class EventsService {
     ]);
 
     return {
-      events: plainToInstance(EventResponseDto, events, {
+      events: plainToInstance(summary ? EventSummaryDto : EventResponseDto, events, {
         excludeExtraneousValues: true,
       }),
       count: eventCount,

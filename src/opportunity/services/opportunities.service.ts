@@ -7,6 +7,7 @@ import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import {
   CreateOpportunityDto,
   OpportunityResponseDto,
+  OpportunitySummaryDto,
   OpportunitySearchInput,
   UpdateOpportunityDto,
 } from "../dto/opportunities.dto";
@@ -35,9 +36,10 @@ export class OpportunityService {
   async getOpportunities(
     ctx: RequestContext,
     query: OpportunitySearchInput
-  ): Promise<{ items: OpportunityResponseDto[]; count: number }> {
+  ): Promise<{ items: (OpportunityResponseDto | OpportunitySummaryDto)[]; count: number }> {
     this.logger.log(ctx, `${this.getOpportunities.name} was called`);
-    const { limit, offset, ...restQuery } = query;
+    const { limit, offset, view, ...restQuery } = query;
+    const summary = view === "summary";
 
     const { whereBuilder: whereQuery } =
       await applyFilters<Prisma.OpportunityWhereInput>({
@@ -99,16 +101,23 @@ export class OpportunityService {
         where: {
           AND: [whereQuery],
         },
-        include: {
-          address: true,
-          tags: true,
-        },
+        ...(summary
+          ? {
+              select: {
+                id: true, title: true, description: true, locationType: true,
+                type: true, format: true, status: true, cost: true,
+                bannerImageUrl: true,
+                address: { select: { state: true } },
+                tags: { select: { tag: true } },
+              },
+            }
+          : { include: { address: true, tags: true } }),
         take: limit,
         skip: offset,
         orderBy: {
           createdAt: "desc",
         },
-      }),
+      } as Prisma.OpportunityFindManyArgs),
       this.prismaService.opportunity.count({
         where: {
           AND: [whereQuery],
@@ -116,7 +125,7 @@ export class OpportunityService {
       }),
     ]);
     return {
-      items: plainToInstance(OpportunityResponseDto, items, {
+      items: plainToInstance(summary ? OpportunitySummaryDto : OpportunityResponseDto, items, {
         excludeExtraneousValues: true,
       }),
       count: count,

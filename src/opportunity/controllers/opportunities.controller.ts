@@ -36,6 +36,7 @@ import { OpportunityService } from "../services/opportunities.service";
 import {
   CreateOpportunityDto,
   OpportunityResponseDto,
+  OpportunitySummaryDto,
   OpportunitySearchInput,
   UpdateOpportunityDto,
 } from "../dto/opportunities.dto";
@@ -66,7 +67,7 @@ export class OpportunityController {
   async getOpportunities(
     @ReqContext() ctx: RequestContext,
     @Query() query: OpportunitySearchInput
-  ): Promise<BaseApiResponse<OpportunityResponseDto[]>> {
+  ): Promise<BaseApiResponse<(OpportunityResponseDto | OpportunitySummaryDto)[]>> {
     this.logger.log(ctx, `${this.getOpportunities.name} was called`);
 
     const { items, count } = await this.service.getOpportunities(ctx, query);

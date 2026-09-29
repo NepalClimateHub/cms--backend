@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma-module/prisma.service';
-import { CreateResourceDto, UpdateResourceDto, ResourceSearchInput, ResourceResponseDto } from '../dto/resource.dto';
+import { CreateResourceDto, UpdateResourceDto, ResourceSearchInput, ResourceResponseDto, ResourceSummaryDto } from '../dto/resource.dto';
 import { plainToInstance } from 'class-transformer';
 import { BadRequestException } from '@nestjs/common';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -33,8 +33,9 @@ export class ResourceService {
     return _c;
   }
 
-  async findAllResources(searchInput: ResourceSearchInput): Promise<{ resources: ResourceResponseDto[]; total: number }> {
-    const { offset = 0, limit = 10, ...searchParams } = searchInput;
+  async findAllResources(searchInput: ResourceSearchInput): Promise<{ resources: (ResourceResponseDto | ResourceSummaryDto)[]; total: number }> {
+    const { offset = 0, limit = 10, view, ...searchParams } = searchInput;
+    const summary = view === 'summary';
     const where: any = { deletedAt: null };
 
     if (searchParams.title) {
@@ -60,7 +61,14 @@ export class ResourceService {
     const [resources, total] = await Promise.all([
         (this.prisma as any).resource.findMany({
             where,
-            include: { tags: true },
+            ...(summary
+              ? {
+                  select: {
+                    id: true, title: true, overview: true, type: true,
+                    level: true, link: true, bannerImageUrl: true,
+                  },
+                }
+              : { include: { tags: true } }),
             take: limit,
             skip: offset,
             orderBy: { createdAt: 'desc' }
@@ -69,7 +77,7 @@ export class ResourceService {
     ]);
 
     return {
-        resources: plainToInstance(ResourceResponseDto, resources, { excludeExtraneousValues: true }) as unknown as ResourceResponseDto[],
+        resources: plainToInstance(summary ? ResourceSummaryDto : ResourceResponseDto, resources, { excludeExtraneousValues: true }) as unknown as (ResourceResponseDto | ResourceSummaryDto)[],
         total,
     };
   }
