@@ -19,6 +19,32 @@ import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class BlogService {
+  /**
+   * Fields exposed by BlogResponseDto for the optional linked author.
+   * Keep this selection aligned with AuthorOutputDto so public reads do not
+   * fetch account credentials or other internal user fields only to discard
+   * them during serialization.
+   */
+  private readonly authorUserSelect = {
+    id: true,
+    socials: true,
+    currentRole: true,
+    fullName: true,
+    email: true,
+    bio: true,
+    profilePhotoUrl: true,
+  } as const;
+
+  /** Fields exposed by BlogResponseDto for the optional category relation. */
+  private readonly categoryDataSelect = {
+    id: true,
+    name: true,
+    description: true,
+    type: true,
+    createdAt: true,
+    updatedAt: true,
+  } as const;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
@@ -116,8 +142,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
@@ -213,8 +239,8 @@ export class BlogService {
         omit: searchParams.excludeContent ? { content: true } : undefined,
         include: {
           tags: true,
-          authorUser: true,
-          categoryData: true,
+          authorUser: { select: this.authorUserSelect },
+          categoryData: { select: this.categoryDataSelect },
         },
         take: limit,
         skip: offset,
@@ -244,8 +270,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
@@ -342,8 +368,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
@@ -412,8 +438,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
@@ -442,8 +468,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
       orderBy: {
         createdAt: "desc",
@@ -464,8 +490,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
       orderBy: {
         publishedDate: "desc",

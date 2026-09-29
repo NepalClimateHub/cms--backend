@@ -25,6 +25,8 @@ describe("BlogService — approval workflow", () => {
       create: jest.fn(),
       update: jest.fn(),
       findFirst: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
     },
   };
   const notification = { notifyBlogReview: jest.fn() };
@@ -64,6 +66,33 @@ describe("BlogService — approval workflow", () => {
     const data = prisma.blog.create.mock.calls[0][0].data;
     expect(data.status).toBe(ContentStatus.UNDER_REVIEW);
     expect(data.approvedByAdmin).toBe(false);
+  });
+
+  it("uses the existing content exclusion option and selects only serialized author/category fields", async () => {
+    prisma.blog.findMany.mockResolvedValue([]);
+    prisma.blog.count.mockResolvedValue(0);
+
+    await service.findAllBlogs({ excludeContent: true } as any);
+
+    const query = prisma.blog.findMany.mock.calls[0][0];
+    expect(query.omit).toEqual({ content: true });
+    expect(query.include.authorUser.select).toEqual({
+      id: true,
+      socials: true,
+      currentRole: true,
+      fullName: true,
+      email: true,
+      bio: true,
+      profilePhotoUrl: true,
+    });
+    expect(query.include.categoryData.select).toEqual({
+      id: true,
+      name: true,
+      description: true,
+      type: true,
+      createdAt: true,
+      updatedAt: true,
+    });
   });
 
   it("admin approves a blog → PUBLISHED + author notified", async () => {

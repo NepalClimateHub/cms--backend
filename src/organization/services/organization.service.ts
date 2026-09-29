@@ -124,27 +124,28 @@ export class OrganizationService {
         },
       });
 
-    const organizations = await this.prismaService.organizations.findMany({
-      where: {
-        AND: [orgWhereQuery],
-      },
-      include: {
-        address: true,
-        tags: true,
-        linkedAccountUser: linkedUserSelect,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const organizationCount = await this.prismaService.organizations.count({
-      where: {
-        AND: [orgWhereQuery],
-      },
-    });
+    const [organizations, organizationCount] = await Promise.all([
+      this.prismaService.organizations.findMany({
+        where: {
+          AND: [orgWhereQuery],
+        },
+        include: {
+          address: true,
+          tags: true,
+          linkedAccountUser: linkedUserSelect,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.organizations.count({
+        where: {
+          AND: [orgWhereQuery],
+        },
+      }),
+    ]);
 
     return {
       organizations: organizations.map((o) =>

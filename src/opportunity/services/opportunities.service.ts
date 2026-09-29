@@ -94,26 +94,27 @@ export class OpportunityService {
         },
       });
 
-    const items = await this.prismaService.opportunity.findMany({
-      where: {
-        AND: [whereQuery],
-      },
-      include: {
-        address: true,
-        tags: true,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const count = await this.prismaService.opportunity.count({
-      where: {
-        AND: [whereQuery],
-      },
-    });
+    const [items, count] = await Promise.all([
+      this.prismaService.opportunity.findMany({
+        where: {
+          AND: [whereQuery],
+        },
+        include: {
+          address: true,
+          tags: true,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.opportunity.count({
+        where: {
+          AND: [whereQuery],
+        },
+      }),
+    ]);
     return {
       items: plainToInstance(OpportunityResponseDto, items, {
         excludeExtraneousValues: true,

@@ -100,26 +100,27 @@ export class EventsService {
         },
       });
 
-    const events = await this.prismaService.events.findMany({
-      where: {
-        AND: [whereQuery],
-      },
-      include: {
-        address: true,
-        tags: true,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const eventCount = await this.prismaService.events.count({
-      where: {
-        AND: [whereQuery],
-      },
-    });
+    const [events, eventCount] = await Promise.all([
+      this.prismaService.events.findMany({
+        where: {
+          AND: [whereQuery],
+        },
+        include: {
+          address: true,
+          tags: true,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.events.count({
+        where: {
+          AND: [whereQuery],
+        },
+      }),
+    ]);
 
     return {
       events: plainToInstance(EventResponseDto, events, {
