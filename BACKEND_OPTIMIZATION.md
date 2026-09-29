@@ -149,3 +149,82 @@ paginate locally.
   `FeaturedOpportunitySection`, eliminating its nested identical SSR request.
   The component retains its fallback fetch for homepage/current callers and
   preserves the current related-card ordering/selection.
+
+## 16. DETAIL LOOKUP ARCHITECTURE AND SUMMARY PROJECTIONS
+
+### Slug lookup decision
+
+Events, Opportunities, and Blogs have no `slug` column, slug index, unique
+constraint, or historical alias in Prisma schema/migrations. The public Astro
+site deterministically derives URLs from mutable titles by lowercasing,
+removing non-word punctuation, collapsing whitespace/underscore/hyphen to
+`-`, and trimming. Titles are neither unique nor immutable. Consequently,
+case/punctuation variants can collide and a title edit changes the public URL.
+IDs do not appear in current public URLs.
+
+The current lookup behavior is itself a compatibility rule: each detail route
+downloads the createdAt-desc first 100 records and picks the first title whose
+derived slug matches. A database-wide derived-slug endpoint would change
+collision/tie-break and beyond-page behavior. No direct-slug endpoint was
+added. A genuine `GET /:domain/slug/:slug` lookup is **blocked by data
+migration and product/SEO policy**: introduce/backfill a canonical unique slug,
+resolve collisions, establish immutable-or-redirect-on-title-change behavior,
+and preserve historical URLs. A two-segment `/slug/:slug` route would be safe
+from the existing one-segment `/:id` routes; static blog routes already precede
+the generic ID route. That route safety does not solve data ambiguity.
+
+Current public visibility is retained exactly. Events and Opportunities list/
+ID reads currently have no publication/deletion visibility predicate; Blogs
+enforce anonymous approved/published/non-draft/non-deleted visibility. This
+is an existing correctness contract, not changed by this pass.
+
+### Opt-in summary contract — implemented
+
+`GET /api/v1/events?view=summary`,
+`GET /api/v1/opportunities?view=summary`, and
+`GET /api/v1/resources?view=summary` are backward-compatible additions. An
+omitted `view` retains the legacy query, DTO, JSON fields, relations, ordering,
+filters, skip/take, and count. `view` accepts only `summary`.
+
+| Domain | Summary JSON / Prisma select | Frontend callers now using it |
+| --- | --- | --- |
+| Events | `id,title,description,locationType,type,format,status,cost,bannerImageUrl,address:{state},tags:{tag}` | `/events`, homepage featured section, events sitemap. |
+| Opportunities | `id,title,description,locationType,type,format,status,cost,bannerImageUrl,address:{state},tags:{tag}` | `/opportunities`, homepage featured section, opportunities sitemap. |
+| Resources | `id,title,overview,type,level,link,bannerImageUrl` | `/resources`. |
+| Blogs | Existing `excludeContent=true` remains the chosen opt-in projection. It omits body content but is not a new minimal-summary contract in this batch. | `/blogs`, blog detail summary lookup, sitemap. |
+
+Summary mode uses dedicated DTOs and Prisma `select`, rather than reading full
+records and stripping fields after query. It preserves all existing filters,
+createdAt-desc ordering, limit/offset semantics, and `meta.count`; it does not
+reduce the default record count of 100 because current public list filters and
+pagination are client-side.
+
+### Request graph and related-card implications
+
+- **Before → after Events list/home/sitemap:** one legacy full collection read
+  → one equal-count summary collection read. Event detail remains one full
+  collection read because a safe direct slug lookup does not exist; it already
+  reuses that collection for related cards.
+- **Before → after Opportunities list/home/sitemap:** one legacy full
+  collection read → one equal-count summary collection read. Opportunity detail
+  remains one full collection read and reuses it for related cards (the prior
+  nested duplicate was removed in pass 2).
+- **Before → after Resources:** one legacy full collection with complete tags
+  and unused metadata → one equal-count scalar-only summary collection.
+- Event related cards are first four eligible banner/title/tag/location records
+  in createdAt-desc order *after excluding the current event*. Opportunity
+  cards are first four eligible records in the same order and currently do not
+  exclude the current record. A naïve `limit=4` would change visible cards, so
+  no related-only query was added. A future related endpoint must encode these
+  exact eligibility/order rules before using a smaller limit.
+
+### Validation and remaining work
+
+- Focused mocked service tests verify summary Prisma selections, retained
+  legacy Event include, filters, ordering, pagination, and count behavior.
+- Production Docker builder (`Dockerfile.prod --target builder`) and focused
+  tests pass; frontend production build and formatting/static checks pass.
+- **Runtime DB work deferred:** query plans/indexes, row cardinality, deep
+  offset cost, payload-byte measurements, and relation SQL count.
+- **Caching deferred:** public freshness, invalidation after content mutations
+  and moderation, and HTTP cache policy remain undecided.
