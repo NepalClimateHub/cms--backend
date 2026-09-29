@@ -103,3 +103,49 @@ No caching was added. Public-read caching needs a defined source of truth, TTL/H
 ## 14. Deferred work
 
 No dependency installation, database connection, migration, benchmark, cache change, API contract change, or Git history/remote mutation has been performed. Start only after approval and measurement access.
+
+## 15. PUBLIC FRONTEND ↔ CMS CONTRACT
+
+Verified 2026-09-29 against the `NepalClimateHub` Astro source (branch
+`perf/homepage-core-web-vitals`). This supersedes the provisional mapping in
+section 4. The public frontend has no client-side CMS re-fetch for these
+domains: all active requests below run during Astro SSR (or an XML endpoint)
+and block that response. React islands receive pre-fetched props and filter/
+paginate locally.
+
+| Domain | Active frontend request graph and record count | Backend path / fetch | Frontend-required response fields | Confirmed not used by this public frontend | Decision |
+| --- | --- | --- | --- | --- | --- |
+| Events | `/events`, homepage featured, event detail, and events sitemap each make an independent unparameterized `GET /api/v1/events`; current shared default is up to 100. Detail title-slug scans the list and reuses it for four related cards. `/events` passes the full collection to `EventFilter client:load` for local filters/pagination. | `EventsController.getEvents` → `EventsService.getEvents`: filters title/tagIds/status/publicationStatus/moderationStatus; `findMany` + `count` in parallel, createdAt desc, skip/take, complete address and tags. `/:id` additionally includes gallery but is unused by public Astro. | List: id, title, type, locationType, status, format, cost, description, bannerImageUrl, address.state, tags[].tag. Detail additionally uses organizer, location, startDate, registration deadline/link, contact email, website, and named social links. Homepage needs id/title/locationType/description/banner/tags. | list meta.count; contributedBy, bannerImageId, moderation/publication workflow fields, address except state, tag metadata except `tag`; event gallery is not received. | **BREAKING/DEFER** default reduction: complete local filtering and slug resolution rely on the collection. **COORDINATED** opt-in summary plus slug/addressable detail and related limit. **BACKEND COMPATIBLE** Prisma root scalar select can omit DB-only timestamps/FKs/review fields while preserving DTO JSON; requires focused snapshot validation. |
+| Blogs | `/blogs`, blog detail, and blog sitemap use `GET /api/v1/blogs?excludeContent=true`; current count remains the backend default up to 100. Detail sequentially lists to resolve title slug and derive three Top Reads, then calls `GET /blogs/:id` for body/author detail. `BlogCategoryFilter client:load` filters the list prop locally. No active homepage Blog request; featured/published helpers/components are unreferenced. | `BlogController.findAllBlogs` → `BlogService.findAllBlogs`: anonymous predicate approved/published/non-draft/non-deleted, filters, createdAt desc, parallel findMany/count, omit content only with flag, tags and selected author/category. Detail uses `findFirst` + visibility check; featured/published are unbounded but inactive in this frontend. | List cards: id/title/excerpt/author/authorUser.profilePhotoUrl/readingTime/category/publishedDate/bannerImageUrl; `isFeatured` selects highlight. Detail summary also needs isTopRead and top-read card fields. Detail response needs title/content/excerpt/author/date/time/banner/tags[].tag and conditional author profile/social linkedin/bio/role. | List: content; tags metadata; categoryData; author id/socials/currentRole/fullName/email/bio except profile photo; bannerImageId/workflow/review/timestamps/categoryId. Detail: categoryData, category copied but unrendered, author id/fullName/email. | **SAFE NOW implemented in frontend:** use existing `excludeContent=true`, so DB/API/network body no longer carries list content that old frontend code stripped after receipt. **COORDINATED:** opt-in summary/slug lookup eliminates sequential detail collection scan. **BREAKING/DEFER:** lower default/cap or alter featured/published defaults. |
+| Resources | `/resources` makes unparameterized `GET /api/v1/resources` (up to 100) and passes a seven-field mapped collection to `ResourceFilter client:load`; no resource detail route exists, and resource cards link externally. | `ResourceController.findAllResources` → `ResourceService.findAllResources`: deletedAt predicate plus title/type/level/draft/tag filters, createdAt desc, parallel findMany/count, complete tags. | id, title, overview, link, type, level, bannerImageUrl (banner conditional). | courseProvider, platform, duration, author, publicationYear, bannerImageId, isDraft, tags, timestamps, meta.count. | **BREAKING/DEFER** lower default: client filtering requires current collection. **BACKEND COMPATIBLE** select DTO fields only, omitting DB-only status/review/deleted fields while retaining response. **COORDINATED** opt-in seven-field summary/no-tags projection. |
+| Opportunities | homepage, `/opportunities`, detail, and sitemap make unparameterized `GET /api/v1/opportunities` (up to 100). Listing filters/paginates locally. Detail title-slug scans the collection; formerly its related component requested the identical collection again. | `OpportunitiesController.getOpportunities` → `OpportunityService.getOpportunities`: title/tag/status/moderation filters, createdAt desc, parallel findMany/count, complete address/tags. `/:id` exists but is unused. | List: id/title/type/locationType/address.state/status/format/cost/description/tags[].tag/banner. Detail additionally needs duration, application deadline, website URL, socials, contact email. Homepage cards need title/location/address.state/description/tag/banner. | meta.count; tag metadata except tag; address except state; bannerImageId, moderation/isDraft, organizer/location for active list cards. ORM also reads DB-only contributedBy/timestamps/deleted/review fields. | **SAFE NOW implemented in frontend:** detail reuses its resolved collection for related cards; exact current card choice/order remains. **BACKEND COMPATIBLE** root/nested selects can omit unexposed scalars/address city while preserving DTO JSON. **COORDINATED** summary/slug projection or slug detail endpoint; do not lower default. |
+| Organizations | **No public CMS call.** `/organizations`, homepage feature, and prerendered detail all read `src/data/organizations.json`; list hydrates local compact props for pagination. | Backend list remains controller → service `findMany` + count, full address/tags/selected linked user; detail adds gallery. It is not on the active public frontend request graph. | Static JSON contract: list id/name/description/address/tags/logoUrl/slug; detail also pictures/contact/full local object. | All CMS organization response fields are unused by this frontend, but this is not evidence that external API consumers do not use them. | **DEFER:** do not change public response/defaults from this frontend evidence. **BACKEND COMPATIBLE** root scalar select can omit ORM-only verification/type/timestamp columns after response snapshot validation. CMS migration needs an explicit shape, slug, visibility, and static-generation decision. |
+
+### Verified orchestration and compatibility notes
+
+- All active list callers omit page/limit/filter/sort parameters and consequently
+  rely on `PaginationParamsDto.limit = 100`; none is safe to reduce without a
+  coordinated paging/filter design. Homepage featured sections also filter
+  eligibility after fetching, so a naïve `limit=4` is not equivalent.
+- Existing direct detail endpoints for events/opportunities are unused because
+  public routes are title-slug based, not ID based. Blog detail needs the list
+  before its ID detail call for the same reason.
+- List relations are broader than public use: all five active CMS lists send
+  complete tag objects; events/opportunities send full addresses though only
+  `state` is read; resource tags are entirely unused. Removing those fields is
+  a response-shape change and is deferred pending an opt-in projection.
+- No cache was added. Caching still requires public freshness, mutation/
+  moderation invalidation, and HTTP policy design. Index work still requires
+  representative production plans, cardinalities, and timings.
+
+### Implementation pass 2
+
+- Frontend `fetchAllBlogs` now asks the existing compatible
+  `?excludeContent=true` API projection. Previously it downloaded complete
+  bodies (potentially base64 HTML) and removed them locally with a streaming
+  transform. Detail continues to fetch `/:id` for the sole full body. This
+  changes no backend default or response contract for other consumers.
+- Opportunity detail now supplies its already fetched list to
+  `FeaturedOpportunitySection`, eliminating its nested identical SSR request.
+  The component retains its fallback fetch for homepage/current callers and
+  preserves the current related-card ordering/selection.
