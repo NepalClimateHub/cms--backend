@@ -24,6 +24,7 @@ import {
   UpdateBlogDto,
   BlogSearchInput,
   BlogResponseDto,
+  BlogSummaryDto,
 } from "../dto/blog.dto";
 import {
   BaseApiResponse,
@@ -86,7 +87,7 @@ export class BlogController {
   async findAllBlogs(
     @Query() searchInput: BlogSearchInput,
     @ReqContext() ctx: RequestContext,
-  ): Promise<BaseApiResponse<BlogResponseDto[]>> {
+  ): Promise<BaseApiResponse<(BlogResponseDto | BlogSummaryDto)[]>> {
     const result = await this.blogService.findAllBlogs(searchInput, ctx);
     return { data: result.blogs, meta: { count: result.total } };
   }

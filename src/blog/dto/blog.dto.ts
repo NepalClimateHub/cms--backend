@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsIn,
   IsOptional,
   IsString,
 } from "class-validator";
@@ -70,6 +71,14 @@ export class AuthorOutputDto {
 }
 
 export class BlogSearchInput extends PaginationParamsDto {
+  @ApiPropertyOptional({
+    description: "Use the compact public card projection for blog listings",
+    enum: ["summary"],
+  })
+  @IsIn(["summary"])
+  @IsOptional()
+  view?: "summary";
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -524,4 +533,49 @@ export class BlogResponseDto {
   @Type(() => CategoryResponseDto)
   @Expose()
   categoryData?: CategoryResponseDto;
+}
+
+export class BlogSummaryAuthorDto {
+  @Expose()
+  profilePhotoUrl?: string;
+}
+
+/**
+ * Public listing shape. Keep this deliberately separate from BlogResponseDto:
+ * cards do not need a blog body, review metadata, tags, or author PII.
+ */
+export class BlogSummaryDto {
+  @Expose()
+  id: string;
+
+  @Expose()
+  title: string;
+
+  @Expose()
+  excerpt?: string;
+
+  @Expose()
+  author: string;
+
+  @Expose()
+  category: string;
+
+  @Expose()
+  readingTime?: string;
+
+  @Expose()
+  publishedDate?: Date;
+
+  @Expose()
+  isFeatured: boolean;
+
+  @Expose()
+  isTopRead: boolean;
+
+  @Expose()
+  bannerImageUrl?: string;
+
+  @Expose()
+  @Type(() => BlogSummaryAuthorDto)
+  authorUser?: BlogSummaryAuthorDto;
 }

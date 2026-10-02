@@ -10,6 +10,7 @@ import {
   UpdateBlogDto,
   BlogSearchInput,
   BlogResponseDto,
+  BlogSummaryDto,
 } from "../dto/blog.dto";
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -19,6 +20,20 @@ import { ActivityLogService } from "../../activity-log/activity-log.service";
 
 @Injectable()
 export class BlogService {
+  private readonly blogSummarySelect = {
+    id: true,
+    title: true,
+    excerpt: true,
+    author: true,
+    category: true,
+    readingTime: true,
+    publishedDate: true,
+    isFeatured: true,
+    isTopRead: true,
+    bannerImageUrl: true,
+    authorUser: { select: { profilePhotoUrl: true } },
+  } as const;
+
   /**
    * Fields exposed by BlogResponseDto for the optional linked author.
    * Keep this selection aligned with AuthorOutputDto so public reads do not
@@ -157,8 +172,8 @@ export class BlogService {
   async findAllBlogs(
     searchInput: BlogSearchInput,
     ctx?: RequestContext,
-  ): Promise<{ blogs: BlogResponseDto[]; total: number }> {
-    const { offset = 1, limit = 10, ...searchParams } = searchInput;
+  ): Promise<{ blogs: (BlogResponseDto | BlogSummaryDto)[]; total: number }> {
+    const { offset = 1, limit = 10, view, ...searchParams } = searchInput;
 
     const where: any = {
       deletedAt: null,
@@ -233,28 +248,41 @@ export class BlogService {
       };
     }
 
+    const blogQuery =
+      view === "summary"
+        ? this.prisma.blog.findMany({
+            where,
+            select: this.blogSummarySelect,
+            take: limit,
+            skip: offset,
+            orderBy: { createdAt: "desc" },
+          })
+        : this.prisma.blog.findMany({
+            where,
+            omit: searchParams.excludeContent ? { content: true } : undefined,
+            include: {
+              tags: true,
+              authorUser: { select: this.authorUserSelect },
+              categoryData: { select: this.categoryDataSelect },
+            },
+            take: limit,
+            skip: offset,
+            orderBy: { createdAt: "desc" },
+          });
+
     const [blogs, total] = await Promise.all([
-      this.prisma.blog.findMany({
-        where,
-        omit: searchParams.excludeContent ? { content: true } : undefined,
-        include: {
-          tags: true,
-          authorUser: { select: this.authorUserSelect },
-          categoryData: { select: this.categoryDataSelect },
-        },
-        take: limit,
-        skip: offset,
-        orderBy: {
-          createdAt: "desc",
-        },
-      }),
+      blogQuery,
       this.prisma.blog.count({ where }),
     ]);
 
     return {
-      blogs: plainToInstance(BlogResponseDto, blogs, {
-        excludeExtraneousValues: true,
-      }),
+      blogs: plainToInstance(
+        view === "summary" ? BlogSummaryDto : BlogResponseDto,
+        blogs,
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
       total,
     };
   }

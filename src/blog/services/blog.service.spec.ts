@@ -95,6 +95,63 @@ describe("BlogService — approval workflow", () => {
     });
   });
 
+  it("uses the compact card projection for summary listings", async () => {
+    prisma.blog.findMany.mockResolvedValue([
+      {
+        id: "blog-1",
+        title: "A compact blog",
+        excerpt: "Card text",
+        author: "Writer",
+        category: "Climate Science",
+        readingTime: "3 min",
+        publishedDate: new Date("2026-01-01"),
+        isFeatured: false,
+        isTopRead: true,
+        bannerImageUrl: "https://images.example/blog.jpg",
+        authorUser: {
+          profilePhotoUrl: "https://images.example/author.jpg",
+          email: "private@example.com",
+          bio: "Private author bio",
+        },
+        content: "A full body must never escape through the summary DTO",
+        tags: [{ tag: "Private tag metadata" }],
+      },
+    ]);
+    prisma.blog.count.mockResolvedValue(0);
+
+    const result = await service.findAllBlogs({ view: "summary" } as any);
+
+    const query = prisma.blog.findMany.mock.calls[0][0];
+    expect(query.select).toEqual({
+      id: true,
+      title: true,
+      excerpt: true,
+      author: true,
+      category: true,
+      readingTime: true,
+      publishedDate: true,
+      isFeatured: true,
+      isTopRead: true,
+      bannerImageUrl: true,
+      authorUser: { select: { profilePhotoUrl: true } },
+    });
+    expect(query).not.toHaveProperty("include");
+    expect(query).not.toHaveProperty("omit");
+    expect(result.blogs[0]).toEqual({
+      id: "blog-1",
+      title: "A compact blog",
+      excerpt: "Card text",
+      author: "Writer",
+      category: "Climate Science",
+      readingTime: "3 min",
+      publishedDate: new Date("2026-01-01"),
+      isFeatured: false,
+      isTopRead: true,
+      bannerImageUrl: "https://images.example/blog.jpg",
+      authorUser: { profilePhotoUrl: "https://images.example/author.jpg" },
+    });
+  });
+
   it("admin approves a blog → PUBLISHED + author notified", async () => {
     prisma.blog.findFirst.mockResolvedValue({ id: "blog-1", authorId: WRITER_ID });
     await service.blogAction(
