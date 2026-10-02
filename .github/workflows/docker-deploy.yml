@@ -17,6 +17,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.3.4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # dist is plain JS, so build once here and let Dockerfile.prod just copy it
+      - name: Build app
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm prisma generate
+          pnpm build
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -49,7 +67,8 @@ jobs:
           file: ./Dockerfile.prod
           platforms: linux/amd64,linux/arm64
           push: true
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
