@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEmail,
   IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   IsUrl,
@@ -19,6 +20,10 @@ import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 import { GalleryInput, GalleryResponse } from "../../shared/dtos/gallery.dto";
 
 export class OpportunitySearchInput extends PaginationParamsDto {
+  @ApiPropertyOptional({ enum: ["summary"], description: "Opt-in compact list response" })
+  @IsOptional()
+  @IsIn(["summary"])
+  view?: "summary";
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -472,4 +477,29 @@ export class OpportunityResponseDto {
   })
   @Expose()
   websiteUrl: string;
+}
+
+export class OpportunitySummaryAddressDto {
+  @Expose()
+  state?: string;
+}
+
+export class OpportunitySummaryTagDto {
+  @Expose()
+  tag: string;
+}
+
+/** Opt-in list contract for public cards and client-side filters. */
+export class OpportunitySummaryDto {
+  @Expose() id: string;
+  @Expose() title: string;
+  @Expose() description: string;
+  @Expose() locationType: string;
+  @Expose() type: string;
+  @Expose() format: string;
+  @Expose() status?: string;
+  @Expose() cost?: string;
+  @Expose() bannerImageUrl?: string;
+  @Expose() @Type(() => OpportunitySummaryAddressDto) address?: OpportunitySummaryAddressDto;
+  @Expose() @Type(() => OpportunitySummaryTagDto) tags?: OpportunitySummaryTagDto[];
 }

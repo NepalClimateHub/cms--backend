@@ -79,25 +79,26 @@ export class NewsService {
         },
       });
 
-    const news = await this.prismaService.news.findMany({
-      where: {
-        AND: [whereQuery],
-      },
-      include: {
-        tags: true,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const newsCount = await this.prismaService.news.count({
-      where: {
-        AND: [whereQuery],
-      },
-    });
+    const [news, newsCount] = await Promise.all([
+      this.prismaService.news.findMany({
+        where: {
+          AND: [whereQuery],
+        },
+        include: {
+          tags: true,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.news.count({
+        where: {
+          AND: [whereQuery],
+        },
+      }),
+    ]);
 
     return {
       news: plainToInstance(NewsResponseDto, news, {

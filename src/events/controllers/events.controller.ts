@@ -36,6 +36,7 @@ import { EventsService } from "../services/events.service";
 import {
   CreateEventDto,
   EventResponseDto,
+  EventSummaryDto,
   EventsSearchInput,
   UpdateEventDto,
 } from "../dto/events.dto";
@@ -66,7 +67,7 @@ export class EventsController {
   async getEvents(
     @ReqContext() ctx: RequestContext,
     @Query() query: EventsSearchInput
-  ): Promise<BaseApiResponse<EventResponseDto[]>> {
+  ): Promise<BaseApiResponse<(EventResponseDto | EventSummaryDto)[]>> {
     this.logger.log(ctx, `${this.getEvents.name} was called`);
 
     const { events, count } = await this.eventsService.getEvents(ctx, query);

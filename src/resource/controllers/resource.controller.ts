@@ -25,6 +25,7 @@ import {
   UpdateResourceDto,
   ResourceSearchInput,
   ResourceResponseDto,
+  ResourceSummaryDto,
 } from "../dto/resource.dto";
 import {
   BaseApiResponse,
@@ -75,7 +76,7 @@ export class ResourceController {
   })
   async findAllResources(
     @Query() searchInput: ResourceSearchInput
-  ): Promise<BaseApiResponse<ResourceResponseDto[]>> {
+  ): Promise<BaseApiResponse<(ResourceResponseDto | ResourceSummaryDto)[]> > {
     const result = await this.resourceService.findAllResources(searchInput);
     return { data: result.resources, meta: { count: result.total } };
   }
