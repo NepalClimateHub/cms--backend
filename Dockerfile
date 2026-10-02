@@ -10,11 +10,12 @@ RUN apt-get update && apt-get install -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_AUTO_PIN=0
 WORKDIR /usr/src/app
 
 # Copy and install dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-RUN corepack enable && corepack prepare pnpm@12.3.4 --activate && pnpm install --frozen-lockfile
+RUN corepack enable && pnpm install --frozen-lockfile
 
 # Copy the rest of the application files
 COPY . .

@@ -1,9 +1,10 @@
 # Expects `pnpm build` to have run on the host/CI first: only dist + prod deps go into the image.
 FROM node:24.2.0-bookworm-slim
 
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_AUTO_PIN=0
 WORKDIR /usr/src/app
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
-RUN corepack enable && corepack prepare pnpm@12.3.4 --activate
+RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 RUN pnpm i --prod --frozen-lockfile
 COPY prisma ./prisma
