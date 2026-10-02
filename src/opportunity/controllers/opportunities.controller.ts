@@ -9,9 +9,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  Res,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import type { Request, Response } from "express";
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -66,11 +69,30 @@ export class OpportunityController {
   })
   async getOpportunities(
     @ReqContext() ctx: RequestContext,
-    @Query() query: OpportunitySearchInput
+    @Query() query: OpportunitySearchInput,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<BaseApiResponse<(OpportunityResponseDto | OpportunitySummaryDto)[]>> {
     this.logger.log(ctx, `${this.getOpportunities.name} was called`);
 
-    const { items, count } = await this.service.getOpportunities(ctx, query);
+    const isAnonymousSummary =
+      query.view === "summary" &&
+      !request.headers.authorization &&
+      !request.headers.cookie;
+
+    response.setHeader(
+      "Cache-Control",
+      isAnonymousSummary
+        ? "public, max-age=60, s-maxage=300, stale-while-revalidate=86400, stale-if-error=86400"
+        : "private, no-store",
+    );
+    response.setHeader("Vary", "Accept-Encoding");
+
+    const { items, count } = await this.service.getOpportunities(
+      ctx,
+      query,
+      isAnonymousSummary,
+    );
 
     return { data: items, meta: { count } };
   }

@@ -23,8 +23,19 @@ import { BadRequestException } from "@nestjs/common";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 import { ActivityAction, ActivityEntity } from "@prisma/client";
 
+type OpportunityListResult = {
+  items: (OpportunityResponseDto | OpportunitySummaryDto)[];
+  count: number;
+};
+
 @Injectable()
 export class OpportunityService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: OpportunityListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
+
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService,
@@ -33,11 +44,34 @@ export class OpportunityService {
     this.logger.setContext(OpportunityService.name);
   }
 
+  private getPublicSummaryCacheKey(query: OpportunitySearchInput): string {
+    const { tagIds, ...filters } = query;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
+
   async getOpportunities(
     ctx: RequestContext,
-    query: OpportunitySearchInput
-  ): Promise<{ items: (OpportunityResponseDto | OpportunitySummaryDto)[]; count: number }> {
+    query: OpportunitySearchInput,
+    usePublicCache = false,
+  ): Promise<OpportunityListResult> {
     this.logger.log(ctx, `${this.getOpportunities.name} was called`);
+    const cacheKey = query.view === "summary" && usePublicCache
+      ? this.getPublicSummaryCacheKey(query)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
     const { limit, offset, view, ...restQuery } = query;
     const summary = view === "summary";
 
@@ -124,12 +158,21 @@ export class OpportunityService {
         },
       }),
     ]);
-    return {
+    const result = {
       items: plainToInstance(summary ? OpportunitySummaryDto : OpportunityResponseDto, items, {
         excludeExtraneousValues: true,
       }),
       count: count,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async getOneOpportunity(
@@ -207,6 +250,7 @@ export class OpportunityService {
     });
 
     const _cResult = plainToClass(OpportunityResponseDto, item, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.OPPORTUNITY, _cResult.id, _cResult.title);
     return _cResult;
   }
@@ -234,6 +278,7 @@ export class OpportunityService {
     });
 
     const _dResult = plainToInstance(OpportunityResponseDto, item, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.OPPORTUNITY, _dResult.id, _dResult.title);
     return _dResult;
   }
@@ -282,6 +327,7 @@ export class OpportunityService {
     });
 
     const _uResult = plainToClass(OpportunityResponseDto, updatedItem, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.OPPORTUNITY, _uResult.id, _uResult.title);
     return _uResult;
   }
@@ -317,6 +363,7 @@ export class OpportunityService {
         isDraft: payload.action !== ModerationAction.APPROVE,
       },
     });
+    this.clearPublicSummaryCache();
 
     return plainToClass(OpportunityResponseDto, item, {
       excludeExtraneousValues: true,
