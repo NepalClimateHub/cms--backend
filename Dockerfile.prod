@@ -6,9 +6,10 @@ WORKDIR /usr/src/app
 RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-RUN pnpm i --prod --frozen-lockfile
 COPY prisma ./prisma
+# generate the client at build time so the image works even if the start command skips it
+RUN pnpm i --prod --frozen-lockfile && pnpm exec prisma generate
 COPY dist ./dist
 ARG APP_ENV=production
 
-CMD ["sh", "-c", "pnpm --version && pnpm exec prisma generate && pnpm exec prisma migrate deploy && node dist/src/main"]
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/src/main"]
