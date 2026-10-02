@@ -18,8 +18,18 @@ import { NotificationService } from "../../notification/notification.service";
 import { ContentStatus, UserType, ActivityAction, ActivityEntity } from "@prisma/client";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 
+type BlogListResult = {
+  blogs: (BlogResponseDto | BlogSummaryDto)[];
+  total: number;
+};
+
 @Injectable()
 export class BlogService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: BlogListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
   private readonly blogSummarySelect = {
     id: true,
     title: true,
@@ -118,6 +128,19 @@ export class BlogService {
     return `${readingTimeMinutes} min read`;
   }
 
+  private getPublicSummaryCacheKey(searchInput: BlogSearchInput): string {
+    const { tagIds, ...filters } = searchInput;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
+
   async createBlog(
     createBlogDto: CreateBlogDto,
     ctx: RequestContext,
@@ -165,6 +188,7 @@ export class BlogService {
     const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.BLOG, blog.id, blog.title);
     return result;
   }
@@ -172,7 +196,18 @@ export class BlogService {
   async findAllBlogs(
     searchInput: BlogSearchInput,
     ctx?: RequestContext,
-  ): Promise<{ blogs: (BlogResponseDto | BlogSummaryDto)[]; total: number }> {
+    usePublicCache = !ctx?.user,
+  ): Promise<BlogListResult> {
+    const canUsePublicCache = searchInput.view === "summary" && usePublicCache;
+    const cacheKey = canUsePublicCache
+      ? this.getPublicSummaryCacheKey(searchInput)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
     const { offset = 1, limit = 10, view, ...searchParams } = searchInput;
 
     const where: any = {
@@ -275,7 +310,7 @@ export class BlogService {
       this.prisma.blog.count({ where }),
     ]);
 
-    return {
+    const result = {
       blogs: plainToInstance(
         view === "summary" ? BlogSummaryDto : BlogResponseDto,
         blogs,
@@ -285,6 +320,15 @@ export class BlogService {
       ),
       total,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async findBlogById(
@@ -404,6 +448,7 @@ export class BlogService {
     const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.BLOG, blog.id, blog.title);
     return result;
   }
@@ -428,6 +473,7 @@ export class BlogService {
         deletedAt: new Date(),
       },
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.BLOG, id, existingBlog.title);
   }
 
@@ -470,6 +516,7 @@ export class BlogService {
         categoryData: { select: this.categoryDataSelect },
       },
     });
+    this.clearPublicSummaryCache();
 
     await this.notificationService.notifyBlogReview(
       existingBlog.authorId,

@@ -152,6 +152,58 @@ describe("BlogService — approval workflow", () => {
     });
   });
 
+  it("caches anonymous summary listings but not authenticated reads", async () => {
+    prisma.blog.findMany.mockResolvedValue([]);
+    prisma.blog.count.mockResolvedValue(0);
+
+    await service.findAllBlogs({ view: "summary", limit: 12, offset: 0 } as any);
+    await service.findAllBlogs({ view: "summary", limit: 12, offset: 0 } as any);
+    await service.findAllBlogs(
+      { view: "summary", limit: 12, offset: 0 } as any,
+      ctxFor(ADMIN_ID, UserType.ADMIN),
+      false,
+    );
+
+    expect(prisma.blog.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.blog.count).toHaveBeenCalledTimes(2);
+  });
+
+  it("invalidates cached summaries after a blog update", async () => {
+    prisma.blog.findMany.mockResolvedValue([]);
+    prisma.blog.count.mockResolvedValue(0);
+    prisma.blog.findFirst.mockResolvedValue({
+      id: "blog-1",
+      authorId: WRITER_ID,
+      approvedByAdmin: true,
+      status: ContentStatus.PUBLISHED,
+    });
+    prisma.blog.update.mockResolvedValue({
+      id: "blog-1",
+      title: "Updated title",
+      author: "Writer",
+      category: "Environment",
+      content: "Body",
+      isDraft: false,
+      isFeatured: false,
+      isTopRead: false,
+      approvedByAdmin: true,
+      status: ContentStatus.PUBLISHED,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await service.findAllBlogs({ view: "summary", limit: 12, offset: 0 } as any);
+    await service.updateBlog(
+      "blog-1",
+      { title: "Updated title" } as any,
+      ctxFor(WRITER_ID, UserType.INDIVIDUAL),
+    );
+    await service.findAllBlogs({ view: "summary", limit: 12, offset: 0 } as any);
+
+    expect(prisma.blog.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.blog.count).toHaveBeenCalledTimes(2);
+  });
+
   it("admin approves a blog → PUBLISHED + author notified", async () => {
     prisma.blog.findFirst.mockResolvedValue({ id: "blog-1", authorId: WRITER_ID });
     await service.blogAction(
