@@ -17,10 +17,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "doc:serve": "npx compodoc -p tsconfig.json -w -s -r 8001",
     "doc:generate": "npx compodoc -p tsconfig.json",
-    "migrate:dev": "npx prisma migrate dev",
-    "migrate:deploy": "npx prisma@6.4.1 migrate deploy",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
     "migrate:seed": "npx tsx scripts/seed/index.ts",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@azure/communication-email": "^1.1.0",
@@ -52,6 +52,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "prisma": "6.4.1",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
     "rxjs": "^7.8.2",
@@ -73,7 +74,6 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-sonar-reporter": "^2.0.0",
-    "prisma": "6.4.1",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

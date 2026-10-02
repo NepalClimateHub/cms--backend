@@ -1,5 +1,5 @@
 # Development Dockerfile
-FROM node:20.14.0-bookworm-slim
+FROM node:24.2.0-bookworm-slim
 
 # Install additional tools for development
 RUN apt-get update && apt-get install -y \
@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /usr/src/app
 
 # Copy and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN corepack enable && corepack prepare pnpm@12.3.4 --activate && pnpm install --frozen-lockfile
 
 # Copy the rest of the application files
 COPY . .
@@ -26,5 +26,5 @@ ENV NODE_ENV=${APP_ENV}
 # Expose the application port
 EXPOSE 3000
 
-# Set the default command to run the application with nodemon
-CMD ["npm", "start:dev"]
+# Run in watch mode
+CMD ["pnpm", "dev"]
