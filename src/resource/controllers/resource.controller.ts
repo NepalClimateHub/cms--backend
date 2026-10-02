@@ -8,11 +8,14 @@ import {
   Param,
   Delete,
   Query,
+  Req,
+  Res,
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
   HttpStatus,
 } from "@nestjs/common";
+import type { Request, Response } from "express";
 import {
   ApiTags,
   ApiOperation,
@@ -75,9 +78,27 @@ export class ResourceController {
     type: SwaggerBaseApiResponse([ResourceResponseDto]),
   })
   async findAllResources(
-    @Query() searchInput: ResourceSearchInput
+    @Query() searchInput: ResourceSearchInput,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<BaseApiResponse<(ResourceResponseDto | ResourceSummaryDto)[]> > {
-    const result = await this.resourceService.findAllResources(searchInput);
+    const isAnonymousSummary =
+      searchInput.view === "summary" &&
+      !request.headers.authorization &&
+      !request.headers.cookie;
+
+    response.setHeader(
+      "Cache-Control",
+      isAnonymousSummary
+        ? "public, max-age=60, s-maxage=300, stale-while-revalidate=86400, stale-if-error=86400"
+        : "private, no-store",
+    );
+    response.setHeader("Vary", "Accept-Encoding");
+
+    const result = await this.resourceService.findAllResources(
+      searchInput,
+      isAnonymousSummary,
+    );
     return { data: result.resources, meta: { count: result.total } };
   }
 

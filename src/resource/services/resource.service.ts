@@ -8,12 +8,36 @@ import { ContentStatus, ActivityAction, ActivityEntity } from '@prisma/client';
 import { ContentModerationDto, ModerationAction } from '../../shared/dtos/moderation.dto';
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 
+type ResourceListResult = {
+  resources: (ResourceResponseDto | ResourceSummaryDto)[];
+  total: number;
+};
+
 @Injectable()
 export class ResourceService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: ResourceListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly activityLogService: ActivityLogService,
   ) {}
+
+  private getPublicSummaryCacheKey(searchInput: ResourceSearchInput): string {
+    const { tagIds, ...filters } = searchInput;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
 
   async createResource(createResourceDto: CreateResourceDto, ctx?: RequestContext): Promise<ResourceResponseDto> {
     const { tagIds, ...resourceData } = createResourceDto;
@@ -29,11 +53,24 @@ export class ResourceService {
     });
 
     const _c = plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.RESOURCE, _c.id, _c.title);
     return _c;
   }
 
-  async findAllResources(searchInput: ResourceSearchInput): Promise<{ resources: (ResourceResponseDto | ResourceSummaryDto)[]; total: number }> {
+  async findAllResources(
+    searchInput: ResourceSearchInput,
+    usePublicCache = false,
+  ): Promise<ResourceListResult> {
+    const cacheKey = searchInput.view === 'summary' && usePublicCache
+      ? this.getPublicSummaryCacheKey(searchInput)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
     const { offset = 0, limit = 10, view, ...searchParams } = searchInput;
     const summary = view === 'summary';
     const where: any = { deletedAt: null };
@@ -76,10 +113,19 @@ export class ResourceService {
         (this.prisma as any).resource.count({ where })
     ]);
 
-    return {
+    const result = {
         resources: plainToInstance(summary ? ResourceSummaryDto : ResourceResponseDto, resources, { excludeExtraneousValues: true }) as unknown as (ResourceResponseDto | ResourceSummaryDto)[],
         total,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async findResourceById(id: string): Promise<ResourceResponseDto> {
@@ -110,6 +156,7 @@ export class ResourceService {
       });
 
       const _u = plainToInstance(ResourceResponseDto, resource, { excludeExtraneousValues: true });
+      this.clearPublicSummaryCache();
       if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.RESOURCE, _u.id, _u.title);
       return _u;
   }
@@ -120,6 +167,7 @@ export class ResourceService {
           where: { id },
           data: { deletedAt: new Date() }
       });
+      this.clearPublicSummaryCache();
       if (ctx) this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.RESOURCE, id, undefined);
   }
 
@@ -152,6 +200,7 @@ export class ResourceService {
         isDraft: payload.action !== ModerationAction.APPROVE,
       },
     });
+    this.clearPublicSummaryCache();
 
     return plainToInstance(ResourceResponseDto, resource, {
       excludeExtraneousValues: true,

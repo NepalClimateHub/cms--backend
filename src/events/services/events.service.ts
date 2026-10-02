@@ -22,8 +22,19 @@ import { BadRequestException } from "@nestjs/common";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 import { ActivityAction, ActivityEntity } from "@prisma/client";
 
+type EventListResult = {
+  events: (EventResponseDto | EventSummaryDto)[];
+  count: number;
+};
+
 @Injectable()
 export class EventsService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: EventListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
+
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService,
@@ -32,11 +43,34 @@ export class EventsService {
     this.logger.setContext(EventsService.name);
   }
 
+  private getPublicSummaryCacheKey(query: EventsSearchInput): string {
+    const { tagIds, ...filters } = query;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
+
   async getEvents(
     ctx: RequestContext,
-    query: EventsSearchInput
-  ): Promise<{ events: (EventResponseDto | EventSummaryDto)[]; count: number }> {
+    query: EventsSearchInput,
+    usePublicCache = false,
+  ): Promise<EventListResult> {
     this.logger.log(ctx, `${this.getEvents.name} was called`);
+    const cacheKey = query.view === "summary" && usePublicCache
+      ? this.getPublicSummaryCacheKey(query)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
     const { limit, offset, view, ...restQuery } = query;
     const summary = view === "summary";
 
@@ -131,12 +165,21 @@ export class EventsService {
       }),
     ]);
 
-    return {
+    const result = {
       events: plainToInstance(summary ? EventSummaryDto : EventResponseDto, events, {
         excludeExtraneousValues: true,
       }),
       count: eventCount,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async getOneEvent(
@@ -208,6 +251,7 @@ export class EventsService {
     });
 
     const addResult = plainToClass(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.EVENT, event.id, event.title);
     return addResult;
   }
@@ -235,6 +279,7 @@ export class EventsService {
     });
 
     const delResult = plainToInstance(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.EVENT, event.id, event.title);
     return delResult;
   }
@@ -303,6 +348,7 @@ export class EventsService {
     });
 
     const updResult = plainToClass(EventResponseDto, eventUpdate, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.EVENT, eventUpdate.id, eventUpdate.title);
     return updResult;
   }
@@ -338,6 +384,7 @@ export class EventsService {
             : PublicationStatus.DRAFT,
       },
     });
+    this.clearPublicSummaryCache();
 
     return plainToClass(EventResponseDto, event, {
       excludeExtraneousValues: true,
