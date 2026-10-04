@@ -632,6 +632,7 @@ model Vacancy {
   isActive         Boolean              @default(true)
   isDraft          Boolean              @default(false)
   questions        Json                 @default("[]")
+  googleFormLink   String?
   createdAt        DateTime             @default(now()) @db.Timestamptz(6)
   updatedAt        DateTime             @updatedAt
   deletedAt        DateTime?
