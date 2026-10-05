@@ -212,6 +212,17 @@ export class CreateVacancyDto {
   @ValidateNested({ each: true })
   @Type(() => VacancyQuestionDto)
   questions?: VacancyQuestionDto[];
+
+  /** Optional external Google Form. "" or null clears it on update. */
+  @ApiPropertyOptional({
+    example: "https://forms.gle/abc123",
+    nullable: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
+  @IsUrl()
+  @MaxLength(2048)
+  googleFormLink?: string | null;
 }
 
 export class UpdateVacancyDto extends PartialType(CreateVacancyDto) {}
@@ -385,6 +396,9 @@ export class VacancyResponseDto {
 
   @ApiProperty({ type: () => [VacancyQuestionDto] })
   questions: VacancyQuestionDto[];
+
+  @ApiPropertyOptional({ nullable: true })
+  googleFormLink?: string | null;
 
   @ApiProperty()
   createdAt: Date;

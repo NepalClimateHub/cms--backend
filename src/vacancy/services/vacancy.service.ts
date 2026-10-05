@@ -198,6 +198,7 @@ export class VacancyService {
         isActive: createVacancyDto.isActive ?? true,
         isDraft: createVacancyDto.isDraft ?? false,
         questions: this.normalizeQuestions(createVacancyDto.questions ?? []),
+        googleFormLink: createVacancyDto.googleFormLink,
       },
       include: {
         _count: {
