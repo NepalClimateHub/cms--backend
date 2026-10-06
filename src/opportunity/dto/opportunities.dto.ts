@@ -12,12 +12,16 @@ import {
   isBoolean,
   isURL,
 } from "class-validator";
-import { ContentStatus } from "@prisma/client";
+import { ContentStatus, EventStatus } from "@prisma/client";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AddressInput, AddressResponse } from "../../shared/dtos/address.dto";
-import { Expose, Type } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 import { GalleryInput, GalleryResponse } from "../../shared/dtos/gallery.dto";
+
+// Accept legacy lowercase input ("open") from older clients.
+const toUpperStatus = ({ value }: { value: unknown }) =>
+  typeof value === "string" ? value.trim().toUpperCase() : value;
 
 export class OpportunitySearchInput extends PaginationParamsDto {
   @ApiPropertyOptional({ enum: ["summary"], description: "Opt-in compact list response" })
@@ -34,10 +38,14 @@ export class OpportunitySearchInput extends PaginationParamsDto {
   @IsArray()
   tagIds?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: "Opportunity status (OPEN, UPCOMING, CLOSED)",
+    enum: EventStatus,
+  })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @Transform(toUpperStatus)
+  @IsEnum(EventStatus)
+  status?: EventStatus;
 
   @ApiPropertyOptional({ enum: ContentStatus })
   @IsOptional()
@@ -116,13 +124,16 @@ export class CreateOpportunityDto {
   contactEmail?: string;
 
   @ApiPropertyOptional({
-    description: "status",
+    description:
+      "Opportunity status (OPEN, UPCOMING, CLOSED). Closes automatically once applicationDeadline passes.",
+    enum: EventStatus,
     required: false,
-    example: "open",
+    example: EventStatus.OPEN,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @Transform(toUpperStatus)
+  @IsEnum(EventStatus)
+  status?: EventStatus;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -250,12 +261,15 @@ export class UpdateOpportunityDto {
   contactEmail?: string;
 
   @ApiPropertyOptional({
-    description: "status",
+    description:
+      "Opportunity status (OPEN, UPCOMING, CLOSED). Closes automatically once applicationDeadline passes.",
+    enum: EventStatus,
     required: false,
   })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @Transform(toUpperStatus)
+  @IsEnum(EventStatus)
+  status?: EventStatus;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -401,13 +415,12 @@ export class OpportunityResponseDto {
   contactEmail?: string;
 
   @ApiPropertyOptional({
-    description: "status",
+    description: "Opportunity status, computed from applicationDeadline",
+    enum: EventStatus,
     required: false,
   })
-  @IsOptional()
-  @IsString()
   @Expose()
-  status?: string;
+  status?: EventStatus;
 
   @ApiPropertyOptional({
     description: "moderation status",
@@ -497,9 +510,10 @@ export class OpportunitySummaryDto {
   @Expose() locationType: string;
   @Expose() type: string;
   @Expose() format: string;
-  @Expose() status?: string;
+  @Expose() status?: EventStatus;
   @Expose() cost?: string;
   @Expose() bannerImageUrl?: string;
+  @Expose() applicationDeadline?: string;
   @Expose() @Type(() => OpportunitySummaryAddressDto) address?: OpportunitySummaryAddressDto;
   @Expose() @Type(() => OpportunitySummaryTagDto) tags?: OpportunitySummaryTagDto[];
 }

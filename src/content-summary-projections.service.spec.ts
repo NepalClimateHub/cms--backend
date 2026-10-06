@@ -23,7 +23,7 @@ describe("opt-in content summary projections", () => {
       select: {
         id: true, title: true, description: true, locationType: true,
         type: true, format: true, status: true, cost: true,
-        bannerImageUrl: true,
+        bannerImageUrl: true, startDate: true, registrationDeadline: true,
         address: { select: { state: true } },
         tags: { select: { tag: true } },
       },
@@ -51,13 +51,13 @@ describe("opt-in content summary projections", () => {
       take: 8,
       skip: 2,
       orderBy: { createdAt: "desc" },
-      select: expect.objectContaining({
+      select: {
         id: true, title: true, description: true, locationType: true,
         type: true, format: true, status: true, cost: true,
-        bannerImageUrl: true,
+        bannerImageUrl: true, applicationDeadline: true,
         address: { select: { state: true } },
         tags: { select: { tag: true } },
-      }),
+      },
     }));
   });
 

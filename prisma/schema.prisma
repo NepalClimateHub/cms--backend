@@ -148,7 +148,7 @@ model Opportunity {
   organizer           String    @map("organizer")
   isDraft             Boolean   @default(true)
   moderationStatus    ContentStatus @default(DRAFT)
-  status              String    @default("open")
+  status              EventStatus @default(OPEN)
   reviewFeedback      String?
   websiteUrl          String?
   socials             Json?

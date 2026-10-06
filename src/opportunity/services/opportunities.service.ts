@@ -12,7 +12,8 @@ import {
   UpdateOpportunityDto,
 } from "../dto/opportunities.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
-import { ContentStatus, Prisma } from "@prisma/client";
+import { ContentStatus, EventStatus, Prisma } from "@prisma/client";
+import { applyComputedStatus, computeStatus } from "../../content-status/compute-status";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
 import {
   ContentModerationDto,
@@ -69,6 +70,8 @@ export class OpportunityService {
     const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
 
     if (cached && cached.expiresAt > Date.now()) {
+      // Cached entries can outlive a deadline, so recompute on every hit.
+      applyComputedStatus(cached.value.items);
       return cached.value;
     }
 
@@ -116,7 +119,7 @@ export class OpportunityService {
           status: async ({ filter }) => {
             return {
               where: {
-                status: filter as string,
+                status: filter as EventStatus,
               },
             };
           },
@@ -140,7 +143,7 @@ export class OpportunityService {
               select: {
                 id: true, title: true, description: true, locationType: true,
                 type: true, format: true, status: true, cost: true,
-                bannerImageUrl: true,
+                bannerImageUrl: true, applicationDeadline: true,
                 address: { select: { state: true } },
                 tags: { select: { tag: true } },
               },
@@ -159,9 +162,11 @@ export class OpportunityService {
       }),
     ]);
     const result = {
-      items: plainToInstance(summary ? OpportunitySummaryDto : OpportunityResponseDto, items, {
-        excludeExtraneousValues: true,
-      }),
+      items: applyComputedStatus(
+        plainToInstance(summary ? OpportunitySummaryDto : OpportunityResponseDto, items, {
+          excludeExtraneousValues: true,
+        })
+      ),
       count: count,
     };
 
@@ -195,9 +200,11 @@ export class OpportunityService {
       throw new NotFoundException("Opportunity not found");
     }
 
-    return plainToInstance(OpportunityResponseDto, item, {
+    const result = plainToInstance(OpportunityResponseDto, item, {
       excludeExtraneousValues: true,
     });
+    result.status = computeStatus(result);
+    return result;
   }
 
   async addOpportunity(
