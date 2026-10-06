@@ -620,6 +620,8 @@ export class EventSummaryDto {
   @Expose() status: EventStatus;
   @Expose() cost?: string;
   @Expose() bannerImageUrl?: string;
+  @Expose() startDate?: string;
+  @Expose() registrationDeadline?: string;
   @Expose() @Type(() => EventSummaryAddressDto) address?: EventSummaryAddressDto;
   @Expose() @Type(() => EventSummaryTagDto) tags?: EventSummaryTagDto[];
 }

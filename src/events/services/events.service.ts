@@ -13,6 +13,7 @@ import {
 } from "../dto/events.dto";
 import { applyFilters } from "../../shared/filters/prisma-filter.filter";
 import { ContentStatus, EventStatus, Prisma, PublicationStatus } from "@prisma/client";
+import { applyComputedStatus, computeStatus } from "../../content-status/compute-status";
 import { createSearchKey } from "../../shared/utils/createSearchKey";
 import {
   ContentModerationDto,
@@ -68,6 +69,8 @@ export class EventsService {
     const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
 
     if (cached && cached.expiresAt > Date.now()) {
+      // Cached entries can outlive a deadline, so recompute on every hit.
+      applyComputedStatus(cached.value.events);
       return cached.value;
     }
 
@@ -146,7 +149,7 @@ export class EventsService {
               select: {
                 id: true, title: true, description: true, locationType: true,
                 type: true, format: true, status: true, cost: true,
-                bannerImageUrl: true,
+                bannerImageUrl: true, startDate: true, registrationDeadline: true,
                 address: { select: { state: true } },
                 tags: { select: { tag: true } },
               },
@@ -166,9 +169,11 @@ export class EventsService {
     ]);
 
     const result = {
-      events: plainToInstance(summary ? EventSummaryDto : EventResponseDto, events, {
-        excludeExtraneousValues: true,
-      }),
+      events: applyComputedStatus(
+        plainToInstance(summary ? EventSummaryDto : EventResponseDto, events, {
+          excludeExtraneousValues: true,
+        })
+      ),
       count: eventCount,
     };
 
@@ -203,9 +208,11 @@ export class EventsService {
       throw new NotFoundException("Event not found");
     }
 
-    return plainToInstance(EventResponseDto, event, {
+    const result = plainToInstance(EventResponseDto, event, {
       excludeExtraneousValues: true,
     });
+    result.status = computeStatus(result);
+    return result;
   }
 
   async addEvent(
