@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
   Query,
+  Res,
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
   HttpStatus,
 } from "@nestjs/common";
+import type { Request, Response } from "express";
 import {
   ApiTags,
   ApiOperation,
@@ -24,6 +27,7 @@ import {
   UpdateBlogDto,
   BlogSearchInput,
   BlogResponseDto,
+  BlogSummaryDto,
 } from "../dto/blog.dto";
 import {
   BaseApiResponse,
@@ -86,8 +90,28 @@ export class BlogController {
   async findAllBlogs(
     @Query() searchInput: BlogSearchInput,
     @ReqContext() ctx: RequestContext,
-  ): Promise<BaseApiResponse<BlogResponseDto[]>> {
-    const result = await this.blogService.findAllBlogs(searchInput, ctx);
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<BaseApiResponse<(BlogResponseDto | BlogSummaryDto)[]>> {
+    const isAnonymousSummary =
+      searchInput.view === "summary" &&
+      !ctx.user &&
+      !request.headers.authorization &&
+      !request.headers.cookie;
+
+    response.setHeader(
+      "Cache-Control",
+      isAnonymousSummary
+        ? "public, max-age=60, s-maxage=300, stale-while-revalidate=86400, stale-if-error=86400"
+        : "private, no-store",
+    );
+    response.setHeader("Vary", "Accept-Encoding");
+
+    const result = await this.blogService.findAllBlogs(
+      searchInput,
+      ctx,
+      isAnonymousSummary,
+    );
     return { data: result.blogs, meta: { count: result.total } };
   }
 
