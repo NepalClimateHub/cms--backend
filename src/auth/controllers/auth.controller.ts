@@ -93,11 +93,14 @@ export class AuthController {
       { secret: "temp-secret-key", expiresIn: "10m" }
     );
     // Send verification email
-    await sendEmail(EmailType.EMAIL_VERIFICATION, {
+    const emailResult = await sendEmail(EmailType.EMAIL_VERIFICATION, {
       to: registeredUser.email,
-      fullName: registeredUser.name,
+      fullName: input.name,
       verificationCode: accountVerificationToken,
     });
+    if (!emailResult.success) {
+      this.logger.error(ctx, `Verification email could not be sent to ${registeredUser.email}: ${emailResult.message}`);
+    }
 
     return { data: registeredUser, meta: {} };
   }

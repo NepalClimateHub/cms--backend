@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsOptional,
   IsString,
+  MaxLength,
   ValidateNested,
 } from "class-validator";
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
@@ -175,6 +176,12 @@ export class VerifyOrganizationInput {
   })
   @IsBoolean()
   isVerified: boolean;
+
+  @ApiPropertyOptional({ description: "Feedback for an organization when verification cannot be completed" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(5000)
+  message?: string;
 }
 
 export class OrganizationResponseDto {

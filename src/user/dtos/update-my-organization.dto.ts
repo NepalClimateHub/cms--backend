@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsObject, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
+import { ArrayMaxSize, IsArray, IsObject, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
 import { UpdateOrganizationAddressInput } from "./update-organization-address-input.dto";
 
 export class UpdateMyOrganizationInput {
@@ -66,6 +66,17 @@ export class UpdateMyOrganizationInput {
   @IsOptional()
   @IsString()
   verificationDocumentId?: string;
+
+  @ApiPropertyOptional({
+    description: "One to three supporting verification files, each with id and url",
+    type: [Object],
+    maxItems: 3,
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(3)
+  @IsObject({ each: true })
+  verificationDocuments?: Array<{ id: string; url: string }>;
 
   @ApiPropertyOptional({
     description: "Message to admins with the verification request",

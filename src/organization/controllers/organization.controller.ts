@@ -210,6 +210,7 @@ export class OrganizationController {
       ctx,
       id,
       payload.isVerified,
+      payload.message,
     );
     return { data: organization, meta: {} };
   }

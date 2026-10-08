@@ -55,6 +55,7 @@ enum NotificationType {
   BLOG_APPROVED
   BLOG_REJECTED
   ORGANIZATION_VERIFIED
+  ORGANIZATION_VERIFICATION_MESSAGE
 }
 
 model Notification {
@@ -87,6 +88,11 @@ model Organizations {
   verificationDocumentId     String?
   verificationRequestRemarks String?
   verificationRequestedAt    DateTime? @db.Timestamptz(6)
+  /// Up to three files submitted by an organization for administrator review.
+  verificationDocuments      Json?
+  /// Feedback sent by an administrator when more information is needed.
+  verificationAdminMessage   String?
+  verificationMessageSentAt  DateTime? @db.Timestamptz(6)
   address             Address?  @relation(fields: [addressId], references: [id])
   organizationGallery Gallery[] @relation("GalleryToOrganizations")
   tags                Tags[]    @relation("OrganizationsToTags")
@@ -660,6 +666,5 @@ model VacancyApplication {
   @@index([vacancyId])
   @@map("nch_vacancy_applications")
 }
-
 
 

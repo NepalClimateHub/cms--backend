@@ -41,10 +41,22 @@ export class OrganizationProfileOutputDto {
   verificationDocumentId: string | null;
 
   @Expose()
+  @ApiPropertyOptional({ type: [Object], nullable: true })
+  verificationDocuments: Array<{ id: string; url: string }> | null;
+
+  @Expose()
   @ApiPropertyOptional()
   verificationRequestRemarks: string | null;
 
   @Expose()
   @ApiPropertyOptional()
   verificationRequestedAt: Date | null;
+
+  @Expose()
+  @ApiPropertyOptional()
+  verificationAdminMessage: string | null;
+
+  @Expose()
+  @ApiPropertyOptional()
+  verificationMessageSentAt: Date | null;
 }
