@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsIn,
   IsOptional,
   IsString,
 } from "class-validator";
@@ -33,6 +34,10 @@ export enum ResourceLevel {
 }
 
 export class ResourceSearchInput extends PaginationParamsDto {
+  @ApiPropertyOptional({ enum: ["summary"], description: "Opt-in compact list response" })
+  @IsOptional()
+  @IsIn(["summary"])
+  view?: "summary";
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -246,4 +251,15 @@ export class ResourceResponseDto {
   @ApiProperty()
   @Expose()
   updatedAt: Date;
+}
+
+/** Opt-in list contract for public resource cards and client-side filters. */
+export class ResourceSummaryDto {
+  @Expose() id: string;
+  @Expose() title: string;
+  @Expose() overview?: string;
+  @Expose() type: ResourceType;
+  @Expose() level?: ResourceLevel;
+  @Expose() link?: string;
+  @Expose() bannerImageUrl?: string;
 }

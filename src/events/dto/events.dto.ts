@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsEmail,
   IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   IsUrl,
@@ -17,6 +18,10 @@ import { TagOutputDto } from "../../tags/dto/tags-output.dto";
 import { GalleryInput, GalleryResponse } from "../../shared/dtos/gallery.dto";
 
 export class EventsSearchInput extends PaginationParamsDto {
+  @ApiPropertyOptional({ enum: ["summary"], description: "Opt-in compact list response" })
+  @IsOptional()
+  @IsIn(["summary"])
+  view?: "summary";
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
@@ -592,4 +597,29 @@ export class EventResponseDto {
   get isDraft(): boolean {
     return this.publicationStatus === PublicationStatus.DRAFT;
   }
+}
+
+export class EventSummaryAddressDto {
+  @Expose()
+  state?: string;
+}
+
+export class EventSummaryTagDto {
+  @Expose()
+  tag: string;
+}
+
+/** Opt-in list contract for public cards and client-side filters. */
+export class EventSummaryDto {
+  @Expose() id: string;
+  @Expose() title: string;
+  @Expose() description: string;
+  @Expose() locationType: string;
+  @Expose() type: string;
+  @Expose() format: string;
+  @Expose() status: EventStatus;
+  @Expose() cost?: string;
+  @Expose() bannerImageUrl?: string;
+  @Expose() @Type(() => EventSummaryAddressDto) address?: EventSummaryAddressDto;
+  @Expose() @Type(() => EventSummaryTagDto) tags?: EventSummaryTagDto[];
 }

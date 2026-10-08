@@ -7,6 +7,7 @@ import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import {
   CreateEventDto,
   EventResponseDto,
+  EventSummaryDto,
   EventsSearchInput,
   UpdateEventDto,
 } from "../dto/events.dto";
@@ -21,8 +22,19 @@ import { BadRequestException } from "@nestjs/common";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 import { ActivityAction, ActivityEntity } from "@prisma/client";
 
+type EventListResult = {
+  events: (EventResponseDto | EventSummaryDto)[];
+  count: number;
+};
+
 @Injectable()
 export class EventsService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: EventListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
+
   constructor(
     private readonly logger: AppLogger,
     private readonly prismaService: PrismaService,
@@ -31,12 +43,36 @@ export class EventsService {
     this.logger.setContext(EventsService.name);
   }
 
+  private getPublicSummaryCacheKey(query: EventsSearchInput): string {
+    const { tagIds, ...filters } = query;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
+
   async getEvents(
     ctx: RequestContext,
-    query: EventsSearchInput
-  ): Promise<{ events: EventResponseDto[]; count: number }> {
+    query: EventsSearchInput,
+    usePublicCache = false,
+  ): Promise<EventListResult> {
     this.logger.log(ctx, `${this.getEvents.name} was called`);
-    const { limit, offset, ...restQuery } = query;
+    const cacheKey = query.view === "summary" && usePublicCache
+      ? this.getPublicSummaryCacheKey(query)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
+    const { limit, offset, view, ...restQuery } = query;
+    const summary = view === "summary";
 
     const { whereBuilder: whereQuery } =
       await applyFilters<Prisma.EventsWhereInput>({
@@ -100,33 +136,50 @@ export class EventsService {
         },
       });
 
-    const events = await this.prismaService.events.findMany({
-      where: {
-        AND: [whereQuery],
-      },
-      include: {
-        address: true,
-        tags: true,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const [events, eventCount] = await Promise.all([
+      this.prismaService.events.findMany({
+        where: {
+          AND: [whereQuery],
+        },
+        ...(summary
+          ? {
+              select: {
+                id: true, title: true, description: true, locationType: true,
+                type: true, format: true, status: true, cost: true,
+                bannerImageUrl: true,
+                address: { select: { state: true } },
+                tags: { select: { tag: true } },
+              },
+            }
+          : { include: { address: true, tags: true } }),
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      } as Prisma.EventsFindManyArgs),
+      this.prismaService.events.count({
+        where: {
+          AND: [whereQuery],
+        },
+      }),
+    ]);
 
-    const eventCount = await this.prismaService.events.count({
-      where: {
-        AND: [whereQuery],
-      },
-    });
-
-    return {
-      events: plainToInstance(EventResponseDto, events, {
+    const result = {
+      events: plainToInstance(summary ? EventSummaryDto : EventResponseDto, events, {
         excludeExtraneousValues: true,
       }),
       count: eventCount,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async getOneEvent(
@@ -198,6 +251,7 @@ export class EventsService {
     });
 
     const addResult = plainToClass(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.EVENT, event.id, event.title);
     return addResult;
   }
@@ -225,6 +279,7 @@ export class EventsService {
     });
 
     const delResult = plainToInstance(EventResponseDto, event, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.EVENT, event.id, event.title);
     return delResult;
   }
@@ -293,6 +348,7 @@ export class EventsService {
     });
 
     const updResult = plainToClass(EventResponseDto, eventUpdate, { excludeExtraneousValues: true });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.EVENT, eventUpdate.id, eventUpdate.title);
     return updResult;
   }
@@ -328,6 +384,7 @@ export class EventsService {
             : PublicationStatus.DRAFT,
       },
     });
+    this.clearPublicSummaryCache();
 
     return plainToClass(EventResponseDto, event, {
       excludeExtraneousValues: true,

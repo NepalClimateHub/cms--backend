@@ -91,24 +91,24 @@ export class TagsService {
         },
       });
 
-    const tags = await this.prismaService.tags.findMany({
-      where: {
-        AND: [tagsWhereQuery],
-        deletedAt: null,
-      },
-      take: limit,
-      skip: offset,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    console.log("==tags", tags);
-    const tagsCount = await this.prismaService.tags.count({
-      where: {
-        AND: [tagsWhereQuery],
-      },
-    });
+    const [tags, tagsCount] = await Promise.all([
+      this.prismaService.tags.findMany({
+        where: {
+          AND: [tagsWhereQuery],
+          deletedAt: null,
+        },
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.tags.count({
+        where: {
+          AND: [tagsWhereQuery],
+        },
+      }),
+    ]);
 
     return {
       tags: plainToInstance(TagOutputDto, tags, {
@@ -187,20 +187,22 @@ export class TagsService {
         },
       });
 
-    const tags = await this.prismaService.tags.findMany({
-      where: {
-        AND: [tagsWhereQuery],
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    const tagsCount = await this.prismaService.tags.count({
-      where: {
-        AND: [tagsWhereQuery],
-      },
-    });
+    const [tags, tagsCount] = await Promise.all([
+      this.prismaService.tags.findMany({
+        where: {
+          AND: [tagsWhereQuery],
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      this.prismaService.tags.count({
+        where: {
+          AND: [tagsWhereQuery],
+        },
+      }),
+    ]);
 
     return {
       tags: plainToInstance(TagOutputDto, tags, {

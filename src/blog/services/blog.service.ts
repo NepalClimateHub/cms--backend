@@ -10,6 +10,7 @@ import {
   UpdateBlogDto,
   BlogSearchInput,
   BlogResponseDto,
+  BlogSummaryDto,
 } from "../dto/blog.dto";
 import { plainToInstance } from "class-transformer";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
@@ -17,8 +18,58 @@ import { NotificationService } from "../../notification/notification.service";
 import { ContentStatus, UserType, ActivityAction, ActivityEntity } from "@prisma/client";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 
+type BlogListResult = {
+  blogs: (BlogResponseDto | BlogSummaryDto)[];
+  total: number;
+};
+
 @Injectable()
 export class BlogService {
+  private readonly publicSummaryCache = new Map<
+    string,
+    { expiresAt: number; value: BlogListResult }
+  >();
+  private readonly publicSummaryCacheTtlMs = 5 * 60 * 1000;
+  private readonly blogSummarySelect = {
+    id: true,
+    title: true,
+    excerpt: true,
+    author: true,
+    category: true,
+    readingTime: true,
+    publishedDate: true,
+    isFeatured: true,
+    isTopRead: true,
+    bannerImageUrl: true,
+    authorUser: { select: { profilePhotoUrl: true } },
+  } as const;
+
+  /**
+   * Fields exposed by BlogResponseDto for the optional linked author.
+   * Keep this selection aligned with AuthorOutputDto so public reads do not
+   * fetch account credentials or other internal user fields only to discard
+   * them during serialization.
+   */
+  private readonly authorUserSelect = {
+    id: true,
+    socials: true,
+    currentRole: true,
+    fullName: true,
+    email: true,
+    bio: true,
+    profilePhotoUrl: true,
+  } as const;
+
+  /** Fields exposed by BlogResponseDto for the optional category relation. */
+  private readonly categoryDataSelect = {
+    id: true,
+    name: true,
+    description: true,
+    type: true,
+    createdAt: true,
+    updatedAt: true,
+  } as const;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
@@ -77,6 +128,19 @@ export class BlogService {
     return `${readingTimeMinutes} min read`;
   }
 
+  private getPublicSummaryCacheKey(searchInput: BlogSearchInput): string {
+    const { tagIds, ...filters } = searchInput;
+
+    return JSON.stringify({
+      ...filters,
+      tagIds: tagIds ? [...tagIds].sort() : undefined,
+    });
+  }
+
+  private clearPublicSummaryCache(): void {
+    this.publicSummaryCache.clear();
+  }
+
   async createBlog(
     createBlogDto: CreateBlogDto,
     ctx: RequestContext,
@@ -116,14 +180,15 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
     const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.CREATE, ActivityEntity.BLOG, blog.id, blog.title);
     return result;
   }
@@ -131,8 +196,19 @@ export class BlogService {
   async findAllBlogs(
     searchInput: BlogSearchInput,
     ctx?: RequestContext,
-  ): Promise<{ blogs: BlogResponseDto[]; total: number }> {
-    const { offset = 1, limit = 10, ...searchParams } = searchInput;
+    usePublicCache = !ctx?.user,
+  ): Promise<BlogListResult> {
+    const canUsePublicCache = searchInput.view === "summary" && usePublicCache;
+    const cacheKey = canUsePublicCache
+      ? this.getPublicSummaryCacheKey(searchInput)
+      : undefined;
+    const cached = cacheKey ? this.publicSummaryCache.get(cacheKey) : undefined;
+
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
+    const { offset = 1, limit = 10, view, ...searchParams } = searchInput;
 
     const where: any = {
       deletedAt: null,
@@ -207,30 +283,52 @@ export class BlogService {
       };
     }
 
+    const blogQuery =
+      view === "summary"
+        ? this.prisma.blog.findMany({
+            where,
+            select: this.blogSummarySelect,
+            take: limit,
+            skip: offset,
+            orderBy: { createdAt: "desc" },
+          })
+        : this.prisma.blog.findMany({
+            where,
+            omit: searchParams.excludeContent ? { content: true } : undefined,
+            include: {
+              tags: true,
+              authorUser: { select: this.authorUserSelect },
+              categoryData: { select: this.categoryDataSelect },
+            },
+            take: limit,
+            skip: offset,
+            orderBy: { createdAt: "desc" },
+          });
+
     const [blogs, total] = await Promise.all([
-      this.prisma.blog.findMany({
-        where,
-        omit: searchParams.excludeContent ? { content: true } : undefined,
-        include: {
-          tags: true,
-          authorUser: true,
-          categoryData: true,
-        },
-        take: limit,
-        skip: offset,
-        orderBy: {
-          createdAt: "desc",
-        },
-      }),
+      blogQuery,
       this.prisma.blog.count({ where }),
     ]);
 
-    return {
-      blogs: plainToInstance(BlogResponseDto, blogs, {
-        excludeExtraneousValues: true,
-      }),
+    const result = {
+      blogs: plainToInstance(
+        view === "summary" ? BlogSummaryDto : BlogResponseDto,
+        blogs,
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
       total,
     };
+
+    if (cacheKey) {
+      this.publicSummaryCache.set(cacheKey, {
+        expiresAt: Date.now() + this.publicSummaryCacheTtlMs,
+        value: result,
+      });
+    }
+
+    return result;
   }
 
   async findBlogById(
@@ -244,8 +342,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
@@ -342,14 +440,15 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
 
     const result = plainToInstance(BlogResponseDto, blog, {
       excludeExtraneousValues: true,
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.UPDATE, ActivityEntity.BLOG, blog.id, blog.title);
     return result;
   }
@@ -374,6 +473,7 @@ export class BlogService {
         deletedAt: new Date(),
       },
     });
+    this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.BLOG, id, existingBlog.title);
   }
 
@@ -412,10 +512,11 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
     });
+    this.clearPublicSummaryCache();
 
     await this.notificationService.notifyBlogReview(
       existingBlog.authorId,
@@ -442,8 +543,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
       orderBy: {
         createdAt: "desc",
@@ -464,8 +565,8 @@ export class BlogService {
       },
       include: {
         tags: true,
-        authorUser: true,
-        categoryData: true,
+        authorUser: { select: this.authorUserSelect },
+        categoryData: { select: this.categoryDataSelect },
       },
       orderBy: {
         publishedDate: "desc",
