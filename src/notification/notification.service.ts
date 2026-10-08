@@ -52,6 +52,23 @@ export class NotificationService {
     });
   }
 
+  async notifyOrganizationVerificationMessage(
+    userId: string,
+    organizationId: string,
+    organizationName: string,
+  ): Promise<void> {
+    await this.prisma.notification.create({
+      data: {
+        userId,
+        type: "ORGANIZATION_VERIFICATION_MESSAGE" as NotificationType,
+        title: "Organization verification update",
+        body: `An administrator sent feedback about the verification request for "${organizationName}".`,
+        entityType: "ORGANIZATION",
+        entityId: organizationId,
+      },
+    });
+  }
+
   async findForUser(
     userId: string,
     limit: number,

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -384,6 +384,7 @@ export class OrganizationService {
     ctx: RequestContext,
     id: string,
     isVerified: boolean,
+    message?: string,
   ): Promise<OrganizationResponseDto> {
     this.logger.log(ctx, `${this.verifyOrganization.name} was called`);
 
@@ -392,6 +393,10 @@ export class OrganizationService {
     });
     if (!org) {
       throw new NotFoundException("Organization not found!");
+    }
+    const feedback = message?.trim();
+    if (!isVerified && !feedback) {
+      throw new BadRequestException("A message is required when verification is not approved.");
     }
 
     let usersToNotifyOnVerify: {
@@ -414,6 +419,23 @@ export class OrganizationService {
       where: { organizationId: id, deletedAt: null },
       data: { isVerifiedByAdmin: isVerified },
     });
+
+    if (!isVerified && feedback) {
+      await this.prismaService.organizations.update({
+        where: { id },
+        data: {
+          verificationAdminMessage: feedback,
+          verificationMessageSentAt: new Date(),
+        } as Prisma.OrganizationsUpdateInput,
+      });
+      const recipients = await this.prismaService.user.findMany({
+        where: { organizationId: id, deletedAt: null },
+        select: { id: true },
+      });
+      await Promise.all(recipients.map((user) =>
+        this.notificationService.notifyOrganizationVerificationMessage(user.id, id, org.name),
+      ));
+    }
 
     for (const u of usersToNotifyOnVerify) {
       await this.notificationService.notifyOrganizationVerified(

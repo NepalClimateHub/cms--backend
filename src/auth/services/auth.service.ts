@@ -53,11 +53,14 @@ export class AuthService {
     // Prevent disabled users from logging in.
     if (!user.isEmailVerified) {
       // send email to user to verify account
-      await sendEmail(EmailType.EMAIL_VERIFICATION, {
+      const emailResult = await sendEmail(EmailType.EMAIL_VERIFICATION, {
         to: user.email,
         fullName: user.fullName,
         verificationCode: getJWTTokenForEmailVerification(user.email), // makes the url from this JWT token and sends email
       });
+      if (!emailResult.success) {
+        this.logger.error(ctx, `Could not resend verification email to ${user.email}`);
+      }
 
       throw new UnauthorizedException("This account is not verified!");
     }
@@ -114,11 +117,11 @@ export class AuthService {
     // Send verification email
     const emailSent = await sendEmail(EmailType.EMAIL_VERIFICATION, {
       to: user.email,
-      userName: user.fullName,
+      fullName: user.fullName,
       verificationCode: getJWTTokenForEmailVerification(user.email),
     });
 
-    if (!emailSent) {
+    if (!emailSent.success) {
       throw new BadRequestException("Failed to send verification email");
     }
 
