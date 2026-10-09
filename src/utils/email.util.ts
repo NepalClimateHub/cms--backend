@@ -55,21 +55,19 @@ class EmailService {
   }
 
   private async getTemplate(templateName: string): Promise<string> {
-    // Use process.cwd() to get the project root directory
-    const templatePath = path.join(
-      process.cwd(),
-      "src",
-      "templates",
-      `${templateName}.hbs`,
-    );
-
-    try {
-      return fs.readFileSync(templatePath, "utf8");
-    } catch (error) {
-      throw new Error(
-        `Template not found: ${templateName}.hbs at path: ${templatePath}`,
-      );
+    const fileName = `${templateName}.hbs`;
+    // Development reads src/templates; production builds copy templates beside
+    // the compiled source, so resolve that location first as well.
+    const candidates = [
+      path.resolve(__dirname, "..", "templates", fileName),
+      path.join(process.cwd(), "src", "templates", fileName),
+      path.join(process.cwd(), "dist", "src", "templates", fileName),
+    ];
+    const templatePath = candidates.find((candidate) => fs.existsSync(candidate));
+    if (!templatePath) {
+      throw new Error(`Template not found: ${fileName}`);
     }
+    return fs.readFileSync(templatePath, "utf8");
   }
 
   private async renderTemplate(
@@ -118,9 +116,13 @@ class EmailService {
   ): Record<string, any> {
     const baseData = {
       userName: metadata.userName || "User",
+      fullName: metadata.fullName || metadata.userName || "User",
       organizationName: metadata.organizationName || "Nepal Climate Hub",
       currentYear: new Date().getFullYear(),
-      siteUrl: this.configService?.get("urls.baseUrl") || process.env.BASE_URL,
+      siteUrl:
+        this.configService?.get("urls.baseUrl") ||
+        process.env.BASE_URL ||
+        process.env.API_BASE_URL,
       frontendBaseUrl:
         this.configService?.get("urls.frontendBaseUrl") ||
         process.env.FRONTEND_BASE_URL,
@@ -128,6 +130,9 @@ class EmailService {
 
     switch (emailType) {
       case EmailType.EMAIL_VERIFICATION:
+        if (!baseData.siteUrl || !metadata.verificationCode) {
+          throw new Error("Verification email needs BASE_URL (the API URL) and a token");
+        }
         return {
           ...baseData,
           verificationLink: `${baseData.siteUrl}/auth/verify-email?token=${metadata.verificationCode}`,
@@ -225,10 +230,12 @@ const emailService = new EmailService();
 export const sendEmail = async (
   emailType: EmailType,
   metadata: EmailMetadata,
-): Promise<any> => {
+): Promise<{ success: boolean; message: string }> => {
   try {
     const result = await emailService.sendEmail(emailType, metadata);
-    return { success: result, message: "Email sent successfully" };
+    return result
+      ? { success: true, message: "Email sent successfully" }
+      : { success: false, message: "Email provider rejected the message" };
   } catch (error) {
     console.error("Failed to send email:", error);
     return { success: false, message: "Failed to send email" };

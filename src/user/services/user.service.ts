@@ -236,6 +236,11 @@ export class UserService {
         : await this.resolveOrganizationForUser(user);
     // Plain object (not a class instance) so ClassSerializerInterceptor does not
     // drop `role` / nested `organization` when serializing GET /users/me.
+    const verificationOrg = org as (Organizations & {
+      verificationDocuments?: unknown;
+      verificationAdminMessage?: string | null;
+      verificationMessageSentAt?: Date | null;
+    }) | null;
     const organizationPayload =
       org === null
         ? null
@@ -260,9 +265,18 @@ export class UserService {
           socials: user.socials,
           verificationDocumentUrl: org.verificationDocumentUrl ?? null,
           verificationDocumentId: org.verificationDocumentId ?? null,
+          verificationDocuments: Array.isArray(verificationOrg?.verificationDocuments)
+            ? verificationOrg.verificationDocuments
+            : org.verificationDocumentUrl && org.verificationDocumentId
+              ? [{ id: org.verificationDocumentId, url: org.verificationDocumentUrl }]
+              : [],
           verificationRequestRemarks: org.verificationRequestRemarks ?? null,
           verificationRequestedAt: org.verificationRequestedAt
             ? org.verificationRequestedAt.toISOString()
+            : null,
+          verificationAdminMessage: verificationOrg?.verificationAdminMessage ?? null,
+          verificationMessageSentAt: verificationOrg?.verificationMessageSentAt
+            ? verificationOrg.verificationMessageSentAt.toISOString()
             : null,
         };
 
@@ -330,6 +344,7 @@ export class UserService {
     const hasVerificationPatch =
       input.verificationDocumentUrl !== undefined ||
       input.verificationDocumentId !== undefined ||
+      input.verificationDocuments !== undefined ||
       input.verificationRequestRemarks !== undefined;
 
     if (
@@ -446,6 +461,25 @@ export class UserService {
         orgData.verificationDocumentUrl = url;
         orgData.verificationDocumentId = docId;
         orgData.verificationRequestedAt = new Date();
+      }
+      if (input.verificationDocuments !== undefined) {
+        if (input.verificationDocuments.length === 0 || input.verificationDocuments.length > 3) {
+          throw new BadRequestException("Submit between one and three verification documents.");
+        }
+        const documents = input.verificationDocuments.map((document) => ({
+          id: document.id?.trim(),
+          url: document.url?.trim(),
+        }));
+        if (documents.some((document) => !document.id || !document.url)) {
+          throw new BadRequestException("Each verification document needs an id and URL.");
+        }
+        (orgData as Prisma.OrganizationsUpdateInput & { verificationDocuments?: unknown }).verificationDocuments = documents;
+        // Keep legacy fields populated for existing API consumers.
+        orgData.verificationDocumentId = documents[0].id;
+        orgData.verificationDocumentUrl = documents[0].url;
+        orgData.verificationRequestedAt = new Date();
+        (orgData as Prisma.OrganizationsUpdateInput & { verificationAdminMessage?: string | null }).verificationAdminMessage = null;
+        (orgData as Prisma.OrganizationsUpdateInput & { verificationMessageSentAt?: Date | null }).verificationMessageSentAt = null;
       }
     }
 
