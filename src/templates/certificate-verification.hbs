@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Certificate Verification Code - Nepal Climate Hub</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+        .code-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #065f46;
+            margin: 24px 0;
+            word-break: break-all;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #15803d;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px 0 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Nepal Climate Hub</div>
+        <div class="title">Your certificate verification code</div>
+
+        <p>Hi {{fullName}},</p>
+        <p>Your Nepal Climate Hub certificate has been issued successfully.</p>
+        <p><strong>Certificate Number:</strong> {{certificateNumber}}</p>
+
+        <div class="code-box">{{verificationCode}}</div>
+
+        <p>You can verify your certificate using the code above or through this link:</p>
+        <a href="{{verifyLink}}" class="cta-button">Verify Certificate</a>
+
+        <p>Please keep this code safe and do not share it publicly.</p>
+
+        <div class="footer">
+            <p>© {{currentYear}} Nepal Climate Hub</p>
+        </div>
+    </div>
+</body>
+</html>

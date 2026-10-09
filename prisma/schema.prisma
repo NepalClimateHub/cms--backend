@@ -522,6 +522,7 @@ enum ActivityEntity {
   USER
   ORGANIZATION
   VACANCY
+  CERTIFICATE
 }
 
 model ActivityLog {
@@ -660,5 +661,50 @@ model VacancyApplication {
   @@map("nch_vacancy_applications")
 }
 
+model Volunteer {
+  id                String        @id @default(uuid()) @db.Uuid
+  fullName          String        @map("full_name") @db.VarChar(200)
+  profilePictureUrl String?       @map("profile_picture_url") @db.Text
+  email             String?       @db.VarChar(255)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  certificates      Certificate[]
 
+  @@map("volunteers")
+}
 
+model Certificate {
+  id                    String                       @id @default(uuid()) @db.Uuid
+  certificateNumber     String                       @unique @map("certificate_number") @db.VarChar(50)
+  verificationTokenHash String                       @unique @map("verification_token_hash") @db.Char(64)
+  volunteerId           String                       @map("volunteer_id") @db.Uuid
+  certificateType       String                       @map("certificate_type") @db.VarChar(50)
+  role                  String                       @db.VarChar(100)
+  dateJoined            DateTime                     @map("date_joined") @db.Date
+  dateEnded             DateTime?                    @map("date_ended") @db.Date
+  status                String                       @default("ACTIVE") @db.VarChar(20)
+  issuedAt              DateTime                     @default(now()) @map("issued_at") @db.Timestamptz(6)
+  revokedAt             DateTime?                    @map("revoked_at") @db.Timestamptz(6)
+  revocationReason      String?                      @map("revocation_reason") @db.Text
+  createdAt             DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  volunteer             Volunteer                    @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  verificationLogs      CertificateVerificationLog[]
+
+  @@index([verificationTokenHash])
+  @@map("certificates")
+}
+
+model CertificateVerificationLog {
+  id            String       @id @default(uuid()) @db.Uuid
+  certificateId String?      @map("certificate_id") @db.Uuid
+  result        String       @db.VarChar(20)
+  requestedAt   DateTime     @default(now()) @map("requested_at") @db.Timestamptz(6)
+  ipHash        String?      @map("ip_hash") @db.VarChar(64)
+  userAgent     String?      @map("user_agent") @db.Text
+  certificate   Certificate? @relation(fields: [certificateId], references: [id], onDelete: SetNull)
+
+  @@index([certificateId])
+  @@index([requestedAt])
+  @@map("certificate_verification_logs")
+}

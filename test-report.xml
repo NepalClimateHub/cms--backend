@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\magar\OneDrive\Desktop\CMS\cms--backend\src\certificate\certificate.service.spec.ts">
+    <testCase name="CertificateService Duration Calculation should correctly calculate &quot;2 years, 1 month&quot; for June 7 2024 to July 9 2026" duration="2"/>
+    <testCase name="CertificateService Duration Calculation should correctly calculate &quot;1 year&quot; for exactly 12 months" duration="0"/>
+    <testCase name="CertificateService Duration Calculation should correctly calculate &quot;6 months&quot; within the same year" duration="1"/>
+    <testCase name="CertificateService Token Normalization &amp; Hashing should normalize uppercase, trim whitespace, and strip NCH- prefix" duration="0"/>
+    <testCase name="CertificateService Token Normalization &amp; Hashing should calculate accurate 64-char SHA-256 hex string" duration="0"/>
+    <testCase name="CertificateService Public Verification should throw BadRequestException if token format is invalid" duration="14"/>
+    <testCase name="CertificateService Public Verification should throw NotFoundException if token does not exist in database" duration="1"/>
+    <testCase name="CertificateService Public Verification should return valid certificate response when active record exists" duration="2"/>
+    <testCase name="CertificateService Public Verification should return REVOKED status if certificate was revoked" duration="0"/>
+    <testCase name="CertificateService Rate Limiting should allow up to 10 verification requests within 1 minute from the same IP, then block the 11th" duration="6"/>
+    <testCase name="CertificateService Certificate Generation should create volunteer if not provided, hash token, and return raw token once" duration="3"/>
+    <testCase name="CertificateService Certificate Generation should email the verification code to the volunteer when an email is provided" duration="1"/>
+  </file>
+</testExecutions>

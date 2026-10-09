@@ -28,6 +28,7 @@ import { ActivityLogModule } from "./activity-log/activity-log.module";
 import { MinutesModule } from "./minutes/minutes.module";
 import { TestimonialModule } from "./testimonial/testimonial.module";
 import { VacancyModule } from "./vacancy/vacancy.module";
+import { CertificateModule } from "./certificate/certificate.module";
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { VacancyModule } from "./vacancy/vacancy.module";
     MinutesModule,
     TestimonialModule,
     VacancyModule,
+    CertificateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
