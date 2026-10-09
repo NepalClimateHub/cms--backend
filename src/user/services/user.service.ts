@@ -602,21 +602,6 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
-    const user = await this.prismaService.user.findUnique({
-      where: { id },
-      include: { organization: true },
-    });
-
-    if (!user) {
-      throw new NotFoundException("User not found.");
-    }
-
-    // Preventive safety check: user cannot delete their own active session account
-    if (ctx.user.id === id) {
-      throw new BadRequestException("You cannot delete your own user account.");
-    }
-
-    // Role restriction check: Only SUPER_ADMIN and ADMIN can delete users
     const actorRole = ctx.user.userType;
     if (actorRole !== UserType.SUPER_ADMIN && actorRole !== UserType.ADMIN) {
       throw new ForbiddenException(
@@ -624,36 +609,33 @@ export class UserService {
       );
     }
 
-    // ADMIN role cannot delete a SUPER_ADMIN account
+    if (ctx.user.id === id) {
+      throw new BadRequestException("You cannot delete your own user account.");
+    }
+
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found.");
+    }
+
     if (actorRole === UserType.ADMIN && user.userType === UserType.SUPER_ADMIN) {
       throw new ForbiddenException("Admins cannot delete Super Admin accounts.");
     }
 
     const output = await this.toUserOutput(user);
 
-    // Unlink authored blogs before deleting user to prevent DB foreign key constraint errors
-    await this.prismaService.blog.updateMany({
-      where: { authorId: id },
-      data: { authorId: null },
-    });
-
-    const linkedOrgId = user.organizationId;
-
-    // Delete user from database
-    await this.prismaService.user.delete({
-      where: { id },
-    });
-
-    // If user was an organization account, clean up the linked organization record
-    if (linkedOrgId) {
-      await this.prismaService.organizations
-        .delete({
-          where: { id: linkedOrgId },
-        })
-        .catch(() => {
-          // Silently handle if organization record was already deleted
-        });
-    }
+    // Hard delete frees the globally unique email. The linked organization and
+    // authored content are intentionally kept; blogs are only detached.
+    await this.prismaService.$transaction([
+      this.prismaService.blog.updateMany({
+        where: { authorId: id },
+        data: { authorId: null },
+      }),
+      this.prismaService.user.delete({ where: { id } }),
+    ]);
 
     // Log the activity details (who deleted what)
     const targetName = user.fullName || user.email;
