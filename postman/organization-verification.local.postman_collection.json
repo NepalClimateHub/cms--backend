@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "NCH — Organization verification local QA",
+    "description": "Run the requests in numeric order. Fill the blank collection variables before starting. The Verify email request requires a token copied from the email link.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api/v1", "type": "string" },
+    { "key": "org_name", "value": "", "type": "string" },
+    { "key": "org_username", "value": "", "type": "string" },
+    { "key": "org_email", "value": "", "type": "string" },
+    { "key": "org_password", "value": "", "type": "string" },
+    { "key": "organization_name", "value": "", "type": "string" },
+    { "key": "organization_type", "value": "", "type": "string" },
+    { "key": "verification_token", "value": "", "type": "string" },
+    { "key": "document_1_id", "value": "", "type": "string" },
+    { "key": "document_1_url", "value": "", "type": "string" },
+    { "key": "document_2_id", "value": "", "type": "string" },
+    { "key": "document_2_url", "value": "", "type": "string" },
+    { "key": "document_3_id", "value": "", "type": "string" },
+    { "key": "document_3_url", "value": "", "type": "string" },
+    { "key": "admin_email", "value": "", "type": "string" },
+    { "key": "admin_password", "value": "", "type": "string" },
+    { "key": "admin_feedback", "value": "", "type": "string" },
+    { "key": "org_access_token", "value": "", "type": "string" },
+    { "key": "admin_access_token", "value": "", "type": "string" },
+    { "key": "organization_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Register organization account",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"{{org_name}}\",\n  \"username\": \"{{org_username}}\",\n  \"password\": \"{{org_password}}\",\n  \"email\": \"{{org_email}}\",\n  \"role\": \"ORGANIZATION\",\n  \"orgName\": \"{{organization_name}}\",\n  \"orgType\": \"{{organization_type}}\",\n  \"province\": \"\",\n  \"district\": \"\"\n}" },
+        "url": "{{base_url}}/auth/register"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Created', () => pm.response.to.have.status(201));"] } }]
+    },
+    {
+      "name": "2. Verify email (copy token from email link first)",
+      "request": { "method": "GET", "url": "{{base_url}}/auth/verify-email?token={{verification_token}}" },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Verification redirects', () => pm.expect(pm.response.code).to.be.oneOf([200, 301, 302]));"] } }]
+    },
+    {
+      "name": "3. Log in as organization — saves org_access_token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{org_email}}\",\n  \"password\": \"{{org_password}}\"\n}" },
+        "url": "{{base_url}}/auth/login"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Logged in', () => pm.response.to.have.status(200));", "const body = pm.response.json();", "pm.collectionVariables.set('org_access_token', body.data.accessToken);"] } }]
+    },
+    {
+      "name": "4. Get organization profile — saves organization_id",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{org_access_token}}" }],
+        "url": "{{base_url}}/users/me"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Organization profile returned', () => pm.response.to.have.status(200));", "const org = pm.response.json().data.organization;", "pm.expect(org, 'linked organization').to.exist;", "pm.collectionVariables.set('organization_id', org.id);"] } }]
+    },
+    {
+      "name": "5. Submit 1–3 verification documents",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{org_access_token}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"verificationDocuments\": [\n    { \"id\": \"{{document_1_id}}\", \"url\": \"{{document_1_url}}\" },\n    { \"id\": \"{{document_2_id}}\", \"url\": \"{{document_2_url}}\" },\n    { \"id\": \"{{document_3_id}}\", \"url\": \"{{document_3_url}}\" }\n  ],\n  \"verificationRequestRemarks\": \"Please review the attached verification documents.\"\n}" },
+        "url": "{{base_url}}/users/me/organization"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Documents submitted', () => pm.response.to.have.status(200));", "pm.test('Exactly three documents returned', () => pm.expect(pm.response.json().data.organization.verificationDocuments).to.have.lengthOf(3));"] } }]
+    },
+    {
+      "name": "6. Negative test — reject 4 documents",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{org_access_token}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"verificationDocuments\": [\n    { \"id\": \"{{document_1_id}}\", \"url\": \"{{document_1_url}}\" },\n    { \"id\": \"{{document_2_id}}\", \"url\": \"{{document_2_url}}\" },\n    { \"id\": \"{{document_3_id}}\", \"url\": \"{{document_3_url}}\" },\n    { \"id\": \"fourth-document\", \"url\": \"https://replace-me.example/fourth.pdf\" }\n  ]\n}" },
+        "url": "{{base_url}}/users/me/organization"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Four documents are rejected', () => pm.response.to.have.status(400));"] } }]
+    },
+    {
+      "name": "7. Log in as CMS admin — saves admin_access_token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}" },
+        "url": "{{base_url}}/auth/login"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Admin logged in', () => pm.response.to.have.status(200));", "pm.collectionVariables.set('admin_access_token', pm.response.json().data.accessToken);"] } }]
+    },
+    {
+      "name": "8. Admin review organization",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{admin_access_token}}" }],
+        "url": "{{base_url}}/organizations/{{organization_id}}"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Organization request visible', () => pm.response.to.have.status(200));", "pm.test('Documents visible', () => pm.expect(pm.response.json().data.verificationDocuments).to.have.lengthOf(3));"] } }]
+    },
+    {
+      "name": "9. Admin sends feedback (do before approval)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_access_token}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"isVerified\": false,\n  \"message\": \"{{admin_feedback}}\"\n}" },
+        "url": "{{base_url}}/organizations/{{organization_id}}/verify"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Feedback sent', () => pm.response.to.have.status(200));"] } }]
+    },
+    {
+      "name": "10. Organization checks feedback and notification",
+      "item": [
+        {
+          "name": "Profile contains admin message",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{org_access_token}}" }], "url": "{{base_url}}/users/me" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Admin feedback is shown', () => pm.expect(pm.response.json().data.organization.verificationAdminMessage).to.eql(pm.collectionVariables.get('admin_feedback'));"] } }]
+        },
+        {
+          "name": "Notification is present",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{org_access_token}}" }], "url": "{{base_url}}/notifications?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "exec": ["const items = pm.response.json().data;", "pm.test('Feedback notification exists', () => pm.expect(items.some((n) => n.type === 'ORGANIZATION_VERIFICATION_MESSAGE')).to.eql(true));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "11. Admin approves organization (run last)",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_access_token}}" }],
+        "body": { "mode": "raw", "raw": "{\n  \"isVerified\": true\n}" },
+        "url": "{{base_url}}/organizations/{{organization_id}}/verify"
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Organization approved', () => pm.response.to.have.status(200));"] } }]
+    }
+  ]
+}
