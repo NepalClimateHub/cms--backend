@@ -17,6 +17,8 @@ import { RequestContext } from "../../shared/request-context/request-context.dto
 import { NotificationService } from "../../notification/notification.service";
 import { ContentStatus, UserType, ActivityAction, ActivityEntity } from "@prisma/client";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { sanitizeBlogContent } from "../blog-content.sanitizer";
+import { BlogMediaService } from "./blog-media.service";
 
 type BlogListResult = {
   blogs: (BlogResponseDto | BlogSummaryDto)[];
@@ -74,6 +76,7 @@ export class BlogService {
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
     private readonly activityLogService: ActivityLogService,
+    private readonly blogMedia: BlogMediaService,
   ) {}
 
   /** Staff roles that may edit/delete any blog. */
@@ -145,7 +148,11 @@ export class BlogService {
     createBlogDto: CreateBlogDto,
     ctx: RequestContext,
   ): Promise<BlogResponseDto> {
-    const { tagIds, ...blogData } = createBlogDto;
+    const { tagIds, ...rawBlogData } = createBlogDto;
+    const blogData = {
+      ...rawBlogData,
+      content: sanitizeBlogContent(rawBlogData.content),
+    };
 
     // Super admin and content admin publish directly unless saving as draft
     const canAutoPublish =
@@ -165,24 +172,33 @@ export class BlogService {
     // Auto-calculate reading time from content
     const readingTime = this.calculateReadingTime(blogData.content);
 
-    const blog = await this.prisma.blog.create({
-      data: {
-        ...blogData,
-        readingTime,
-        approvedByAdmin,
-        status,
-        authorId: ctx.user?.id,
-        tags: tagIds
-          ? {
-              connect: tagIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
-      include: {
-        tags: true,
-        authorUser: { select: this.authorUserSelect },
-        categoryData: { select: this.categoryDataSelect },
-      },
+    const mediaPlan = this.blogMedia.plan(blogData);
+    await this.blogMedia.assertOwnership(ctx, mediaPlan);
+
+    const blog = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.blog.create({
+        data: {
+          ...blogData,
+          readingTime,
+          approvedByAdmin,
+          status,
+          authorId: ctx.user?.id,
+          tags: tagIds
+            ? {
+                connect: tagIds.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+        include: {
+          tags: true,
+          authorUser: { select: this.authorUserSelect },
+          categoryData: { select: this.categoryDataSelect },
+        },
+      });
+      if (ctx.user?.id) {
+        await this.blogMedia.sync(tx, created.id, ctx.user.id, mediaPlan);
+      }
+      return created;
     });
 
     const result = plainToInstance(BlogResponseDto, blog, {
@@ -379,7 +395,11 @@ export class BlogService {
     updateBlogDto: UpdateBlogDto,
     ctx: RequestContext,
   ): Promise<BlogResponseDto> {
-    const { tagIds, ...blogData } = updateBlogDto;
+    const { tagIds, ...rawBlogData } = updateBlogDto;
+    const blogData =
+      typeof rawBlogData.content === "string"
+        ? { ...rawBlogData, content: sanitizeBlogContent(rawBlogData.content) }
+        : rawBlogData;
 
     const existingBlog = await this.prisma.blog.findFirst({
       where: {
@@ -393,6 +413,9 @@ export class BlogService {
     }
 
     this.assertCanModifyBlog(ctx, existingBlog);
+
+    const mediaPlan = this.blogMedia.plan(blogData, existingBlog);
+    await this.blogMedia.assertOwnership(ctx, mediaPlan);
 
     // Auto-calculate reading time if content is being updated
     const updatedData: any = { ...blogData };
@@ -428,21 +451,30 @@ export class BlogService {
       }
     }
 
-    const blog = await this.prisma.blog.update({
-      where: { id },
-      data: {
-        ...updatedData,
-        tags: tagIds
-          ? {
-              set: tagIds.map((tagId) => ({ id: tagId })),
-            }
-          : undefined,
-      },
-      include: {
-        tags: true,
-        authorUser: { select: this.authorUserSelect },
-        categoryData: { select: this.categoryDataSelect },
-      },
+    const blog = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.blog.update({
+        where: { id },
+        data: {
+          ...updatedData,
+          tags: tagIds
+            ? {
+                set: tagIds.map((tagId) => ({ id: tagId })),
+              }
+            : undefined,
+        },
+        include: {
+          tags: true,
+          authorUser: { select: this.authorUserSelect },
+          categoryData: { select: this.categoryDataSelect },
+        },
+      });
+      await this.blogMedia.sync(
+        tx,
+        id,
+        existingBlog.authorId ?? ctx.user!.id,
+        mediaPlan,
+      );
+      return updated;
     });
 
     const result = plainToInstance(BlogResponseDto, blog, {
@@ -467,11 +499,14 @@ export class BlogService {
 
     this.assertCanModifyBlog(ctx, existingBlog);
 
-    await this.prisma.blog.update({
-      where: { id },
-      data: {
-        deletedAt: new Date(),
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.blog.update({
+        where: { id },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+      await this.blogMedia.orphanBlogMedia(tx, id);
     });
     this.clearPublicSummaryCache();
     this.activityLogService.logActivity(ctx, ActivityAction.DELETE, ActivityEntity.BLOG, id, existingBlog.title);

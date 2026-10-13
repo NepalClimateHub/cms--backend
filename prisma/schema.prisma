@@ -42,6 +42,7 @@ model User {
   i_am                            String    @default("Student")
   organizationId                String?   @unique
   blogs                           Blog[]
+  media                           Media[]
   address                         Address?  @relation(fields: [addressId], references: [id])
   gallery                         Gallery[] @relation("GalleryToUser")
   tags                            Tags[]    @relation("TagsToUser")
@@ -205,6 +206,37 @@ model Blog {
   authorUser      User?      @relation(fields: [authorId], references: [id])
   categoryData    Category?  @relation(fields: [categoryId], references: [id])
   tags            Tags[]     @relation("BlogToTags")
+  media           Media[]
+}
+
+enum MediaKind {
+  BANNER
+  INLINE
+}
+
+enum MediaStatus {
+  ACTIVE
+  ORPHANED
+}
+
+model Media {
+  id             String      @id @default(cuid())
+  url            String      @unique
+  imageKitFileId String?
+  ownerId        String
+  blogId         String?
+  kind           MediaKind
+  alt            String?
+  caption        String?
+  credit         String?
+  status         MediaStatus @default(ACTIVE)
+  createdAt      DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime    @updatedAt
+  owner          User        @relation(fields: [ownerId], references: [id])
+  blog           Blog?       @relation(fields: [blogId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@index([blogId, status])
 }
 
 model Address {

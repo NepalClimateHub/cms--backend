@@ -1,12 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ForbiddenException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import { ContentStatus, UserType } from "@prisma/client";
 
 import { BlogService } from "./blog.service";
+import { BlogMediaService } from "./blog-media.service";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
 import { NotificationService } from "../../notification/notification.service";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
+import { CreateBlogDto, UpdateBlogDto } from "../dto/blog.dto";
+import {
+  BLOG_CONTENT_MAX_IMAGES,
+  BLOG_CONTENT_MAX_LENGTH,
+} from "../blog-content.sanitizer";
 
 const WRITER_ID = "writer-1";
 const OTHER_WRITER_ID = "writer-2";
@@ -16,6 +22,65 @@ function ctxFor(id: string, userType: UserType): RequestContext {
   const ctx = new RequestContext();
   ctx.user = { id, userType } as RequestContext["user"];
   return ctx;
+}
+
+const IMG = "https://ik.imagekit.io/nch/photo.jpg";
+const TIPTAP_CONTENT = [
+  "<h2>Heading</h2>",
+  '<p style="text-align: center">Text with <strong>bold</strong> and <a href="https://example.org" target="_blank" rel="noopener noreferrer nofollow">a link</a><br>break</p>',
+  "<ul><li><p>item</p></li></ul>",
+  "<blockquote><p>quote</p></blockquote>",
+  '<pre><code class="language-ts">const a = 1;</code></pre>',
+  `<figure data-layout="wide"><img src="${IMG}" alt="Photo" width="1200" height="800"><figcaption>Caption<cite>Credit</cite></figcaption></figure>`,
+  `<div data-layout="two-up"><figure><img src="${IMG}" alt="L" width="600" height="400"></figure><figure><img src="${IMG}" alt="R" width="600" height="400"></figure></div>`,
+].join("");
+
+const HOSTILE_CONTENT: [string, string, string][] = [
+  ["script element", "<p>a</p><script>alert(1)</script>", "<p>a</p>"],
+  ["event handler", '<p onclick="alert(1)">a</p>', "<p>a</p>"],
+  [
+    "img onerror",
+    `<figure><img src="${IMG}" alt="x" onerror="alert(1)"></figure>`,
+    `<figure><img src="${IMG}" alt="x"></figure>`,
+  ],
+  ["javascript href", '<a href="javascript:alert(1)">x</a>', "<a>x</a>"],
+  ["data href", '<a href="data:text/html,x">x</a>', "<a>x</a>"],
+  ["iframe", '<iframe src="https://evil.example"></iframe><p>a</p>', "<p>a</p>"],
+  [
+    "style url()",
+    '<p style="background: url(https://evil.example/x.png)">a</p>',
+    "<p>a</p>",
+  ],
+  [
+    "style expression()",
+    '<p style="width: expression(alert(1))">a</p>',
+    "<p>a</p>",
+  ],
+  ["unapproved attributes", '<p class="x" id="y" data-x="1">a</p>', "<p>a</p>"],
+  [
+    "blob img src",
+    '<figure><img src="blob:https://x/1" alt="x"></figure>',
+    "<figure></figure>",
+  ],
+  [
+    "data img src",
+    '<figure><img src="data:text/html;base64,PHNjcmlwdD4=" alt="x"></figure>',
+    "<figure></figure>",
+  ],
+];
+
+function createDto(content: string): CreateBlogDto {
+  return Object.assign(new CreateBlogDto(), {
+    title: "t",
+    content,
+    author: "W",
+    category: "x",
+    isDraft: false,
+  });
+}
+
+function updateDto(content: string): UpdateBlogDto {
+  return Object.assign(new UpdateBlogDto(), { content });
 }
 
 describe("BlogService — approval workflow", () => {
@@ -28,12 +93,22 @@ describe("BlogService — approval workflow", () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+    media: {
+      findFirst: jest.fn(),
+      upsert: jest.fn(),
+      updateMany: jest.fn(),
+    },
+    $transaction: jest.fn(),
   };
   const notification = { notifyBlogReview: jest.fn() };
   const activity = { logActivity: jest.fn() };
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    prisma.$transaction.mockImplementation((callback: (tx: unknown) => unknown) =>
+      callback(prisma),
+    );
+    prisma.media.findFirst.mockResolvedValue(null);
     // create/update echo back the data they were called with
     prisma.blog.create.mockImplementation(({ data }: any) => ({
       id: "blog-1",
@@ -49,6 +124,7 @@ describe("BlogService — approval workflow", () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         BlogService,
+        BlogMediaService,
         { provide: PrismaService, useValue: prisma },
         { provide: NotificationService, useValue: notification },
         { provide: ActivityLogService, useValue: activity },
@@ -320,5 +396,168 @@ describe("BlogService — approval workflow", () => {
         ctxFor(WRITER_ID, UserType.INDIVIDUAL),
       ),
     ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  describe("rich content sanitization", () => {
+    beforeEach(() => {
+      prisma.blog.findFirst.mockResolvedValue({
+        id: "blog-1",
+        authorId: WRITER_ID,
+        approvedByAdmin: true,
+        status: ContentStatus.PUBLISHED,
+      });
+    });
+
+    const writer = () => ctxFor(WRITER_ID, UserType.INDIVIDUAL);
+
+    it("persists normal Tiptap content unchanged on create", async () => {
+      await service.createBlog(createDto(TIPTAP_CONTENT), writer());
+      expect(prisma.blog.create.mock.calls[0][0].data.content).toBe(
+        TIPTAP_CONTENT,
+      );
+    });
+
+    it("persists normal Tiptap content unchanged on update", async () => {
+      await service.updateBlog("blog-1", updateDto(TIPTAP_CONTENT), writer());
+      expect(prisma.blog.update.mock.calls[0][0].data.content).toBe(
+        TIPTAP_CONTENT,
+      );
+    });
+
+    it.each(HOSTILE_CONTENT)(
+      "sanitizes hostile %s on create",
+      async (_name, input, expected) => {
+        await service.createBlog(createDto(input), writer());
+        expect(prisma.blog.create.mock.calls[0][0].data.content).toBe(expected);
+      },
+    );
+
+    it.each(HOSTILE_CONTENT)(
+      "sanitizes hostile %s on update",
+      async (_name, input, expected) => {
+        await service.updateBlog("blog-1", updateDto(input), writer());
+        expect(prisma.blog.update.mock.calls[0][0].data.content).toBe(expected);
+      },
+    );
+
+    it("rejects oversize content on create without persisting", async () => {
+      const content = "a".repeat(BLOG_CONTENT_MAX_LENGTH + 1);
+      await expect(
+        service.createBlog(createDto(content), writer()),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.blog.create).not.toHaveBeenCalled();
+    });
+
+    it("rejects oversize content on update without persisting", async () => {
+      const content = "a".repeat(BLOG_CONTENT_MAX_LENGTH + 1);
+      await expect(
+        service.updateBlog("blog-1", updateDto(content), writer()),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.blog.update).not.toHaveBeenCalled();
+    });
+
+    it("leaves updates without content untouched", async () => {
+      await service.updateBlog(
+        "blog-1",
+        Object.assign(new UpdateBlogDto(), { title: "new" }),
+        writer(),
+      );
+      expect(prisma.blog.update.mock.calls[0][0].data.content).toBeUndefined();
+    });
+  });
+
+  describe("draft → review → publication lifecycle", () => {
+    it("moves a writer's blog through DRAFT, UNDER_REVIEW and PUBLISHED and keeps it live on edit", async () => {
+      let stored: Record<string, unknown> = {};
+      prisma.blog.create.mockImplementation(({ data }: { data: Record<string, unknown> }) => {
+        stored = { id: "blog-1", title: "t", authorId: WRITER_ID, ...data };
+        return stored;
+      });
+      prisma.blog.findFirst.mockImplementation(() => ({ ...stored }));
+      prisma.blog.update.mockImplementation(({ data }: { data: Record<string, unknown> }) => {
+        stored = { ...stored, ...data };
+        return stored;
+      });
+      const writer = ctxFor(WRITER_ID, UserType.INDIVIDUAL);
+      const admin = ctxFor(ADMIN_ID, UserType.CONTENT_ADMIN);
+
+      await service.createBlog(
+        Object.assign(createDto("<p>one</p>"), { isDraft: true }),
+        writer,
+      );
+      expect(stored.status).toBe(ContentStatus.DRAFT);
+      expect(stored.approvedByAdmin).toBe(false);
+
+      await service.updateBlog(
+        "blog-1",
+        Object.assign(new UpdateBlogDto(), { content: "<p>two</p>", isDraft: true }),
+        writer,
+      );
+      expect(stored.status).toBe(ContentStatus.DRAFT);
+
+      await service.updateBlog(
+        "blog-1",
+        Object.assign(new UpdateBlogDto(), { isDraft: false }),
+        writer,
+      );
+      expect(stored.status).toBe(ContentStatus.UNDER_REVIEW);
+      expect(stored.approvedByAdmin).toBe(false);
+
+      await service.blogAction("blog-1", "approve", admin, "ok");
+      expect(stored.status).toBe(ContentStatus.PUBLISHED);
+      expect(stored.approvedByAdmin).toBe(true);
+
+      await service.updateBlog(
+        "blog-1",
+        Object.assign(new UpdateBlogDto(), {
+          content: "<p>three</p>",
+          isDraft: false,
+        }),
+        writer,
+      );
+      expect(stored.status).toBe(ContentStatus.PUBLISHED);
+      expect(stored.approvedByAdmin).toBe(true);
+      expect(stored.content).toBe("<p>three</p>");
+    });
+
+    it("updates without isDraft never change the persisted status", async () => {
+      prisma.blog.findFirst.mockResolvedValue({
+        id: "blog-1",
+        authorId: WRITER_ID,
+        approvedByAdmin: true,
+        status: ContentStatus.PUBLISHED,
+      });
+      await service.updateBlog(
+        "blog-1",
+        Object.assign(new UpdateBlogDto(), { content: "<p>x</p>" }),
+        ctxFor(WRITER_ID, UserType.INDIVIDUAL),
+      );
+      const data = prisma.blog.update.mock.calls[0][0].data;
+      expect(data.status).toBeUndefined();
+      expect(data.approvedByAdmin).toBeUndefined();
+    });
+
+    it("rejects more than the maximum images on create and update without persisting", async () => {
+      const img = '<figure><img src="https://ik.imagekit.io/nch/a.jpg" alt="a"></figure>';
+      const content = img.repeat(BLOG_CONTENT_MAX_IMAGES + 1);
+      prisma.blog.findFirst.mockResolvedValue({
+        id: "blog-1",
+        authorId: WRITER_ID,
+        approvedByAdmin: false,
+        status: ContentStatus.DRAFT,
+      });
+      await expect(
+        service.createBlog(createDto(content), ctxFor(WRITER_ID, UserType.INDIVIDUAL)),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      await expect(
+        service.updateBlog(
+          "blog-1",
+          Object.assign(new UpdateBlogDto(), { content }),
+          ctxFor(WRITER_ID, UserType.INDIVIDUAL),
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.blog.create).not.toHaveBeenCalled();
+      expect(prisma.blog.update).not.toHaveBeenCalled();
+    });
   });
 });
