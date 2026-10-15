@@ -7,3 +7,6 @@ allowBuilds:
   "@compodoc/compodoc": true
   "@scarf/scarf": true
   '@nestjs/core': true
+
+patchedDependencies:
+  "buffer-equal-constant-time@1.0.1": patches/buffer-equal-constant-time@1.0.1.patch

@@ -17,7 +17,11 @@ export class ChatRequestDto {
   @IsString()
   query: string;
 
-  @ApiPropertyOptional({ description: "Conversation history" })
+  @ApiPropertyOptional({
+    description: "Conversation history",
+    type: ChatMessageDto,
+    isArray: true,
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
@@ -29,7 +33,7 @@ export class ChatRequestDto {
   @IsString()
   conversation_id?: string;
 
-  @ApiPropertyOptional({ description: "Number of documents to retrieve", default: 5 })
+  @ApiPropertyOptional({ description: "Number of documents to retrieve", default: 8 })
   @IsOptional()
   @IsNumber()
   top_k?: number;
