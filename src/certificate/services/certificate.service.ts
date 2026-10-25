@@ -100,6 +100,19 @@ export class CertificateService {
   }
 
   /**
+   * Generate 16-character alphanumeric verification token
+   */
+  public generateVerificationToken(): string {
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const bytes = crypto.randomBytes(16);
+    let result = "";
+    for (let i = 0; i < 16; i++) {
+      result += chars[bytes[i] % chars.length];
+    }
+    return result;
+  }
+
+  /**
    * Public Certificate Verification
    */
   async verifyCertificate(
@@ -121,10 +134,10 @@ export class CertificateService {
     }
 
     const normalizedToken = this.normalizeToken(rawCode);
-    const uuidV4Regex =
-      /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i;
+    const tokenRegex =
+      /^([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}|[A-Z0-9]{16})$/i;
 
-    if (!uuidV4Regex.test(normalizedToken)) {
+    if (!tokenRegex.test(normalizedToken)) {
       await this.recordAuditLog(null, "INVALID_FORMAT", ipHash, userAgent);
       throw new BadRequestException("Please enter a valid verification code.");
     }
@@ -187,6 +200,10 @@ export class CertificateService {
         duration,
         certificateType: this.formatCertificateType(cert.certificateType),
         profilePicture: cert.volunteer.profilePictureUrl || null,
+        teamName: cert.teamName || null,
+        issuedAt: cert.issuedAt
+          ? cert.issuedAt.toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
         organization: "Nepal Climate Hub",
       },
     };
@@ -222,14 +239,16 @@ export class CertificateService {
     dto: CreateCertificateDto,
     ctx?: RequestContext,
   ): Promise<AdminCertificateResponseDto> {
-    // 1. Generate cryptographically secure random token (UUID v4)
-    const rawToken = crypto.randomUUID().toUpperCase();
+    // 1. Generate cryptographically secure random token (16-character alphanumeric string)
+    const rawToken = this.generateVerificationToken();
     const tokenHash = this.sha256(rawToken);
 
-    // 2. Generate unique Certificate Number
-    const currentYear = new Date().getFullYear();
+    // 2. Generate unique Certificate Number in format NCH-YEAR-MM-CertificateNo
+    const issueDate = dto.issuedAt ? new Date(dto.issuedAt) : new Date();
+    const currentYear = issueDate.getFullYear();
+    const currentMonth = String(issueDate.getMonth() + 1).padStart(2, "0");
     const certCount = await this.prisma.certificate.count();
-    const certNumber = `NCH-CERT-${currentYear}-${String(certCount + 1).padStart(6, "0")}`;
+    const certNumber = `NCH-${currentYear}-${currentMonth}-${String(certCount + 1).padStart(6, "0")}`;
 
     // 3. Find or create Volunteer
     let volunteerId = dto.volunteerId;
@@ -252,9 +271,11 @@ export class CertificateService {
         volunteerId,
         certificateType: dto.certificateType.toUpperCase(),
         role: dto.role,
+        teamName: dto.teamName || null,
         dateJoined: new Date(dto.dateJoined),
         dateEnded: dto.dateEnded ? new Date(dto.dateEnded) : null,
         status: "ACTIVE",
+        issuedAt: dto.issuedAt ? new Date(dto.issuedAt) : undefined,
       },
       include: {
         volunteer: true,
@@ -298,6 +319,7 @@ export class CertificateService {
       verificationCode: rawToken, // Returned ONLY during initial creation
       certificateType: certificate.certificateType,
       role: certificate.role,
+      teamName: certificate.teamName,
       dateJoined: certificate.dateJoined.toISOString().split("T")[0],
       dateEnded: certificate.dateEnded
         ? certificate.dateEnded.toISOString().split("T")[0]
@@ -339,8 +361,8 @@ export class CertificateService {
       );
     }
 
-    // Generate new random UUID token
-    const newRawToken = crypto.randomUUID().toUpperCase();
+    // Generate new random 16-character token
+    const newRawToken = this.generateVerificationToken();
     const newTokenHash = this.sha256(newRawToken);
 
     await this.prisma.certificate.update({
@@ -417,6 +439,7 @@ export class CertificateService {
       certificateNumber: updatedCert.certificateNumber,
       certificateType: updatedCert.certificateType,
       role: updatedCert.role,
+      teamName: updatedCert.teamName,
       dateJoined: updatedCert.dateJoined.toISOString().split("T")[0],
       dateEnded: updatedCert.dateEnded
         ? updatedCert.dateEnded.toISOString().split("T")[0]
@@ -473,6 +496,12 @@ export class CertificateService {
             },
           },
         },
+        {
+          teamName: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
       ];
     }
 
@@ -504,6 +533,7 @@ export class CertificateService {
         certificateNumber: cert.certificateNumber,
         certificateType: cert.certificateType,
         role: cert.role,
+        teamName: cert.teamName,
         dateJoined: cert.dateJoined.toISOString().split("T")[0],
         dateEnded: cert.dateEnded
           ? cert.dateEnded.toISOString().split("T")[0]
@@ -548,6 +578,7 @@ export class CertificateService {
       certificateNumber: cert.certificateNumber,
       certificateType: cert.certificateType,
       role: cert.role,
+      teamName: cert.teamName,
       dateJoined: cert.dateJoined.toISOString().split("T")[0],
       dateEnded: cert.dateEnded
         ? cert.dateEnded.toISOString().split("T")[0]

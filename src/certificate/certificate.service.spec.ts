@@ -210,7 +210,7 @@ describe('CertificateService', () => {
 
       const mockCert = {
         id: 'cert-uuid-1',
-        certificateNumber: 'NCH-CERT-2026-000001',
+        certificateNumber: 'NCH-2026-10-000001',
         verificationTokenHash: 'mock-hash-64-chars',
         certificateType: 'VOLUNTEER',
         role: 'Volunteer',
@@ -236,11 +236,9 @@ describe('CertificateService', () => {
         dateEnded: '2026-07-09',
       });
 
-      expect(result.certificateNumber).toContain('NCH-CERT-');
+      expect(result.certificateNumber).toMatch(/^NCH-\d{4}-\d{2}-\d{6}$/);
       expect(result.verificationCode).toBeDefined();
-      expect(result.verificationCode).toMatch(
-        /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/,
-      );
+      expect(result.verificationCode).toMatch(/^[A-Z0-9]{16}$/);
 
       // Verify DB was called with HASHED token, not raw token
       expect(prismaMock.certificate.create).toHaveBeenCalledWith(

@@ -680,6 +680,7 @@ model Certificate {
   volunteerId           String                       @map("volunteer_id") @db.Uuid
   certificateType       String                       @map("certificate_type") @db.VarChar(50)
   role                  String                       @db.VarChar(100)
+  teamName              String?                      @map("team_name") @db.VarChar(200)
   dateJoined            DateTime                     @map("date_joined") @db.Date
   dateEnded             DateTime?                    @map("date_ended") @db.Date
   status                String                       @default("ACTIVE") @db.VarChar(20)

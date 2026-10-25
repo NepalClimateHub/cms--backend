@@ -16,7 +16,7 @@ export class VerifyCertificateDto {
   @IsNotEmpty({ message: "Please enter a valid verification code." })
   @IsString()
   @Matches(
-    /^(NCH-)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i,
+    /^(NCH-)?([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9]{16})$/i,
     { message: "Please enter a valid verification code." },
   )
   code: string;
@@ -87,6 +87,22 @@ export class CreateCertificateDto {
   @IsOptional()
   @IsString()
   dateEnded?: string;
+
+  @ApiPropertyOptional({
+    description: "Team name (manually entered by admin)",
+    example: "Advocacy & Communications",
+  })
+  @IsOptional()
+  @IsString()
+  teamName?: string;
+
+  @ApiPropertyOptional({
+    description: "Issue date (YYYY-MM-DD)",
+    example: "2026-10-11",
+  })
+  @IsOptional()
+  @IsString()
+  issuedAt?: string;
 }
 
 export class RevokeCertificateDto {
@@ -149,6 +165,12 @@ export class PublicCertificateDetailsDto {
   @ApiProperty({ example: "https://cdn.nepalclimatehub.org/profile/bibek.jpg", nullable: true })
   profilePicture: string | null;
 
+  @ApiPropertyOptional({ example: "Advocacy & Communications", nullable: true })
+  teamName: string | null;
+
+  @ApiProperty({ example: "2026-10-11" })
+  issuedAt: string;
+
   @ApiProperty({ example: "Nepal Climate Hub" })
   organization: string;
 }
@@ -201,6 +223,9 @@ export class AdminCertificateResponseDto {
 
   @ApiProperty({ example: "Volunteer" })
   role: string;
+
+  @ApiPropertyOptional({ example: "Advocacy & Communications", nullable: true })
+  teamName?: string | null;
 
   @ApiProperty({ example: "2024-06-07" })
   dateJoined: string;

@@ -42,6 +42,7 @@ export class AdminCertificateController {
   constructor(private readonly certificateService: CertificateService) {}
 
   @Post()
+  @Roles(ROLE.SUPER_ADMIN)
   @ApiOperation({ summary: "Issue a new certificate" })
   @ApiResponse({
     status: HttpStatus.CREATED,
