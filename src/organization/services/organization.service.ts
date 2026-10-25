@@ -421,12 +421,24 @@ export class OrganizationService {
     });
 
     if (!isVerified && feedback) {
-      await this.prismaService.organizations.update({
-        where: { id },
-        data: {
-          verificationAdminMessage: feedback,
-          verificationMessageSentAt: new Date(),
-        } as Prisma.OrganizationsUpdateInput,
+      await this.prismaService.$transaction(async (tx) => {
+        await tx.organizations.update({
+          where: { id },
+          data: {
+            verificationAdminMessage: feedback,
+            verificationMessageSentAt: new Date(),
+          } as Prisma.OrganizationsUpdateInput,
+        });
+        await (tx as unknown as {
+          organizationVerificationMessage: { create: (args: unknown) => Promise<unknown> };
+        }).organizationVerificationMessage.create({
+          data: {
+            organizationId: id,
+            senderType: "ADMIN",
+            senderUserId: ctx.user?.id ?? null,
+            message: feedback,
+          },
+        });
       });
       const recipients = await this.prismaService.user.findMany({
         where: { organizationId: id, deletedAt: null },

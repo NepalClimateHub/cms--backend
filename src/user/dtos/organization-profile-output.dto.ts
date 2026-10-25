@@ -2,6 +2,28 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Expose, Type } from "class-transformer";
 import { AddressOutputDto } from "./address-output.dto";
 
+export class VerificationMessageOutputDto {
+  @Expose()
+  @ApiProperty()
+  id: string;
+
+  @Expose()
+  @ApiProperty({ enum: ["ORGANIZATION", "ADMIN"] })
+  senderType: "ORGANIZATION" | "ADMIN";
+
+  @Expose()
+  @ApiPropertyOptional({ nullable: true })
+  senderUserId?: string | null;
+
+  @Expose()
+  @ApiProperty()
+  message: string;
+
+  @Expose()
+  @ApiProperty()
+  createdAt: Date;
+}
+
 export class OrganizationProfileOutputDto {
   @Expose()
   @ApiProperty()
@@ -59,4 +81,9 @@ export class OrganizationProfileOutputDto {
   @Expose()
   @ApiPropertyOptional()
   verificationMessageSentAt: Date | null;
+
+  @Expose()
+  @ApiProperty({ type: [VerificationMessageOutputDto] })
+  @Type(() => VerificationMessageOutputDto)
+  verificationMessages: VerificationMessageOutputDto[];
 }
