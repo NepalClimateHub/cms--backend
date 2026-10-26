@@ -168,6 +168,9 @@ export class UserService {
   ): Promise<{ users: UserOutput[]; count: number }> {
     this.logger.log(ctx, `${this.getUsers.name} was called`);
 
+    const canReadVerificationMessages =
+      ctx.user?.userType === UserType.ADMIN ||
+      ctx.user?.userType === UserType.SUPER_ADMIN;
     const [users, count] = await Promise.all([
       this.prismaService.user.findMany({
         take: limit,
@@ -176,7 +179,14 @@ export class UserService {
           createdAt: "desc",
         },
         include: {
-          organization: { include: { address: true } },
+          organization: {
+            include: {
+              address: true,
+              ...(canReadVerificationMessages
+                ? { verificationMessages: { orderBy: { createdAt: "asc" } } }
+                : {}),
+            },
+          },
         },
       }),
       this.prismaService.user.count(),
@@ -189,7 +199,7 @@ export class UserService {
             ? null
             : u.organization
           : undefined;
-        return this.toUserOutput(u, preloaded);
+        return this.toUserOutput(u, preloaded, canReadVerificationMessages);
       }),
     );
 
@@ -207,7 +217,11 @@ export class UserService {
 
     if (!user) throw new UnauthorizedException("User not found.");
 
-    return this.toUserOutput(user);
+    const canReadVerificationMessages =
+      ctx.user?.id === id ||
+      ctx.user?.userType === UserType.ADMIN ||
+      ctx.user?.userType === UserType.SUPER_ADMIN;
+    return this.toUserOutput(user, undefined, canReadVerificationMessages);
   }
 
   private async resolveOrganizationForUser(user: {
@@ -215,13 +229,18 @@ export class UserService {
     email: string;
     userType: UserType;
     organizationId: string | null;
-  }) {
+  }, includeVerificationMessages = false) {
     if (!user.organizationId) {
       return null;
     }
     return this.prismaService.organizations.findFirst({
       where: { id: user.organizationId, deletedAt: null },
-      include: { address: true },
+      include: {
+        address: true,
+        ...(includeVerificationMessages
+          ? { verificationMessages: { orderBy: { createdAt: "asc" } } }
+          : {}),
+      },
     });
   }
 
@@ -229,17 +248,25 @@ export class UserService {
     user: UserEntity,
     /** When set, skip org lookup (used by list to avoid N+1 queries). */
     preloadedOrg?: (Organizations & { address?: Address | null }) | null,
+    includeVerificationMessages = false,
   ): Promise<UserOutput> {
     const org =
       preloadedOrg !== undefined
         ? preloadedOrg
-        : await this.resolveOrganizationForUser(user);
+        : await this.resolveOrganizationForUser(user, includeVerificationMessages);
     // Plain object (not a class instance) so ClassSerializerInterceptor does not
     // drop `role` / nested `organization` when serializing GET /users/me.
     const verificationOrg = org as (Organizations & {
       verificationDocuments?: unknown;
       verificationAdminMessage?: string | null;
       verificationMessageSentAt?: Date | null;
+      verificationMessages?: Array<{
+        id: string;
+        senderType: "ORGANIZATION" | "ADMIN";
+        senderUserId: string | null;
+        message: string;
+        createdAt: Date;
+      }>;
     }) | null;
     const organizationPayload =
       org === null
@@ -278,6 +305,15 @@ export class UserService {
           verificationMessageSentAt: verificationOrg?.verificationMessageSentAt
             ? verificationOrg.verificationMessageSentAt.toISOString()
             : null,
+          verificationMessages: (verificationOrg?.verificationMessages ?? []).map(
+            (verificationMessage) => ({
+              id: verificationMessage.id,
+              senderType: verificationMessage.senderType,
+              senderUserId: verificationMessage.senderUserId,
+              message: verificationMessage.message,
+              createdAt: verificationMessage.createdAt.toISOString(),
+            }),
+          ),
         };
 
     return {
@@ -484,9 +520,24 @@ export class UserService {
     }
 
     if (Object.keys(orgData).length > 0) {
-      await this.prismaService.organizations.update({
-        where: { id: org.id },
-        data: orgData,
+      await this.prismaService.$transaction(async (tx) => {
+        await tx.organizations.update({
+          where: { id: org.id },
+          data: orgData,
+        });
+        const remarks = input.verificationRequestRemarks?.trim();
+        if (remarks) {
+          await (tx as unknown as {
+            organizationVerificationMessage: { create: (args: unknown) => Promise<unknown> };
+          }).organizationVerificationMessage.create({
+            data: {
+              organizationId: org.id,
+              senderType: "ORGANIZATION",
+              senderUserId: userId,
+              message: remarks,
+            },
+          });
+        }
       });
     }
 

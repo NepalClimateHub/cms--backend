@@ -98,6 +98,25 @@ model Organizations {
   organizationGallery Gallery[] @relation("GalleryToOrganizations")
   tags                Tags[]    @relation("OrganizationsToTags")
   linkedAccountUser   User?   @relation("UserOrganizationLink")
+  verificationMessages OrganizationVerificationMessage[]
+}
+
+enum VerificationMessageSenderType {
+  ORGANIZATION
+  ADMIN
+}
+
+model OrganizationVerificationMessage {
+  id             String                        @id @default(cuid())
+  organizationId String
+  senderType     VerificationMessageSenderType
+  senderUserId   String?
+  message        String                        @db.Text
+  createdAt      DateTime                      @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime                      @updatedAt @db.Timestamptz(6)
+  organization   Organizations                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
 }
 
 model Events {
@@ -698,5 +717,4 @@ model VacancyApplication {
   @@index([vacancyId])
   @@map("nch_vacancy_applications")
 }
-
 
