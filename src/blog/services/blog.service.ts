@@ -47,6 +47,24 @@ export class BlogService {
   } as const;
 
   /**
+   * Fields rendered by the authenticated CMS blog table. The table fetches a
+   * full record separately before editing or previewing, so do not join body,
+   * tags, categories, or author profile data here.
+   */
+  private readonly blogTableSelect = {
+    id: true,
+    title: true,
+    author: true,
+    category: true,
+    publishedDate: true,
+    isDraft: true,
+    status: true,
+    reviewFeedback: true,
+    bannerImageUrl: true,
+    authorUser: { select: { id: true } },
+  } as const;
+
+  /**
    * Fields exposed by BlogResponseDto for the optional linked author.
    * Keep this selection aligned with AuthorOutputDto so public reads do not
    * fetch account credentials or other internal user fields only to discard
@@ -308,9 +326,16 @@ export class BlogService {
             skip: offset,
             orderBy: { createdAt: "desc" },
           })
+        : searchParams.excludeContent
+          ? this.prisma.blog.findMany({
+              where,
+              select: this.blogTableSelect,
+              take: limit,
+              skip: offset,
+              orderBy: { createdAt: "desc" },
+            })
         : this.prisma.blog.findMany({
             where,
-            omit: searchParams.excludeContent ? { content: true } : undefined,
             include: {
               tags: true,
               authorUser: { select: this.authorUserSelect },
@@ -326,14 +351,22 @@ export class BlogService {
       this.prisma.blog.count({ where }),
     ]);
 
-    const result = {
-      blogs: plainToInstance(
-        view === "summary" ? BlogSummaryDto : BlogResponseDto,
-        blogs,
-        {
-          excludeExtraneousValues: true,
-        },
-      ),
+    const serializationOptions = { excludeExtraneousValues: true };
+    const serializedBlogs =
+      view === "summary"
+        ? plainToInstance(
+            BlogSummaryDto,
+            blogs as object[],
+            serializationOptions,
+          )
+        : plainToInstance(
+            BlogResponseDto,
+            blogs as object[],
+            serializationOptions,
+          );
+
+    const result: BlogListResult = {
+      blogs: serializedBlogs,
       total,
     };
 

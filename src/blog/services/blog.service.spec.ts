@@ -144,31 +144,27 @@ describe("BlogService — approval workflow", () => {
     expect(data.approvedByAdmin).toBe(false);
   });
 
-  it("uses the existing content exclusion option and selects only serialized author/category fields", async () => {
+  it("uses a compact table projection when content is excluded", async () => {
     prisma.blog.findMany.mockResolvedValue([]);
     prisma.blog.count.mockResolvedValue(0);
 
     await service.findAllBlogs({ excludeContent: true } as any);
 
     const query = prisma.blog.findMany.mock.calls[0][0];
-    expect(query.omit).toEqual({ content: true });
-    expect(query.include.authorUser.select).toEqual({
+    expect(query.select).toEqual({
       id: true,
-      socials: true,
-      currentRole: true,
-      fullName: true,
-      email: true,
-      bio: true,
-      profilePhotoUrl: true,
+      title: true,
+      author: true,
+      category: true,
+      publishedDate: true,
+      isDraft: true,
+      status: true,
+      reviewFeedback: true,
+      bannerImageUrl: true,
+      authorUser: { select: { id: true } },
     });
-    expect(query.include.categoryData.select).toEqual({
-      id: true,
-      name: true,
-      description: true,
-      type: true,
-      createdAt: true,
-      updatedAt: true,
-    });
+    expect(query).not.toHaveProperty("include");
+    expect(query).not.toHaveProperty("omit");
   });
 
   it("uses the compact card projection for summary listings", async () => {
