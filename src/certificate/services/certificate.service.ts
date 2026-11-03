@@ -146,8 +146,13 @@ export class CertificateService {
     const tokenHash = this.sha256(normalizedToken);
 
     // 4. Lookup certificate in database
-    const cert = await this.prisma.certificate.findUnique({
-      where: { verificationTokenHash: tokenHash },
+    const cert = await this.prisma.certificate.findFirst({
+      where: {
+        OR: [
+          { verificationTokenHash: tokenHash },
+          { verificationCode: normalizedToken },
+        ],
+      },
       include: { volunteer: true },
     });
 
@@ -267,6 +272,7 @@ export class CertificateService {
     const certificate = await this.prisma.certificate.create({
       data: {
         certificateNumber: certNumber,
+        verificationCode: rawToken,
         verificationTokenHash: tokenHash,
         volunteerId,
         certificateType: dto.certificateType.toUpperCase(),
@@ -368,6 +374,7 @@ export class CertificateService {
     await this.prisma.certificate.update({
       where: { id: certificateId },
       data: {
+        verificationCode: newRawToken,
         verificationTokenHash: newTokenHash,
       },
     });
@@ -437,6 +444,7 @@ export class CertificateService {
     return {
       id: updatedCert.id,
       certificateNumber: updatedCert.certificateNumber,
+      verificationCode: updatedCert.verificationCode || undefined,
       certificateType: updatedCert.certificateType,
       role: updatedCert.role,
       teamName: updatedCert.teamName,
@@ -531,6 +539,7 @@ export class CertificateService {
       (cert) => ({
         id: cert.id,
         certificateNumber: cert.certificateNumber,
+        verificationCode: cert.verificationCode || undefined,
         certificateType: cert.certificateType,
         role: cert.role,
         teamName: cert.teamName,
@@ -576,6 +585,7 @@ export class CertificateService {
     return {
       id: cert.id,
       certificateNumber: cert.certificateNumber,
+      verificationCode: cert.verificationCode || undefined,
       certificateType: cert.certificateType,
       role: cert.role,
       teamName: cert.teamName,

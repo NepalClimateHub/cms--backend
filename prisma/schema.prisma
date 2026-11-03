@@ -676,6 +676,7 @@ model Volunteer {
 model Certificate {
   id                    String                       @id @default(uuid()) @db.Uuid
   certificateNumber     String                       @unique @map("certificate_number") @db.VarChar(50)
+  verificationCode      String?                      @map("verification_code") @db.VarChar(50)
   verificationTokenHash String                       @unique @map("verification_token_hash") @db.Char(64)
   volunteerId           String                       @map("volunteer_id") @db.Uuid
   certificateType       String                       @map("certificate_type") @db.VarChar(50)
@@ -693,6 +694,7 @@ model Certificate {
   verificationLogs      CertificateVerificationLog[]
 
   @@index([verificationTokenHash])
+ @@index([verificationCode])
   @@map("certificates")
 }
 
