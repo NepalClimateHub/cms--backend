@@ -599,6 +599,33 @@ export class UserService {
       }
     }
 
+    // Password and email-verification are credentials: never self-service here
+    // (use /auth/change-password), and only admins may set them for others.
+    if (input.password !== undefined || input.isEmailVerified !== undefined) {
+      if (!ctx.user?.id) {
+        throw new UnauthorizedException();
+      }
+      if (ctx.user.id === userId) {
+        throw new ForbiddenException(
+          "Use change password to update your own password",
+        );
+      }
+      const [actor, target] = await Promise.all([
+        this.prismaService.user.findUnique({ where: { id: ctx.user.id } }),
+        this.prismaService.user.findUnique({ where: { id: userId } }),
+      ]);
+      const actorType = actor?.userType;
+      const allowed =
+        actorType === UserType.SUPER_ADMIN ||
+        (actorType === UserType.ADMIN &&
+          target?.userType !== UserType.SUPER_ADMIN);
+      if (!allowed) {
+        throw new ForbiddenException(
+          "Not allowed to change this user's credentials",
+        );
+      }
+    }
+
     // Map name to fullName for Prisma; `role` maps to Prisma `userType`
     const { name, role, ...rest } = input;
     const updateData: Record<string, unknown> = { ...rest };

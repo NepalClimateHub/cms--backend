@@ -142,3 +142,61 @@ describe("UserService — deleteUser", () => {
     expect(activity.logActivity).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("UserService — updateUser credentials", () => {
+  let service: UserService;
+  const users: Record<string, { id: string; userType: UserType }> = {
+    super: { id: "super", userType: UserType.SUPER_ADMIN },
+    admin: { id: "admin", userType: UserType.ADMIN },
+    content: { id: "content", userType: UserType.CONTENT_ADMIN },
+    indiv: { id: "indiv", userType: UserType.INDIVIDUAL },
+  };
+  const prisma = {
+    user: {
+      findUnique: jest.fn(({ where }) => Promise.resolve(users[where.id])),
+      update: jest.fn(({ where }) => Promise.resolve(users[where.id])),
+    },
+  };
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    const moduleRef: TestingModule = await Test.createTestingModule({
+      providers: [
+        UserService,
+        { provide: AppLogger, useValue: { log: jest.fn(), setContext: jest.fn() } },
+        { provide: PrismaService, useValue: prisma },
+        { provide: ActivityLogService, useValue: { logActivity: jest.fn() } },
+      ],
+    }).compile();
+    service = moduleRef.get(UserService);
+  });
+
+  it.each([
+    ["self password", "indiv", "indiv", { password: "x".repeat(8) }],
+    ["self email verify", "indiv", "indiv", { isEmailVerified: true }],
+    ["content admin on other", "content", "indiv", { password: "x".repeat(8) }],
+    ["admin on super admin", "admin", "super", { password: "x".repeat(8) }],
+  ])("forbids %s", async (_, actor, target, input) => {
+    await expect(
+      service.updateUser(ctxFor(actor, users[actor].userType), target, input),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["super admin", "super", "admin"],
+    ["admin", "admin", "indiv"],
+  ])("lets %s reset another user's password", async (_, actor, target) => {
+    await service.updateUser(ctxFor(actor, users[actor].userType), target, {
+      password: "x".repeat(8),
+    });
+    expect(prisma.user.update).toHaveBeenCalled();
+  });
+
+  it("allows self profile edits without credentials", async () => {
+    await service.updateUser(ctxFor("indiv", UserType.INDIVIDUAL), "indiv", {
+      name: "New",
+    });
+    expect(prisma.user.update).toHaveBeenCalled();
+  });
+});
