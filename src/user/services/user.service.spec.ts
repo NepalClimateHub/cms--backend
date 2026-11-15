@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserType } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 import { UserService } from "./user.service";
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -67,6 +68,18 @@ describe("UserService — deleteUser", () => {
       expect(prisma.$transaction).not.toHaveBeenCalled();
     },
   );
+
+  it("validateUsernamePassword rejects a wrong password", async () => {
+    const hash = await bcrypt.hash("Correct#123", 4);
+    prisma.user.findUnique.mockResolvedValue(targetUser({ password: hash }));
+    const ctx = new RequestContext();
+    await expect(
+      service.validateUsernamePassword(ctx, "test@example.com", "wrong"),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(
+      service.validateUsernamePassword(ctx, "test@example.com", "Correct#123"),
+    ).resolves.toMatchObject({ id: "target-1" });
+  });
 
   it("rejects unauthenticated context", async () => {
     await expect(

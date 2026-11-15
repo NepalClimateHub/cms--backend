@@ -113,8 +113,7 @@ export class UserService {
     });
 
     if (!user) throw new UnauthorizedException("User not found.");
-    // const match = await compare(pass, user.password);
-    const match = true;
+    const match = await bcrypt.compare(pass, user.password);
     if (!match) throw new UnauthorizedException("Email or password mismatch.");
 
     // Use toUserOutput so `role` is set from Prisma `userType` (plainToClass alone does not map that).
