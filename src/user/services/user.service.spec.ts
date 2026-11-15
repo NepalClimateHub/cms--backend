@@ -193,6 +193,21 @@ describe("UserService — updateUser credentials", () => {
     expect(prisma.user.update).toHaveBeenCalled();
   });
 
+  it("lets super admin set their own password", async () => {
+    await service.updateUser(ctxFor("super", UserType.SUPER_ADMIN), "super", {
+      password: "x".repeat(8),
+    });
+    expect(prisma.user.update).toHaveBeenCalled();
+  });
+
+  it("forbids admin setting their own password", async () => {
+    await expect(
+      service.updateUser(ctxFor("admin", UserType.ADMIN), "admin", {
+        password: "x".repeat(8),
+      }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
   it("allows self profile edits without credentials", async () => {
     await service.updateUser(ctxFor("indiv", UserType.INDIVIDUAL), "indiv", {
       name: "New",

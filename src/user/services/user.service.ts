@@ -599,30 +599,33 @@ export class UserService {
       }
     }
 
-    // Password and email-verification are credentials: never self-service here
-    // (use /auth/change-password), and only admins may set them for others.
+    // Password and email-verification are credentials. SUPER_ADMIN may set
+    // them for anyone, including themselves; ADMIN only for non-super-admins
+    // other than themselves; everyone else uses /auth/change-password.
     if (input.password !== undefined || input.isEmailVerified !== undefined) {
       if (!ctx.user?.id) {
         throw new UnauthorizedException();
       }
-      if (ctx.user.id === userId) {
-        throw new ForbiddenException(
-          "Use change password to update your own password",
-        );
-      }
+      const isSelf = ctx.user.id === userId;
       const [actor, target] = await Promise.all([
         this.prismaService.user.findUnique({ where: { id: ctx.user.id } }),
-        this.prismaService.user.findUnique({ where: { id: userId } }),
+        isSelf ? null : this.prismaService.user.findUnique({ where: { id: userId } }),
       ]);
       const actorType = actor?.userType;
-      const allowed =
-        actorType === UserType.SUPER_ADMIN ||
-        (actorType === UserType.ADMIN &&
-          target?.userType !== UserType.SUPER_ADMIN);
-      if (!allowed) {
-        throw new ForbiddenException(
-          "Not allowed to change this user's credentials",
-        );
+      if (actorType !== UserType.SUPER_ADMIN) {
+        if (isSelf) {
+          throw new ForbiddenException(
+            "Use change password to update your own password",
+          );
+        }
+        if (
+          actorType !== UserType.ADMIN ||
+          target?.userType === UserType.SUPER_ADMIN
+        ) {
+          throw new ForbiddenException(
+            "Not allowed to change this user's credentials",
+          );
+        }
       }
     }
 
