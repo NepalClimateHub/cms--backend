@@ -20,6 +20,7 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:seed": "npx tsx scripts/seed/index.ts",
+    "user:set-password": "node scripts/set-password.js",
     "prepare": "husky || true"
   },
   "dependencies": {

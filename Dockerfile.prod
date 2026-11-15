@@ -10,6 +10,7 @@ COPY prisma ./prisma
 # generate the client at build time so the image works even if the start command skips it
 RUN pnpm i --prod --frozen-lockfile && pnpm exec prisma generate
 COPY dist ./dist
+COPY scripts/set-password.js ./scripts/
 ARG APP_ENV=production
 
 CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/src/main"]
