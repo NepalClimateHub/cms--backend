@@ -25,6 +25,8 @@ model User {
   addressId                       String?
   resetPasswordToken              String?
   resetPasswordExpires            DateTime?
+  // Tokens issued before this instant are rejected (password change / log out everywhere).
+  sessionsRevokedAt               DateTime? @db.Timestamptz(6)
   accountVerificationToken        String?
   accountVerificationTokenExpires DateTime?
   createdAt                       DateTime  @default(now()) @db.Timestamptz(6)

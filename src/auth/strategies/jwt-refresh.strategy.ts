@@ -5,13 +5,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { STRATEGY_JWT_REFRESH } from '../constants/strategy.constant';
 import { UserRefreshTokenClaims } from '../dtos/auth-token-output.dto';
+import { PrismaService } from '../../shared/prisma-module/prisma.service';
+import { isRevoked } from './session-revocation';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   STRATEGY_JWT_REFRESH,
 ) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prismaService: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       secretOrKey: configService.get<string>('jwt.publicKey')!,
@@ -20,7 +25,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  async validate(payload: any): Promise<UserRefreshTokenClaims> {
+  async validate(payload: any): Promise<UserRefreshTokenClaims | null> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: payload.sub },
+      select: { sessionsRevokedAt: true },
+    });
+    if (!user || isRevoked(payload.iat, user.sessionsRevokedAt)) return null;
+
     // Passport automatically creates a user object, based on the value we return from the validate() method,
     // and assigns it to the Request object as req.user
     return { id: payload.sub };

@@ -234,6 +234,31 @@ export class AuthController {
     };
   }
 
+  @Post("logout-all")
+  @ApiOperation({
+    summary: "Log out of all devices API",
+    description:
+      "Invalidates every access and refresh token issued to the current user, including this one",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "All sessions revoked",
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async logoutAllDevices(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<{ message: string }>> {
+    this.logger.log(ctx, `${this.logoutAllDevices.name} was called`);
+
+    const result = await this.authService.logoutAllDevices(ctx);
+    return { data: { message: result.message }, meta: {} };
+  }
+
   @Post("refresh-token")
   @ApiOperation({
     summary: "Refresh access token API",

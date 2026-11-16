@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { STRATEGY_JWT_AUTH } from "../constants/strategy.constant";
 import { UserAccessTokenClaims } from "../dtos/auth-token-output.dto";
 import { PrismaService } from "../../shared/prisma-module/prisma.service";
+import { isRevoked } from "./session-revocation";
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(
@@ -32,7 +33,7 @@ export class JwtAuthStrategy extends PassportStrategy(
         id: payload.sub,
       },
     });
-    if (!user) return null;
+    if (!user || isRevoked(payload.iat, user.sessionsRevokedAt)) return null;
 
     return user;
   }

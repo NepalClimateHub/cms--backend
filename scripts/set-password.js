@@ -47,9 +47,9 @@ const main = async () => {
     }
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: await hash(password, 10) },
+      data: { password: await hash(password, 10), sessionsRevokedAt: new Date() },
     });
-    console.log(`Password updated for ${email} (${user.userType}).`);
+    console.log(`Password updated for ${email} (${user.userType}); all sessions logged out.`);
   } finally {
     await prisma.$disconnect();
   }
