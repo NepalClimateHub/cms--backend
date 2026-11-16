@@ -211,6 +211,12 @@ export class AuthService {
     };
   }
 
+  async logoutAllDevices(ctx: RequestContext): Promise<{ message: string }> {
+    this.logger.log(ctx, `${this.logoutAllDevices.name} was called`);
+    await this.userService.revokeSessions(ctx, ctx.user!.id);
+    return { message: "Logged out of all devices" };
+  }
+
   async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {
     this.logger.log(ctx, `${this.refreshToken.name} was called`);
 

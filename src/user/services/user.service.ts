@@ -641,6 +641,7 @@ export class UserService {
 
     if (input.password) {
       updateData.password = await bcrypt.hash(input.password, 10);
+      updateData.sessionsRevokedAt = new Date();
     } else {
       delete updateData.password;
     }
@@ -658,6 +659,14 @@ export class UserService {
     });
 
     return this.toUserOutput(user);
+  }
+
+  async revokeSessions(ctx: RequestContext, userId: string): Promise<void> {
+    this.logger.log(ctx, `${this.revokeSessions.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { sessionsRevokedAt: new Date() },
+    });
   }
 
   async promoteUser(
