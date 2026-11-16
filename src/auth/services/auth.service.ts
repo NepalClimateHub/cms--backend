@@ -159,9 +159,7 @@ export class AuthService {
       }
 
       // Update user verification status
-      await this.userService.updateUser(ctx, user.id, {
-        isEmailVerified: true,
-      });
+      await this.userService.markEmailVerified(ctx, user.id);
 
       return {
         email: email,
@@ -201,10 +199,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid current password");
     }
 
-    // updateUser hashes the password
-    await this.userService.updateUser(ctx, user.id, {
-      password: input.newPassword,
-    });
+    await this.userService.setPassword(ctx, user.id, input.newPassword);
 
     return {
       message: "Password changed successfully",

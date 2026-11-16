@@ -660,6 +660,29 @@ export class UserService {
     return this.toUserOutput(user);
   }
 
+  // Internal credential writes for flows that already proved who the caller is
+  // (change-password checked the current password, verify-email checked the
+  // token). They skip updateUser's HTTP-facing credential guard on purpose.
+  async setPassword(
+    ctx: RequestContext,
+    userId: string,
+    password: string,
+  ): Promise<void> {
+    this.logger.log(ctx, `${this.setPassword.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { password: await bcrypt.hash(password, 10) },
+    });
+  }
+
+  async markEmailVerified(ctx: RequestContext, userId: string): Promise<void> {
+    this.logger.log(ctx, `${this.markEmailVerified.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { isEmailVerified: true },
+    });
+  }
+
   async promoteUser(
     ctx: RequestContext,
     userId: string,
