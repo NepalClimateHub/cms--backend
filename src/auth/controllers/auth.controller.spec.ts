@@ -1,3 +1,4 @@
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -7,7 +8,15 @@ import { RefreshTokenInput } from "../dtos/auth-refresh-token-input.dto";
 import { RegisterInput } from "../dtos/auth-register-input.dto";
 import { AuthTokenOutput } from "../dtos/auth-token-output.dto";
 import { AuthService } from "../services/auth.service";
+import { sendEmail } from "../../utils/email.util";
 import { AuthController } from "./auth.controller";
+
+jest.mock("../../utils/email.util", () => ({
+  EmailType: { EMAIL_VERIFICATION: "EMAIL_VERIFICATION" },
+  sendEmail: jest.fn(),
+}));
+
+const sendEmailMock = sendEmail as jest.Mock;
 
 describe("AuthController", () => {
   let moduleRef: TestingModule;
@@ -17,6 +26,8 @@ describe("AuthController", () => {
     register: jest.fn(),
     login: jest.fn(),
     refreshToken: jest.fn(),
+    requestPasswordReset: jest.fn(),
+    resetPassword: jest.fn(),
   };
 
   const mockedLogger = { setContext: jest.fn(), log: jest.fn() };
@@ -26,6 +37,7 @@ describe("AuthController", () => {
       controllers: [AuthController],
       providers: [
         { provide: AuthService, useValue: mockedAuthService },
+        { provide: ConfigService, useValue: { get: jest.fn() } },
         { provide: AppLogger, useValue: mockedLogger },
       ],
     }).compile();
@@ -46,13 +58,15 @@ describe("AuthController", () => {
       registerInputDto.username = "john@example.com";
       registerInputDto.password = "123123";
 
+      const registeredUser = { email: "john@example.com" };
       jest
         .spyOn(mockedAuthService, "register")
-        .mockImplementation(async () => null);
+        .mockImplementation(async () => registeredUser);
+      sendEmailMock.mockResolvedValue({ success: true, message: "ok" });
 
       expect(await authController.registerLocal(ctx, registerInputDto)).toEqual(
         {
-          data: null,
+          data: registeredUser,
           meta: {},
         }
       );
@@ -71,6 +85,40 @@ describe("AuthController", () => {
         data: null,
         meta: {},
       });
+    });
+  });
+
+  describe("forgotPassword", () => {
+    it("requests a reset and returns a generic message", async () => {
+      mockedAuthService.requestPasswordReset.mockResolvedValue(undefined);
+
+      const response = await authController.forgotPassword(ctx, {
+        email: "john@example.com",
+      });
+
+      expect(mockedAuthService.requestPasswordReset).toHaveBeenCalledWith(
+        ctx,
+        "john@example.com"
+      );
+      expect(response.data.message).toMatch(/if an account exists/i);
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("resets the password with the token", async () => {
+      mockedAuthService.resetPassword.mockResolvedValue(undefined);
+
+      const response = await authController.resetPassword(ctx, {
+        token: "raw-token",
+        newPassword: "new-password",
+      });
+
+      expect(mockedAuthService.resetPassword).toHaveBeenCalledWith(
+        ctx,
+        "raw-token",
+        "new-password"
+      );
+      expect(response.data.message).toBe("Password reset successfully");
     });
   });
 
