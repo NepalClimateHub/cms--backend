@@ -160,7 +160,7 @@ class EmailService {
       case EmailType.PASSWORD_RESET_SUCCESS:
         return {
           ...baseData,
-          loginLink: `${baseData.frontendBaseUrl}/login`,
+          loginLink: `${baseData.frontendBaseUrl}/sign-in`,
         };
 
       case EmailType.ORGANIZATION_VERIFIED:
