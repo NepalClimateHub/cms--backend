@@ -160,6 +160,60 @@ export class UserService {
     return user; // Return raw user data including password
   }
 
+  async setPasswordResetToken(
+    ctx: RequestContext,
+    email: string,
+    token: string,
+    expiresAt: Date,
+  ): Promise<{ id: string; email: string; fullName: string } | null> {
+    this.logger.log(ctx, `${this.setPasswordResetToken.name} was called`);
+
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, fullName: true },
+    });
+    if (!user) return null;
+
+    await this.prismaService.user.update({
+      where: { id: user.id },
+      data: { resetPasswordToken: token, resetPasswordExpires: expiresAt },
+    });
+    return user;
+  }
+
+  async resetPasswordWithToken(
+    ctx: RequestContext,
+    token: string,
+    password: string,
+  ): Promise<{ email: string; fullName: string } | null> {
+    this.logger.log(ctx, `${this.resetPasswordWithToken.name} was called`);
+
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: { gt: new Date() },
+      },
+      select: { id: true, email: true, fullName: true },
+    });
+    if (!user) return null;
+
+    const result = await this.prismaService.user.updateMany({
+      where: {
+        id: user.id,
+        resetPasswordToken: token,
+        resetPasswordExpires: { gt: new Date() },
+      },
+      data: {
+        password: await bcrypt.hash(password, 10),
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+        sessionsRevokedAt: new Date(),
+      },
+    });
+    if (result.count !== 1) return null;
+    return user;
+  }
+
   async getUsers(
     ctx: RequestContext,
     limit: number,
@@ -641,6 +695,7 @@ export class UserService {
 
     if (input.password) {
       updateData.password = await bcrypt.hash(input.password, 10);
+      updateData.sessionsRevokedAt = new Date();
     } else {
       delete updateData.password;
     }
@@ -658,6 +713,40 @@ export class UserService {
     });
 
     return this.toUserOutput(user);
+  }
+
+  // Internal credential writes for flows that already proved who the caller is
+  // (change-password checked the current password, verify-email checked the
+  // token). They skip updateUser's HTTP-facing credential guard on purpose.
+  async setPassword(
+    ctx: RequestContext,
+    userId: string,
+    password: string,
+  ): Promise<void> {
+    this.logger.log(ctx, `${this.setPassword.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        password: await bcrypt.hash(password, 10),
+        sessionsRevokedAt: new Date(),
+      },
+    });
+  }
+
+  async markEmailVerified(ctx: RequestContext, userId: string): Promise<void> {
+    this.logger.log(ctx, `${this.markEmailVerified.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { isEmailVerified: true },
+    });
+  }
+
+  async revokeSessions(ctx: RequestContext, userId: string): Promise<void> {
+    this.logger.log(ctx, `${this.revokeSessions.name} was called`);
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { sessionsRevokedAt: new Date() },
+    });
   }
 
   async promoteUser(

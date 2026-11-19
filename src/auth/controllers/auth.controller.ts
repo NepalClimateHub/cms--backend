@@ -37,6 +37,8 @@ import { AuthService } from "../services/auth.service";
 import { EmailType, sendEmail } from "../../utils/email.util";
 import { JwtService } from "@nestjs/jwt";
 import { RolesGuard } from "../guards/roles.guard";
+import { ForgotPasswordInput } from "../dtos/auth-forgot-password-input.dto";
+import { ResetPasswordInput } from "../dtos/auth-reset-password-input.dto";
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -232,6 +234,58 @@ export class AuthController {
       data: { message: result.message },
       meta: {},
     };
+  }
+
+  @Post("logout-all")
+  @ApiOperation({
+    summary: "Log out of all devices API",
+    description:
+      "Invalidates every access and refresh token issued to the current user, including this one",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "All sessions revoked",
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: BaseApiErrorResponse,
+  })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async logoutAllDevices(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<{ message: string }>> {
+    this.logger.log(ctx, `${this.logoutAllDevices.name} was called`);
+
+    const result = await this.authService.logoutAllDevices(ctx);
+    return { data: { message: result.message }, meta: {} };
+  }
+
+  @Post("forgot-password")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Request a password reset email" })
+  async forgotPassword(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: ForgotPasswordInput,
+  ): Promise<BaseApiResponse<{ message: string }>> {
+    await this.authService.requestPasswordReset(ctx, input.email);
+    return {
+      data: {
+        message: "If an account exists for this email, a password reset link has been sent.",
+      },
+      meta: {},
+    };
+  }
+
+  @Post("reset-password")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Reset a password using a password reset token" })
+  async resetPassword(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: ResetPasswordInput,
+  ): Promise<BaseApiResponse<{ message: string }>> {
+    await this.authService.resetPassword(ctx, input.token, input.newPassword);
+    return { data: { message: "Password reset successfully" }, meta: {} };
   }
 
   @Post("refresh-token")

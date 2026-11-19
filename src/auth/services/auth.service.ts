@@ -23,6 +23,7 @@ import {
 import { EmailType, sendEmail } from "../../utils/email.util";
 import { getJWTTokenForEmailVerification } from "../../utils/jwt.util";
 import { ActivityLogService } from "../../activity-log/activity-log.service";
+import { createHash, randomBytes } from "crypto";
 
 @Injectable()
 export class AuthService {
@@ -159,9 +160,7 @@ export class AuthService {
       }
 
       // Update user verification status
-      await this.userService.updateUser(ctx, user.id, {
-        isEmailVerified: true,
-      });
+      await this.userService.markEmailVerified(ctx, user.id);
 
       return {
         email: email,
@@ -201,14 +200,79 @@ export class AuthService {
       throw new UnauthorizedException("Invalid current password");
     }
 
-    // updateUser hashes the password
-    await this.userService.updateUser(ctx, user.id, {
-      password: input.newPassword,
-    });
+    await this.userService.setPassword(ctx, user.id, input.newPassword);
 
     return {
       message: "Password changed successfully",
     };
+  }
+
+  async logoutAllDevices(ctx: RequestContext): Promise<{ message: string }> {
+    this.logger.log(ctx, `${this.logoutAllDevices.name} was called`);
+    await this.userService.revokeSessions(ctx, ctx.user!.id);
+    return { message: "Logged out of all devices" };
+  }
+
+  async requestPasswordReset(ctx: RequestContext, email: string): Promise<void> {
+    this.logger.log(ctx, `${this.requestPasswordReset.name} was called`);
+
+    const rawToken = randomBytes(32).toString("hex");
+    const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+    const user = await this.userService.setPasswordResetToken(
+      ctx,
+      email.toLowerCase(),
+      tokenHash,
+      new Date(Date.now() + 60 * 60 * 1000),
+    );
+
+    // Return the same result for every address to prevent account enumeration.
+    if (!user) return;
+
+    const frontendUrl =
+      this.configService.get<string>("urls.frontendBaseUrl") ||
+      process.env.FRONTEND_BASE_URL ||
+      "http://localhost:5173";
+    const resetLink = `${frontendUrl.replace(/\/$/, "")}/reset-password?token=${encodeURIComponent(rawToken)}`;
+    const sent = await sendEmail(EmailType.PASSWORD_RESET, {
+      to: user.email,
+      fullName: user.fullName,
+      resetLink,
+    });
+    if (!sent.success) {
+      this.logger.error(
+        ctx,
+        `Could not send password reset email to ${user.email}: ${sent.message}`,
+      );
+    }
+  }
+
+  async resetPassword(
+    ctx: RequestContext,
+    rawToken: string,
+    newPassword: string,
+  ): Promise<void> {
+    this.logger.log(ctx, `${this.resetPassword.name} was called`);
+
+    const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+    const user = await this.userService.resetPasswordWithToken(
+      ctx,
+      tokenHash,
+      newPassword,
+    );
+    if (!user) {
+      throw new BadRequestException("This password reset link is invalid or has expired");
+    }
+
+    const sent = await sendEmail(EmailType.PASSWORD_RESET_SUCCESS, {
+      to: user.email,
+      fullName: user.fullName,
+    });
+    if (!sent.success) {
+      this.logger.error(
+        ctx,
+        `Could not send password reset confirmation to ${user.email}: ${sent.message}`,
+      );
+    }
   }
 
   async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {
