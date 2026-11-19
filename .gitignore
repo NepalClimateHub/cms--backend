@@ -6,5 +6,7 @@ dist
 build
 .vscode
 .DS_store
-/mydocs
+mydocs
 temp-exports/
+test-report.xml
+test-report.xml
