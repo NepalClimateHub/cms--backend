@@ -29,6 +29,7 @@ import { MinutesModule } from "./minutes/minutes.module";
 import { TestimonialModule } from "./testimonial/testimonial.module";
 import { VacancyModule } from "./vacancy/vacancy.module";
 import { ContentStatusModule } from "./content-status/content-status.module";
+import { CertificateModule } from "./certificate/certificate.module";
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { ContentStatusModule } from "./content-status/content-status.module";
     TestimonialModule,
     VacancyModule,
     ContentStatusModule,
+    CertificateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -11,6 +11,7 @@ export enum EmailType {
   PASSWORD_RESET = "PASSWORD_RESET",
   PASSWORD_RESET_SUCCESS = "PASSWORD_RESET_SUCCESS",
   ORGANIZATION_VERIFIED = "ORGANIZATION_VERIFIED",
+  CERTIFICATE_VERIFICATION = "CERTIFICATE_VERIFICATION",
   DB_BACKUP = "DB_BACKUP",
 }
 
@@ -36,7 +37,7 @@ export interface EmailConfig {
 }
 
 class EmailService {
-  private client: EmailClient;
+  private client?: EmailClient;
   private config: EmailConfig;
 
   constructor(private configService?: ConfigService) {
@@ -51,7 +52,28 @@ class EmailService {
         "",
     };
 
-    this.client = new EmailClient(this.config.connectionString);
+  }
+
+  private getClient(): EmailClient | null {
+    if (this.client) {
+      return this.client;
+    }
+
+    // Email is optional in local/dev setups, so missing Azure config should not stop the API from booting.
+    if (!this.config.connectionString || !this.config.senderAddress) {
+      console.warn(
+        "Azure email is not configured. Skipping email send.",
+      );
+      return null;
+    }
+
+    try {
+      this.client = new EmailClient(this.config.connectionString);
+      return this.client;
+    } catch (error) {
+      console.error("Failed to initialize Azure email client:", error);
+      return null;
+    }
   }
 
   private async getTemplate(templateName: string): Promise<string> {
@@ -90,6 +112,8 @@ class EmailService {
         "Password Reset Successful - Nepal Climate Hub",
       [EmailType.ORGANIZATION_VERIFIED]:
         "Your organization is verified - Nepal Climate Hub",
+      [EmailType.CERTIFICATE_VERIFICATION]:
+        "Your Nepal Climate Hub Certificate Verification Code",
       [EmailType.DB_BACKUP]: "Database Backup - Nepal Climate Hub",
     };
 
@@ -104,6 +128,7 @@ class EmailService {
       [EmailType.PASSWORD_RESET]: "password-reset",
       [EmailType.PASSWORD_RESET_SUCCESS]: "password-reset-success",
       [EmailType.ORGANIZATION_VERIFIED]: "organization-verified",
+      [EmailType.CERTIFICATE_VERIFICATION]: "certificate-verification",
       [EmailType.DB_BACKUP]: "db-backup",
     };
 
@@ -170,6 +195,15 @@ class EmailService {
           profileLink: `${baseData.frontendBaseUrl}/dashboard/profile`,
         };
 
+      case EmailType.CERTIFICATE_VERIFICATION:
+        return {
+          ...baseData,
+          fullName: metadata.fullName || metadata.userName || "User",
+          certificateNumber: metadata.certificateNumber,
+          verificationCode: metadata.verificationCode,
+          verifyLink: `${baseData.frontendBaseUrl || baseData.siteUrl}/verify?code=${metadata.verificationCode}`,
+        };
+
       case EmailType.DB_BACKUP:
         return {
           ...baseData,
@@ -186,13 +220,19 @@ class EmailService {
     metadata: EmailMetadata,
   ): Promise<boolean> {
     try {
+      const client = this.getClient();
+
+      if (!client) {
+        return false;
+      }
+
       const templateName = this.getTemplateName(emailType);
       const templateData = this.prepareTemplateData(emailType, metadata);
 
       const htmlContent = await this.renderTemplate(templateName, templateData);
       const subject = this.getSubject(emailType, metadata);
 
-      const poller = await this.client.beginSend({
+      const poller = await client.beginSend({
         senderAddress: this.config.senderAddress,
         content: {
           subject,
