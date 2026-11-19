@@ -34,7 +34,7 @@ import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { LocalAuthGuard } from "../guards/local-auth.guard";
 import { AuthService } from "../services/auth.service";
-import { EmailType, sendEmail } from "src/utils/email.util";
+import { EmailType, sendEmail } from "../../utils/email.util";
 import { JwtService } from "@nestjs/jwt";
 import { RolesGuard } from "../guards/roles.guard";
 @ApiTags("auth")

@@ -6,10 +6,13 @@ import {
   Delete,
   Body,
   Param,
+  Req,
+  Res,
   UseGuards,
   HttpStatus,
   HttpCode,
 } from "@nestjs/common";
+import { Request, Response } from "express";
 import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { AppLogger } from "../../shared/logger/logger.service";
@@ -193,6 +196,20 @@ export class AiAssistantController {
       decodeURIComponent(sourceUrl)
     );
     return { data: document, meta: {} };
+  }
+
+  @Get("documents/:documentId/file")
+  @ApiOperation({ summary: "View an indexed PDF" })
+  async viewDocumentFile(
+    @Param("documentId") documentId: string,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    await this.aiAssistantService.proxyDocumentFile(
+      documentId,
+      request.headers.range,
+      response,
+    );
   }
 
   @Delete("documents")
