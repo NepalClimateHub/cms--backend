@@ -1,9 +1,10 @@
 FROM node:24.2.0-bookworm-slim AS builder
 
 WORKDIR /usr/src/app
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm@12.3.4
-COPY package.json pnpm-workspace.yaml* .npmrc* ./
-RUN pnpm install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm prisma generate
 RUN pnpm run build
@@ -11,13 +12,13 @@ RUN pnpm run build
 FROM node:24.2.0-bookworm-slim
 
 WORKDIR /usr/src/app
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm@12.3.4
-COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/package.json /usr/src/app/pnpm-lock.yaml /usr/src/app/pnpm-workspace.yaml /usr/src/app/.npmrc ./
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 ARG APP_ENV=production
-RUN pnpm i --prod --frozen-lockfile
+# husky is a devDependency, so the root "prepare" script can't run in a --prod install
+RUN npm pkg delete scripts.prepare && pnpm i --prod --frozen-lockfile
 
-CMD ["sh", "-c", "pnpm --version && pnpm dlx prisma generate && pnpm dlx prisma migrate deploy && node dist/src/main"]
-
+CMD ["sh", "-c", "pnpm --version && pnpm dlx prisma@6.4.1 generate && pnpm dlx prisma@6.4.1 migrate deploy && node dist/src/main"]

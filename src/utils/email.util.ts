@@ -11,6 +11,7 @@ export enum EmailType {
   PASSWORD_RESET = "PASSWORD_RESET",
   PASSWORD_RESET_SUCCESS = "PASSWORD_RESET_SUCCESS",
   ORGANIZATION_VERIFIED = "ORGANIZATION_VERIFIED",
+  CERTIFICATE_VERIFICATION = "CERTIFICATE_VERIFICATION",
   DB_BACKUP = "DB_BACKUP",
 }
 
@@ -113,6 +114,8 @@ class EmailService {
         "Password Reset Successful - Nepal Climate Hub",
       [EmailType.ORGANIZATION_VERIFIED]:
         "Your organization is verified - Nepal Climate Hub",
+      [EmailType.CERTIFICATE_VERIFICATION]:
+        "Your Nepal Climate Hub Certificate Verification Code",
       [EmailType.DB_BACKUP]: "Database Backup - Nepal Climate Hub",
     };
 
@@ -127,6 +130,7 @@ class EmailService {
       [EmailType.PASSWORD_RESET]: "password-reset",
       [EmailType.PASSWORD_RESET_SUCCESS]: "password-reset-success",
       [EmailType.ORGANIZATION_VERIFIED]: "organization-verified",
+      [EmailType.CERTIFICATE_VERIFICATION]: "certificate-verification",
       [EmailType.DB_BACKUP]: "db-backup",
     };
 
@@ -184,6 +188,15 @@ class EmailService {
           ...baseData,
           dashboardLink: `${baseData.frontendBaseUrl}/dashboard`,
           profileLink: `${baseData.frontendBaseUrl}/dashboard/profile`,
+        };
+
+      case EmailType.CERTIFICATE_VERIFICATION:
+        return {
+          ...baseData,
+          fullName: metadata.fullName || metadata.userName || "User",
+          certificateNumber: metadata.certificateNumber,
+          verificationCode: metadata.verificationCode,
+          verifyLink: `${baseData.frontendBaseUrl || baseData.siteUrl}/verify?code=${metadata.verificationCode}`,
         };
 
       case EmailType.DB_BACKUP:
